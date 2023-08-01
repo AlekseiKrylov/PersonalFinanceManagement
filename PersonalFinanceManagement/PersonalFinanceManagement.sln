@@ -1,0 +1,80 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{285AF6CF-6F02-4B49-970F-27929F5DB548}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{38B0A1A6-3ECE-4EA7-80A9-65301ACA865B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{683170F8-C990-40AD-81A7-09B6BA3F4E87}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalFinanceManagement.API", "Srevices\PersonalFinanceManagement.API\PersonalFinanceManagement.API.csproj", "{D26F0142-683B-47CA-A4AB-E36ED21E9589}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalFinanceManagement.Interfaces", "Srevices\PersonalFinanceManagement.Interfaces\PersonalFinanceManagement.Interfaces.csproj", "{4B655983-98F9-4CCD-8F98-6577B7507E6B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalFinanceManagement.Interfaces.Base", "Srevices\PersonalFinanceManagement.Interfaces.Base\PersonalFinanceManagement.Interfaces.Base.csproj", "{F34CBDC2-74A0-4666-B9B9-0A1B89510D23}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalFinanceManagement.WebAPIClients", "Srevices\PersonalFinanceManagement.WebAPIClients\PersonalFinanceManagement.WebAPIClients.csproj", "{8E9E9161-63C9-4A07-9542-24D085F31B5D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalFinanceManagement.Domain", "Common\PersonalFinanceManagement.Domain\PersonalFinanceManagement.Domain.csproj", "{26AA3923-3CCD-490F-B8DB-7664B81AA2D6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalFinanceManagement.Domain.Base", "Common\PersonalFinanceManagement.Domain.Base\PersonalFinanceManagement.Domain.Base.csproj", "{08E25BB9-083F-4D1F-A971-7F4021BF7D18}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalFinanceManagement.DAL", "Data\PersonalFinanceManagement.DAL\PersonalFinanceManagement.DAL.csproj", "{D9B75ECE-5B5F-4774-BA37-C074936D3770}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalFinanceManagement.DAL.SqlServer", "Data\PersonalFinanceManagement.DAL.SqlServer\PersonalFinanceManagement.DAL.SqlServer.csproj", "{E288490A-6C27-4768-8B66-D27AB32668C1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D26F0142-683B-47CA-A4AB-E36ED21E9589}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D26F0142-683B-47CA-A4AB-E36ED21E9589}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D26F0142-683B-47CA-A4AB-E36ED21E9589}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D26F0142-683B-47CA-A4AB-E36ED21E9589}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B655983-98F9-4CCD-8F98-6577B7507E6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B655983-98F9-4CCD-8F98-6577B7507E6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B655983-98F9-4CCD-8F98-6577B7507E6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B655983-98F9-4CCD-8F98-6577B7507E6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F34CBDC2-74A0-4666-B9B9-0A1B89510D23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F34CBDC2-74A0-4666-B9B9-0A1B89510D23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F34CBDC2-74A0-4666-B9B9-0A1B89510D23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F34CBDC2-74A0-4666-B9B9-0A1B89510D23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E9E9161-63C9-4A07-9542-24D085F31B5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E9E9161-63C9-4A07-9542-24D085F31B5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E9E9161-63C9-4A07-9542-24D085F31B5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E9E9161-63C9-4A07-9542-24D085F31B5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26AA3923-3CCD-490F-B8DB-7664B81AA2D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26AA3923-3CCD-490F-B8DB-7664B81AA2D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26AA3923-3CCD-490F-B8DB-7664B81AA2D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26AA3923-3CCD-490F-B8DB-7664B81AA2D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08E25BB9-083F-4D1F-A971-7F4021BF7D18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08E25BB9-083F-4D1F-A971-7F4021BF7D18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08E25BB9-083F-4D1F-A971-7F4021BF7D18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08E25BB9-083F-4D1F-A971-7F4021BF7D18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9B75ECE-5B5F-4774-BA37-C074936D3770}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9B75ECE-5B5F-4774-BA37-C074936D3770}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9B75ECE-5B5F-4774-BA37-C074936D3770}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9B75ECE-5B5F-4774-BA37-C074936D3770}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E288490A-6C27-4768-8B66-D27AB32668C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E288490A-6C27-4768-8B66-D27AB32668C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E288490A-6C27-4768-8B66-D27AB32668C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E288490A-6C27-4768-8B66-D27AB32668C1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D26F0142-683B-47CA-A4AB-E36ED21E9589} = {683170F8-C990-40AD-81A7-09B6BA3F4E87}
+		{4B655983-98F9-4CCD-8F98-6577B7507E6B} = {683170F8-C990-40AD-81A7-09B6BA3F4E87}
+		{F34CBDC2-74A0-4666-B9B9-0A1B89510D23} = {683170F8-C990-40AD-81A7-09B6BA3F4E87}
+		{8E9E9161-63C9-4A07-9542-24D085F31B5D} = {683170F8-C990-40AD-81A7-09B6BA3F4E87}
+		{26AA3923-3CCD-490F-B8DB-7664B81AA2D6} = {285AF6CF-6F02-4B49-970F-27929F5DB548}
+		{08E25BB9-083F-4D1F-A971-7F4021BF7D18} = {285AF6CF-6F02-4B49-970F-27929F5DB548}
+		{D9B75ECE-5B5F-4774-BA37-C074936D3770} = {38B0A1A6-3ECE-4EA7-80A9-65301ACA865B}
+		{E288490A-6C27-4768-8B66-D27AB32668C1} = {38B0A1A6-3ECE-4EA7-80A9-65301ACA865B}
+	EndGlobalSection
+EndGlobal
