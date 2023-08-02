@@ -44,18 +44,21 @@ namespace PersonalFinanceManagement.DAL.Repositories
 
         public async Task<IEnumerable<T>> GetAsync(int skip, int count, CancellationToken cancel = default)
         {
-            //return await Items.Skip(skip).Take(count).ToArrayAsync(cancel).ConfigureAwait(false);
             if (count <= 0)
                 return Enumerable.Empty<T>();
 
-            var query = Items;
+            var query = (Items is IOrderedQueryable<T>) ? Items : Items.OrderBy(i => i.Id);
+
             if (skip > 0)
                 query = query.Skip(skip);
 
             return await query.Take(count).ToArrayAsync(cancel).ConfigureAwait(false);
         }
 
-        protected record Page(IEnumerable<T> Items, int TotalCount, int PageIndex, int PageSize) : IPage<T>;
+        protected record Page(IEnumerable<T> Items, int TotalCount, int PageIndex, int PageSize) : IPage<T>
+        {
+            public int TotalPagesCount => (int)Math.Ceiling((double)TotalCount / PageSize);
+        };
 
         public async Task<IPage<T>> GetPageAsync(int pageIndex, int pageSize, CancellationToken cancel = default)
         {
@@ -66,6 +69,9 @@ namespace PersonalFinanceManagement.DAL.Repositories
             var totalCount = await query.CountAsync(cancel).ConfigureAwait(false);
             if (totalCount == 0)
                 return new Page(Enumerable.Empty<T>(), totalCount, pageIndex, pageSize);
+
+            if (query is not IOrderedQueryable<T>)
+                query = query.OrderBy(i => i.Id);
 
             if (pageIndex > 0)
                 query = query.Skip(pageIndex * pageSize);
@@ -79,13 +85,6 @@ namespace PersonalFinanceManagement.DAL.Repositories
         public async Task<T> GetByIdAsync(int id, CancellationToken cancel = default)
         {
             return await Items.FirstOrDefaultAsync(i => i.Id == id, cancel).ConfigureAwait(false);
-
-            //return Items switch
-            //{
-            //    DbSet<T> set => await set.FindAsync(new object[] { id }, cancel).ConfigureAwait(false),
-            //    IQueryable<T> items => await Items.FirstOrDefaultAsync(i => i.Id == id, cancel).ConfigureAwait(false),
-            //    _ => throw new InvalidOperationException("Data source identification error"),
-            //};
         }
 
         public async Task<T> AddAsync(T item, CancellationToken cancel = default)

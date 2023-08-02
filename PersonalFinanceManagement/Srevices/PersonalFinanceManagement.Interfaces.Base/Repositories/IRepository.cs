@@ -2,7 +2,7 @@
 
 namespace PersonalFinanceManagement.Interfaces.Base.Repositories
 {
-    public interface IRepository<T> where T : IEntity, new()
+    public interface IRepository<T> where T : IEntity
     {
         Task<bool> ExistByIdAsync(int id, CancellationToken cancel = default);
         
