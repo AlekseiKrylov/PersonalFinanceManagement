@@ -1,11 +1,15 @@
-﻿using PersonalFinanceManagement.DAL.Entities.Base;
+﻿using PersonalFinanceManagement.Domain.DALEntities.Base;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PersonalFinanceManagement.DAL.Entities
+namespace PersonalFinanceManagement.Domain.DALEntities
 {
-    public class Transaction : NamedEntity
+    public class Transaction : Entity
     {
+        [Required]
+        [MaxLength(50)]
+        public string Name { get; set; }
+
         [MaxLength(1000)]
         public string? Note { get; set; }
 

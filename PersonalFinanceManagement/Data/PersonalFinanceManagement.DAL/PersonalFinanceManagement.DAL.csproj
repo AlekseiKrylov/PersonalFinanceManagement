@@ -15,7 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Srevices\PersonalFinanceManagement.Interfaces.Base\PersonalFinanceManagement.Interfaces.Base.csproj" />
+    <ProjectReference Include="..\..\Common\PersonalFinanceManagement.Domain\PersonalFinanceManagement.Domain.csproj" />
+    <ProjectReference Include="..\..\Srevices\PersonalFinanceManagement.Interfaces\PersonalFinanceManagement.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

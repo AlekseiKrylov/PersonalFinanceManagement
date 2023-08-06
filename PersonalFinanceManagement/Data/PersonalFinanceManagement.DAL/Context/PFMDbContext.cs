@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PersonalFinanceManagement.DAL.Entities;
+using PersonalFinanceManagement.Domain.DALEntities;
 
 namespace PersonalFinanceManagement.DAL.Context
 {
@@ -19,6 +19,10 @@ namespace PersonalFinanceManagement.DAL.Context
                 .HasMany<Transaction>()
                 .WithOne(c => c.Wallet)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Category>()
+                .HasIndex(c => new { c.Name, c.WalletId })
+                .IsUnique();
         }
     }
 }

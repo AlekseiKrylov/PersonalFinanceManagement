@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PersonalFinanceManagement.DAL.Entities.Base;
+using PersonalFinanceManagement.Domain.DALEntities.Base;
 using PersonalFinanceManagement.Interfaces.Base.Repositories;
 
 namespace PersonalFinanceManagement.API.Controllers.Base
@@ -20,7 +20,7 @@ namespace PersonalFinanceManagement.API.Controllers.Base
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
         public async Task<IActionResult> GetItemsCount() => Ok(await _repository.GetCountAsync());
 
-        [HttpGet("exist/{id:int}")]
+        [HttpGet("exist/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(bool))]
         public async Task<IActionResult> ExistId(int id) => await _repository.ExistByIdAsync(id) ? Ok(true) : NotFound(false);
@@ -30,11 +30,11 @@ namespace PersonalFinanceManagement.API.Controllers.Base
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(bool))]
         public async Task<IActionResult> Exist(T item) => await _repository.ExistAsync(item) ? Ok(true) : NotFound(false);
 
-        [HttpGet("items[[{skip:int}:{count:int}]]")]
+        [HttpGet("items")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<T>>> Get(int skip, int count) => Ok(await _repository.GetAsync(skip, count));
 
-        [HttpGet("page[[{pageIndex:int}:{pageSize:int}]]")]
+        [HttpGet("page")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IPage<T>>> GetPage(int pageIndex, int pageSize)
@@ -43,11 +43,11 @@ namespace PersonalFinanceManagement.API.Controllers.Base
             return result.Items.Any() ? Ok(result) : NotFound(result);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         [ActionName(nameof(Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(int id) => await _repository.GetByIdAsync(id) is { } item ? Ok(item) : NotFound();
+        public async Task<ActionResult<T>> GetById(int id) => await _repository.GetByIdAsync(id) is { } item ? Ok(item) : NotFound();
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -79,7 +79,7 @@ namespace PersonalFinanceManagement.API.Controllers.Base
             return Ok(result);
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)

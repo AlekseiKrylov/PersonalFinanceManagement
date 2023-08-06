@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PersonalFinanceManagement.DAL.Context;
-using PersonalFinanceManagement.DAL.Entities;
+using PersonalFinanceManagement.Domain.DALEntities;
+using PersonalFinanceManagement.Domain.DALEntities;
 
 namespace PersonalFinanceManagement.API.Data
 {

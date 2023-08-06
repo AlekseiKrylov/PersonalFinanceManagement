@@ -1,16 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PersonalFinanceManagement.DAL.Entities.Base;
+﻿using PersonalFinanceManagement.Domain.DALEntities.Base;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PersonalFinanceManagement.DAL.Entities
+namespace PersonalFinanceManagement.Domain.DALEntities
 {
-    [Index(nameof(Name), nameof(WalletId), IsUnique = true)]
-    public class Category : NamedEntity
+    public class Category : Entity
     {
         [Required]
+        [MaxLength(50)]
+        public string Name { get; set; }
+
+        [Required]
         public bool IsIncome { get; set; }
-        
+
         [Required]
         public int WalletId { get; set; }
 

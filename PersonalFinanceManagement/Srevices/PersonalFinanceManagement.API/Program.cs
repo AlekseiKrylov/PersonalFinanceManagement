@@ -1,7 +1,11 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using PersonalFinanceManagement.API.Data;
+using PersonalFinanceManagement.BLL.Services;
 using PersonalFinanceManagement.DAL.Context;
 using PersonalFinanceManagement.DAL.Repositories;
+using PersonalFinanceManagement.DAL.Repositories.Base;
+using PersonalFinanceManagement.Domain.Interfaces;
 using PersonalFinanceManagement.Interfaces.Base.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,10 +17,13 @@ builder.Services.AddDbContext<PFMDbContext>(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("PersonalFinanceManagement.DAL.SqlServer")));
 builder.Services.AddTransient<PFMDbInitializer>();
-builder.Services.AddScoped(typeof(IRepository<>), typeof(DbRepository<>));
+builder.Services.AddScoped(typeof(IRepository<>), typeof(DbRepositoryBase<>));
+builder.Services.AddScoped<ITransactionRepository, DbTransactionRepository>();
+builder.Services.AddScoped<IReportsService, ReportsService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 

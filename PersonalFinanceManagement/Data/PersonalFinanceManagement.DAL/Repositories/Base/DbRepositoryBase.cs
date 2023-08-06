@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PersonalFinanceManagement.DAL.Context;
-using PersonalFinanceManagement.DAL.Entities.Base;
+using PersonalFinanceManagement.Domain.DALEntities.Base;
 using PersonalFinanceManagement.Interfaces.Base.Repositories;
 
-namespace PersonalFinanceManagement.DAL.Repositories
+namespace PersonalFinanceManagement.DAL.Repositories.Base
 {
-    public class DbRepository<T> : IRepository<T> where T : Entity, new()
+    public class DbRepositoryBase<T> : IRepository<T> where T : Entity, new()
     {
         private readonly PFMDbContext _db;
 
@@ -13,7 +13,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
 
         protected virtual IQueryable<T> Items => Set;
 
-        public DbRepository(PFMDbContext db)
+        public DbRepositoryBase(PFMDbContext db)
         {
             _db = db;
             Set = _db.Set<T>();
@@ -47,7 +47,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
             if (count <= 0)
                 return Enumerable.Empty<T>();
 
-            var query = (Items is IOrderedQueryable<T>) ? Items : Items.OrderBy(i => i.Id);
+            var query = Items is IOrderedQueryable<T> ? Items : Items.OrderBy(i => i.Id);
 
             if (skip > 0)
                 query = query.Skip(skip);
@@ -64,7 +64,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
         {
             if (pageSize <= 0)
                 return new Page(Enumerable.Empty<T>(), await GetCountAsync(cancel).ConfigureAwait(false), pageIndex, pageSize);
-            
+
             var query = Items;
             var totalCount = await query.CountAsync(cancel).ConfigureAwait(false);
             if (totalCount == 0)
@@ -76,7 +76,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
             if (pageIndex > 0)
                 query = query.Skip(pageIndex * pageSize);
             query = query.Take(pageSize);
-            
+
             var items = await query.ToArrayAsync(cancel).ConfigureAwait(false);
 
             return new Page(items, totalCount, pageIndex, pageSize);
@@ -92,8 +92,6 @@ namespace PersonalFinanceManagement.DAL.Repositories
             if (item is null)
                 throw new ArgumentNullException(nameof(item));
 
-            //_db.Entry(item).State = EntityState.Added;
-            //await Set.AddAsync(item, cancel);
             await _db.AddAsync(item, cancel).ConfigureAwait(false);
             await _db.SaveChangesAsync(cancel).ConfigureAwait(false);
             return item;
@@ -104,8 +102,6 @@ namespace PersonalFinanceManagement.DAL.Repositories
             if (item is null)
                 throw new ArgumentNullException(nameof(item));
 
-            //_db.Entry(item).State = EntityState.Modified;
-            //Set.Update(item);
             _db.Update(item);
             await _db.SaveChangesAsync(cancel).ConfigureAwait(false);
             return item;
@@ -128,8 +124,6 @@ namespace PersonalFinanceManagement.DAL.Repositories
             if (!await ExistByIdAsync(item.Id, cancel))
                 return null;
 
-            //_db.Entry(item).State = EntityState.Deleted;
-            //Set.Remove(item);
             _db.Remove(item);
             await _db.SaveChangesAsync(cancel).ConfigureAwait(false);
             return item;

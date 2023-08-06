@@ -1,5 +1,5 @@
 ﻿using PersonalFinanceManagement.API.Controllers.Base;
-using PersonalFinanceManagement.DAL.Entities;
+using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Interfaces.Base.Repositories;
 
 namespace PersonalFinanceManagement.API.Controllers

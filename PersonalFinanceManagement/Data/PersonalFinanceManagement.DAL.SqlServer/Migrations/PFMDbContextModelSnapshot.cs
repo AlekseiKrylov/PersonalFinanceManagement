@@ -48,7 +48,7 @@ namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
                     b.HasIndex("Name", "WalletId")
                         .IsUnique();
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("PersonalFinanceManagement.DAL.Entities.Transaction", b =>
@@ -86,7 +86,7 @@ namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
 
                     b.HasIndex("WalletId");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("PersonalFinanceManagement.DAL.Entities.Wallet", b =>
@@ -108,7 +108,7 @@ namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Wallets");
+                    b.ToTable("Wallets", (string)null);
                 });
 
             modelBuilder.Entity("PersonalFinanceManagement.DAL.Entities.Category", b =>
