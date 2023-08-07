@@ -4,6 +4,7 @@ using PersonalFinanceManagement.Interfaces.Base.Repositories;
 
 namespace PersonalFinanceManagement.API.Controllers.Base
 {
+    [NonController] //Disable controller
     [Route("api/[controller]")]
     [ApiController]
     public abstract class EntitiesController<T> : ControllerBase where T : Entity
