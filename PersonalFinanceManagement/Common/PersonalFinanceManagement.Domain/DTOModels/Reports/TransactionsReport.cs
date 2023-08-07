@@ -1,4 +1,5 @@
 ﻿using PersonalFinanceManagement.Domain.DALEntities;
+using PersonalFinanceManagement.Domain.ModelsDTO;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PersonalFinanceManagement.Domain.DTOModels.Reports
@@ -13,6 +14,6 @@ namespace PersonalFinanceManagement.Domain.DTOModels.Reports
         [Column(TypeName = "decimal(18, 2)")]
         public decimal TotalExpenses { get; set; }
 
-        public List<Transaction> Transactions { get; set; }
+        public List<TransactionWithCategory> Transactions { get; set; }
     }
 }

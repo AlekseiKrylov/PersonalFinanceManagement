@@ -1,6 +1,8 @@
-﻿namespace PersonalFinanceManagement.Domain.ModelsDTO
+﻿using PersonalFinanceManagement.Interfaces.Base.Entities;
+
+namespace PersonalFinanceManagement.Domain.ModelsDTO
 {
-    public class WalletDTO
+    public class WalletDTO : IEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }

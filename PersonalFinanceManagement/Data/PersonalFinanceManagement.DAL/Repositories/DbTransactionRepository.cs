@@ -12,7 +12,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
 
         public DbTransactionRepository(PFMDbContext db) : base(db) => _db = db;
 
-        public async Task<IEnumerable<Transaction>> GetTransactionsAsync(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel = default)
+        public async Task<IEnumerable<Transaction>> GetTransactionsWithCategoryAsync(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel = default)
         {
             if (endDate < startDate)
                 return Enumerable.Empty<Transaction>();

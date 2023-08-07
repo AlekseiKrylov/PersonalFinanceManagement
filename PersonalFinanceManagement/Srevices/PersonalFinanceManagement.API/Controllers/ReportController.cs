@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PersonalFinanceManagement.Domain.DTOModels.Reports;
 using PersonalFinanceManagement.Domain.Interfaces;
 
 namespace PersonalFinanceManagement.API.Controllers
@@ -13,12 +14,12 @@ namespace PersonalFinanceManagement.API.Controllers
 
         [HttpGet("daily")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetDailyReport(int walletId, DateTime date, CancellationToken cancel) =>
+        public async Task<ActionResult<DailyTransactionsReport>> GetDailyReport(int walletId, DateTime date, CancellationToken cancel) =>
             Ok(await _reportsService.GetDailyReport(walletId, date, cancel));
 
         [HttpGet("period")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetPeriodReport(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel) =>
+        public async Task<ActionResult<PeriodTransactionsReport>> GetPeriodReport(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel) =>
             Ok(await _reportsService.GetPeriodReport(walletId, startDate, endDate, cancel));
     }
 }

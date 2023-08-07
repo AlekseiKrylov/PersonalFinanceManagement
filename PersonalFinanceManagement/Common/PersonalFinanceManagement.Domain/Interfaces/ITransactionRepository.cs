@@ -5,7 +5,7 @@ namespace PersonalFinanceManagement.Domain.Interfaces
 {
     public interface ITransactionRepository : IRepository<Transaction>
     {
-        Task<IEnumerable<Transaction>> GetTransactionsAsync(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel = default);
+        Task<IEnumerable<Transaction>> GetTransactionsWithCategoryAsync(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel = default);
         
         Task<bool> MoveTransactionsToAnotherCategoryAsync(int walletId, int sourceCategoryId, int targetCategoryId, CancellationToken cancel = default);
         
