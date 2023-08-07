@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PersonalFinanceManagement.Domain.DTOModels.Reports
+namespace PersonalFinanceManagement.Domain.BLLModels.Reports
 {
     public class DailyTransactionsReport : TransactionsReport
     {

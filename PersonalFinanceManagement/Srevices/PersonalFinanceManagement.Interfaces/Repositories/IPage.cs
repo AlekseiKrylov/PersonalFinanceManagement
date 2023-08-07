@@ -10,6 +10,6 @@
         
         int PageSize { get; }
 
-        int TotalPagesCount => (int)Math.Ceiling((double)TotalCount / PageSize);
+        int TotalPagesCount { get; }
     }
 }

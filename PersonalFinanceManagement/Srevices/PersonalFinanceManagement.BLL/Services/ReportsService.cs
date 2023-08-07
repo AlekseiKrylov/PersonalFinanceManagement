@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using PersonalFinanceManagement.Domain.BLLModels.Reports;
 using PersonalFinanceManagement.Domain.DALEntities;
-using PersonalFinanceManagement.Domain.DTOModels.Reports;
 using PersonalFinanceManagement.Domain.Interfaces;
 using PersonalFinanceManagement.Domain.ModelsDTO;
 
@@ -21,7 +21,7 @@ namespace PersonalFinanceManagement.BLL.Services
 
         public async Task<DailyTransactionsReport> GetDailyReport(int walletId, DateTime date, CancellationToken cancel)
         {
-            var transactions = await _transactionRepository.GetTransactionsWithCategoryAsync(walletId, date, date, cancel).ConfigureAwait(false);
+            var transactions = await _transactionRepository.GetWithCategoryAsync(walletId, date, date, cancel).ConfigureAwait(false);
             decimal totalIncome = transactions.Where(t => t.Category.IsIncome).Sum(t => t.Amount);
             decimal totalExpenses = transactions.Where(t => !t.Category.IsIncome).Sum(t => t.Amount);
 
@@ -38,7 +38,7 @@ namespace PersonalFinanceManagement.BLL.Services
 
         public async Task<PeriodTransactionsReport> GetPeriodReport(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel)
         {
-            var transactions = await _transactionRepository.GetTransactionsWithCategoryAsync(walletId, startDate, endDate, cancel).ConfigureAwait(false);
+            var transactions = await _transactionRepository.GetWithCategoryAsync(walletId, startDate, endDate, cancel).ConfigureAwait(false);
             decimal totalIncome = transactions.Where(t => t.Category.IsIncome).Sum(t => t.Amount);
             decimal totalExpenses = transactions.Where(t => !t.Category.IsIncome).Sum(t => t.Amount);
 

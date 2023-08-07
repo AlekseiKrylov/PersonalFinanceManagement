@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PersonalFinanceManagement.Domain.DTOModels.Reports;
+using PersonalFinanceManagement.Domain.BLLModels.Reports;
 using PersonalFinanceManagement.Domain.Interfaces;
 
 namespace PersonalFinanceManagement.API.Controllers

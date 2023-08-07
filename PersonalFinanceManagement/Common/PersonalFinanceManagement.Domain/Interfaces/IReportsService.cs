@@ -1,4 +1,4 @@
-﻿using PersonalFinanceManagement.Domain.DTOModels.Reports;
+﻿using PersonalFinanceManagement.Domain.BLLModels.Reports;
 
 namespace PersonalFinanceManagement.Domain.Interfaces
 {

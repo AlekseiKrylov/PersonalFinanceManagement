@@ -2,7 +2,7 @@
 using PersonalFinanceManagement.Domain.ModelsDTO;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PersonalFinanceManagement.Domain.DTOModels.Reports
+namespace PersonalFinanceManagement.Domain.BLLModels.Reports
 {
     public class TransactionsReport
     {
