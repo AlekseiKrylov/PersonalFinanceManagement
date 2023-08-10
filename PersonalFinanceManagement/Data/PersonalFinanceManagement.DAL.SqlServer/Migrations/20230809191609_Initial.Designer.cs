@@ -12,7 +12,7 @@ using PersonalFinanceManagement.DAL.Context;
 namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
 {
     [DbContext(typeof(PFMDbContext))]
-    [Migration("20230802111301_Initial")]
+    [Migration("20230809191609_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("PersonalFinanceManagement.DAL.Entities.Category", b =>
+            modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -53,7 +53,7 @@ namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("PersonalFinanceManagement.DAL.Entities.Transaction", b =>
+            modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.Transaction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -91,7 +91,47 @@ namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("PersonalFinanceManagement.DAL.Entities.Wallet", b =>
+            modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResetPasswordToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResetTokenExpires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VerificationToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("VerifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("VerificationToken")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.Wallet", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -108,14 +148,19 @@ namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Wallets");
                 });
 
-            modelBuilder.Entity("PersonalFinanceManagement.DAL.Entities.Category", b =>
+            modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.Category", b =>
                 {
-                    b.HasOne("PersonalFinanceManagement.DAL.Entities.Wallet", "Wallet")
+                    b.HasOne("PersonalFinanceManagement.Domain.DALEntities.Wallet", "Wallet")
                         .WithMany("Categories")
                         .HasForeignKey("WalletId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -124,15 +169,15 @@ namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
                     b.Navigation("Wallet");
                 });
 
-            modelBuilder.Entity("PersonalFinanceManagement.DAL.Entities.Transaction", b =>
+            modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.Transaction", b =>
                 {
-                    b.HasOne("PersonalFinanceManagement.DAL.Entities.Category", "Category")
+                    b.HasOne("PersonalFinanceManagement.Domain.DALEntities.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PersonalFinanceManagement.DAL.Entities.Wallet", "Wallet")
+                    b.HasOne("PersonalFinanceManagement.Domain.DALEntities.Wallet", "Wallet")
                         .WithMany()
                         .HasForeignKey("WalletId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -143,7 +188,23 @@ namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
                     b.Navigation("Wallet");
                 });
 
-            modelBuilder.Entity("PersonalFinanceManagement.DAL.Entities.Wallet", b =>
+            modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.Wallet", b =>
+                {
+                    b.HasOne("PersonalFinanceManagement.Domain.DALEntities.User", "User")
+                        .WithMany("Wallets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.User", b =>
+                {
+                    b.Navigation("Wallets");
+                });
+
+            modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.Wallet", b =>
                 {
                     b.Navigation("Categories");
                 });

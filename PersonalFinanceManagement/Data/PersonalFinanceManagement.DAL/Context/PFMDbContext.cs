@@ -5,6 +5,7 @@ namespace PersonalFinanceManagement.DAL.Context
 {
     public class PFMDbContext : DbContext
     {
+        public DbSet<User> Users { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
@@ -22,6 +23,14 @@ namespace PersonalFinanceManagement.DAL.Context
 
             modelBuilder.Entity<Category>()
                 .HasIndex(c => new { c.Name, c.WalletId })
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.VerificationToken)
                 .IsUnique();
         }
     }

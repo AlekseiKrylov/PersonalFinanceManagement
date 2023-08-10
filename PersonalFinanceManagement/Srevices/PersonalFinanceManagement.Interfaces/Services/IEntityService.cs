@@ -1,8 +1,9 @@
 ﻿using PersonalFinanceManagement.Interfaces.Base.Entities;
+using PersonalFinanceManagement.Interfaces.Base.Repositories;
 
-namespace PersonalFinanceManagement.Interfaces.Base.Repositories
+namespace PersonalFinanceManagement.Interfaces.Services
 {
-    public interface IRepository<T> where T : IEntity
+    public interface IEntityService<T, TBase> where T : IEntity where TBase : IEntity
     {
         Task<bool> ExistsByIdAsync(int id, CancellationToken cancel = default);
         Task<bool> ExistsAsync(T item, CancellationToken cancel = default);

@@ -6,8 +6,7 @@ namespace PersonalFinanceManagement.Domain.DALEntities
 {
     public class Category : Entity
     {
-        [Required]
-        [MaxLength(50)]
+        [Required, MaxLength(50)]
         public string Name { get; set; }
 
         [Required]

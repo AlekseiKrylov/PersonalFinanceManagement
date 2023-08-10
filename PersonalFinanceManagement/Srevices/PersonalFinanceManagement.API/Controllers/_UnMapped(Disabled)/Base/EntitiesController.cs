@@ -24,12 +24,12 @@ namespace PersonalFinanceManagement.API.Controllers.UnMapped.Base
         [HttpGet("exist/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(bool))]
-        public async Task<IActionResult> ExistId(int id) => await _repository.ExistByIdAsync(id) ? Ok(true) : NotFound(false);
+        public async Task<IActionResult> ExistId(int id) => await _repository.ExistsByIdAsync(id) ? Ok(true) : NotFound(false);
 
         [HttpPost("exist")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(bool))]
-        public async Task<IActionResult> Exist(T item) => await _repository.ExistAsync(item) ? Ok(true) : NotFound(false);
+        public async Task<IActionResult> Exist(T item) => await _repository.ExistsAsync(item) ? Ok(true) : NotFound(false);
 
         [HttpGet("items")]
         [ProducesResponseType(StatusCodes.Status200OK)]

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using PersonalFinanceManagement.Domain.BLLModels;
 using PersonalFinanceManagement.Domain.DALEntities;
+using PersonalFinanceManagement.Domain.DTOModels;
 using PersonalFinanceManagement.Domain.ModelsDTO;
 
 namespace PersonalFinanceManagement.API.Mapping
@@ -14,6 +16,7 @@ namespace PersonalFinanceManagement.API.Mapping
                 .ForMember(dest => dest.CategoryIsIncome, opt => opt.MapFrom(src => src.Category.IsIncome));
             CreateMap<Category, CategoryDTO>().ReverseMap();
             CreateMap<Wallet, WalletDTO>().ReverseMap();
+            CreateMap<User, UserDTO>();
         }
     }
 }

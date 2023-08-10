@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PersonalFinanceManagement.DAL.Context;
 using PersonalFinanceManagement.Domain.DALEntities;
-using PersonalFinanceManagement.Domain.DALEntities;
 
 namespace PersonalFinanceManagement.API.Data
 {
@@ -29,10 +28,19 @@ namespace PersonalFinanceManagement.API.Data
             var rnd = new Random();
             for (int i = 1; i <= 5; i++)
             {
+                var user = new User
+                {
+                    Email = $"testuser{i}@testmail.com",
+                    PasswordHash = "empty",
+                    VerificationToken = Guid.NewGuid().ToString(),
+                    VerifiedAt = DateTime.Now,
+                };
+
                 var wallet = new Wallet
                 {
                     Name = $"Wallet {i}",
-                    Description = $"Test wallet {i}"
+                    Description = $"Test wallet {i}",
+                    User = user
                 };
                 _db.Wallets.Add(wallet);
 

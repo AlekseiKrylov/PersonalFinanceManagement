@@ -1,28 +1,61 @@
-using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using PersonalFinanceManagement.API.Data;
+using PersonalFinanceManagement.API.Swagger;
 using PersonalFinanceManagement.BLL.Services;
 using PersonalFinanceManagement.DAL.Context;
 using PersonalFinanceManagement.DAL.Repositories;
 using PersonalFinanceManagement.DAL.Repositories.Base;
+using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.Interfaces;
+using PersonalFinanceManagement.Domain.Interfaces.Repository;
+using PersonalFinanceManagement.Domain.Interfaces.Services;
+using PersonalFinanceManagement.Domain.ModelsDTO;
 using PersonalFinanceManagement.Interfaces.Base.Repositories;
+using PersonalFinanceManagement.Interfaces.Services;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"])),
+    };
+});
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<PFMDbContext>(
     options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("PersonalFinanceManagement.DAL.SqlServer")));
+        parametr => parametr.MigrationsAssembly("PersonalFinanceManagement.DAL.SqlServer")));
 builder.Services.AddTransient<PFMDbInitializer>();
-builder.Services.AddScoped(typeof(IRepository<>), typeof(DbRepositoryBase<>));
-builder.Services.AddScoped<ITransactionRepository, DbTransactionRepository>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(RepositoryBase<>));
+builder.Services.AddScoped<IWalletRepository, WalletRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportsService, ReportsService>();
+builder.Services.AddScoped<IEntityService<WalletDTO, Wallet>, WalletService>();
+builder.Services.AddScoped<IEntityService<CategoryDTO, Category>, CategoryService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigSwaggerOptions>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
@@ -42,6 +75,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

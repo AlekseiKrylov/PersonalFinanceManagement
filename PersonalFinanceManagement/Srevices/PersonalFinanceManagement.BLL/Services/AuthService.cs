@@ -1,0 +1,80 @@
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using PersonalFinanceManagement.Domain.BLLModels;
+using PersonalFinanceManagement.Domain.DALEntities;
+using PersonalFinanceManagement.Domain.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
+namespace PersonalFinanceManagement.BLL.Services
+{
+    public class AuthService : IAuthService
+    {
+        private static int _STANDARD_TOKEN_LIFETIME_IN_MINUTES = 15;
+        private readonly IUserService _userService;
+        private readonly IConfiguration _configuration;
+        private readonly int _expirationInMinutes;
+
+        public AuthService(IUserService userService, IConfiguration configuration)
+        {
+            _userService = userService;
+            _configuration = configuration;
+            _expirationInMinutes = int.TryParse(_configuration["JwtSettings:ExpirationInMinutes"], out int parsedValue)
+                ? parsedValue
+                : _STANDARD_TOKEN_LIFETIME_IN_MINUTES;
+        }
+
+        public async Task<JWToken> UserLogin(string email, string password, CancellationToken cancel = default)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException(string.IsNullOrWhiteSpace(email)
+                    ? $"{nameof(email)} cannot be null, empty, or contain only whitespace."
+                    : $"{nameof(password)} cannot be null, empty, or contain only whitespace.");
+
+            if (!await _userService.ExistByEmailAsync(email, cancel))
+                throw new UnauthorizedAccessException($"The user with the email '{email}' is not registered.");
+
+            var user = await _userService.GetUserByEmailAsync(email, cancel).ConfigureAwait(false);
+
+            if (!_userService.VerifyPassword(password, user.PasswordHash))
+                throw new UnauthorizedAccessException("Invalid password.");
+
+            return GenerateJWT(user);
+        }
+
+        private JWToken GenerateJWT(User user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]);
+            var tokenDescriptor = GetSecurityTokenDescriptor(user, key);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            var loginResponse = new JWToken
+            {
+                Token = tokenHandler.WriteToken(token),
+                ExpiresIn = DateTime.UtcNow.AddMinutes(_expirationInMinutes),
+                Email = user.Email
+            };
+
+            return loginResponse;
+        }
+
+        private SecurityTokenDescriptor GetSecurityTokenDescriptor(User user, byte[] key)
+        {
+            return new SecurityTokenDescriptor
+            {
+                Issuer = _configuration["JwtSettings:Issuer"],
+                Audience = _configuration["JwtSettings:Audience"],
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim("Id", user.Id.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email),
+                }),
+                Expires = DateTime.UtcNow.AddMinutes(_expirationInMinutes),
+                NotBefore = DateTime.UtcNow,
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+        }
+    }
+}

@@ -1,6 +1,4 @@
-﻿using PersonalFinanceManagement.Domain.DALEntities;
-using PersonalFinanceManagement.Domain.ModelsDTO;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PersonalFinanceManagement.Domain.BLLModels.Reports
 {

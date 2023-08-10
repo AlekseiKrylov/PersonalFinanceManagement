@@ -2,15 +2,20 @@
 using PersonalFinanceManagement.DAL.Context;
 using PersonalFinanceManagement.DAL.Repositories.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
-using PersonalFinanceManagement.Domain.Interfaces;
+using PersonalFinanceManagement.Domain.Interfaces.Repository;
 
 namespace PersonalFinanceManagement.DAL.Repositories
 {
-    public class DbTransactionRepository : DbRepositoryBase<Transaction>, ITransactionRepository
+    public class TransactionRepository : RepositoryBase<Transaction>, ITransactionRepository
     {
         private readonly PFMDbContext _db;
+        private int _userId;
 
-        public DbTransactionRepository(PFMDbContext db) : base(db) => _db = db;
+        protected override IQueryable<Transaction> Items => _userId > 0 ? Set.Where(t => t.Wallet.UserId == _userId) : Set;
+
+        public TransactionRepository(PFMDbContext db) : base(db) => _db = db;
+
+        public void SetUserId(int userId) => _userId = userId;
 
         public async Task<IEnumerable<Transaction>> GetWithCategoryAsync(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel = default)
         {

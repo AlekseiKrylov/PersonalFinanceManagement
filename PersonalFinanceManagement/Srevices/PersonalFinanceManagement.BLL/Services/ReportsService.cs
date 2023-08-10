@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
+using PersonalFinanceManagement.Domain.BLLModels;
 using PersonalFinanceManagement.Domain.BLLModels.Reports;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.Interfaces;
-using PersonalFinanceManagement.Domain.ModelsDTO;
+using PersonalFinanceManagement.Domain.Interfaces.Repository;
 
 namespace PersonalFinanceManagement.BLL.Services
 {

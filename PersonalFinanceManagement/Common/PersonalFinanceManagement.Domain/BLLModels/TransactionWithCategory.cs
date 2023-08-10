@@ -1,4 +1,4 @@
-﻿namespace PersonalFinanceManagement.Domain.ModelsDTO
+﻿namespace PersonalFinanceManagement.Domain.BLLModels
 {
     public class TransactionWithCategory
     {
