@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PersonalFinanceManagement.API.Controllers.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
+using PersonalFinanceManagement.Domain.DTOModels;
 using PersonalFinanceManagement.Domain.Interfaces.Services;
-using PersonalFinanceManagement.Domain.ModelsDTO;
 
 namespace PersonalFinanceManagement.API.Controllers
 {
-    public class TransactionsController : EntitiesController<TransactionDTO, Transaction>
+    public class TransactionsController : EntitiesController<TransactionDTO, TransactionCreateDTO, Transaction>
     {
         private readonly ITransactionService _transactionService;
 

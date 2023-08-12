@@ -19,7 +19,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
         {
             return await Items.SingleOrDefaultAsync(u => u.Email == email, cancel).ConfigureAwait(false);
         }
-        
+
         public async Task<User> GetByVerificationTokenAsync(string verificationToken, CancellationToken cancel = default)
         {
             return await Items.SingleOrDefaultAsync(u => u.VerificationToken == verificationToken, cancel).ConfigureAwait(false);

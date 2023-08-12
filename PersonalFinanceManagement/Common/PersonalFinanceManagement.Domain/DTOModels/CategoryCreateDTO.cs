@@ -1,17 +1,18 @@
 ﻿using PersonalFinanceManagement.Interfaces.Base.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace PersonalFinanceManagement.Domain.DTOModels
 {
-    public class WalletDTO : IEntity
+    public class CategoryCreateDTO : IEntity
     {
-        [Required]
+        [JsonIgnore]
         public int Id { get; set; }
         [Required, MaxLength(50)]
         public string Name { get; set; }
-        [MaxLength(1000)]
-        public string? Description { get; set; }
         [Required]
-        public int UserId { get; set; }
+        public bool IsIncome { get; set; }
+        [Required]
+        public int WalletId { get; set; }
     }
 }

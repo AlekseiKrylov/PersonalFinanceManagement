@@ -59,7 +59,6 @@ namespace PersonalFinanceManagement.BLL.Services
             {
                 Email = email,
                 PasswordHash = hashedPassword,
-                //VerificationToken = Guid.NewGuid().ToString(),
             };
 
             await _userRepository.AddAsync(user, cancel).ConfigureAwait(false);

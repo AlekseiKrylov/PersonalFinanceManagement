@@ -12,6 +12,6 @@ namespace PersonalFinanceManagement.Domain.BLLModels.Reports
         [Column(TypeName = "decimal(18, 2)")]
         public decimal TotalExpenses { get; set; }
 
-        public List<TransactionWithCategory> Transactions { get; set; }
+        public IEnumerable<TransactionWithCategory> Transactions { get; set; }
     }
 }

@@ -1,12 +1,13 @@
-﻿using PersonalFinanceManagement.Interfaces.Base.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using PersonalFinanceManagement.Interfaces.Base.Entities;
 
 namespace PersonalFinanceManagement.Domain.DTOModels
 {
-    public class TransactionDTO : IEntity
+    public class TransactionCreateDTO : IEntity
     {
-        [Required]
+        [JsonIgnore]
         public int Id { get; set; }
         [Required, MaxLength(50)]
         public string Name { get; set; }

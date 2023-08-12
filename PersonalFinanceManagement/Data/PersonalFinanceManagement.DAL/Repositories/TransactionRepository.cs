@@ -33,24 +33,29 @@ namespace PersonalFinanceManagement.DAL.Repositories
 
         public async Task<bool> MoveToAnotherCategoryAsync(int walletId, int sourceCategoryId, int targetCategoryId, CancellationToken cancel = default)
         {
-            var sourseCategoryIsExist = await _db.Categories.Where(c => c.WalletId == walletId && c.Id == sourceCategoryId).AnyAsync(cancel).ConfigureAwait(false);
-            var targetCategoryIsExist = await _db.Categories.Where(c => c.WalletId == walletId && c.Id == targetCategoryId).AnyAsync(cancel).ConfigureAwait(false);
-            if (!sourseCategoryIsExist || !targetCategoryIsExist)
+            var totalTransactionsToUpdate = await _db.Wallets
+                .Where(w => w.Id == walletId)
+                .SelectMany(w => w.Categories)
+                .Where(c => c.Id == sourceCategoryId || c.Id == targetCategoryId)
+                .SelectMany(c => c.Transactions).Where(t => t.CategoryId == sourceCategoryId)
+                .CountAsync(cancel).ConfigureAwait(false);
+
+            if (totalTransactionsToUpdate == 0)
                 return false;
 
-            int batchSize = 100;
-            int totalTransactions = await GetCountInCategoryAsync(walletId, sourceCategoryId, cancel);
-            while (totalTransactions > 0)
+            int batchSize = 1000;
+
+            while (totalTransactionsToUpdate > 0)
             {
-                var transactionsToUpdate = await Items
-                    .Where(t => t.WalletId == walletId && t.CategoryId == sourceCategoryId).Take(batchSize).ToListAsync(cancel).ConfigureAwait(false);
+                var transactionsToUpdate = await _db.Transactions
+                    .Where(t => t.WalletId == walletId && t.CategoryId == sourceCategoryId)
+                    .Take(batchSize).ToListAsync(cancel).ConfigureAwait(false);
 
                 foreach (var transaction in transactionsToUpdate)
                     transaction.CategoryId = targetCategoryId;
 
                 await _db.SaveChangesAsync(cancel).ConfigureAwait(false);
-
-                totalTransactions -= transactionsToUpdate.Count;
+                totalTransactionsToUpdate -= transactionsToUpdate.Count;
             }
 
             return true;
@@ -68,6 +73,20 @@ namespace PersonalFinanceManagement.DAL.Repositories
                 .Where(t => t.WalletId == walletId && t.CategoryId == categoryId)
                 .ToArrayAsync(cancel)
                 .ConfigureAwait(false);
+        }
+
+        public async Task<bool> CheckEntitiesExistAsync(int walletId, int? categoryId, int? transactionId, CancellationToken cancel = default)
+        {
+            var query = _db.Wallets.Where(w => w.UserId == _userId && w.Id == walletId);
+
+            if (categoryId.HasValue)
+                query = query.Join(_db.Categories.Where(c => c.WalletId == walletId && c.Id == categoryId), w => w.Id, c => c.WalletId, (w, c) => w);
+
+            if (transactionId.HasValue)
+                query = query.Join(_db.Transactions.Where(t => t.WalletId == walletId && t.Id == transactionId), w => w.Id, t => t.WalletId, (w, t) => w);
+
+            var result = await query.AnyAsync(cancel).ConfigureAwait(false);
+            return result;
         }
     }
 }

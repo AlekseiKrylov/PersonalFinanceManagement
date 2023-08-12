@@ -18,7 +18,7 @@ namespace PersonalFinanceManagement.BLL.Services
             _mapper = mapper;
         }
 
-        protected virtual List<TransactionWithCategory> GetDTO(List<Transaction> items) => _mapper.Map<List<TransactionWithCategory>>(items);
+        protected virtual IEnumerable<TransactionWithCategory> GetDTO(IEnumerable<Transaction> items) => _mapper.Map<IEnumerable<TransactionWithCategory>>(items);
 
         public async Task<DailyTransactionsReport> GetDailyReport(int walletId, DateTime date, CancellationToken cancel)
         {
@@ -50,7 +50,7 @@ namespace PersonalFinanceManagement.BLL.Services
                 EndDate = endDate,
                 TotalIncome = totalIncome,
                 TotalExpenses = totalExpenses,
-                Transactions = GetDTO(transactions.ToList()),
+                Transactions = GetDTO(transactions),
             };
             return report;
         }

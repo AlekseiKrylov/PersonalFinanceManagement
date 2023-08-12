@@ -20,6 +20,8 @@ namespace PersonalFinanceManagement.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+
         public async Task<IActionResult> Register(UserRegistrationAndRestoration userRegistration)
         {
             try
@@ -35,6 +37,8 @@ namespace PersonalFinanceManagement.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Login(UserLogin userLogin)
         {
             try

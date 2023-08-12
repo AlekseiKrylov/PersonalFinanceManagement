@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using PersonalFinanceManagement.Domain.BLLModels;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,7 +10,7 @@ namespace PersonalFinanceManagement.BLL.Services
 {
     public class AuthService : IAuthService
     {
-        private static int _STANDARD_TOKEN_LIFETIME_IN_MINUTES = 15;
+        private const int _STANDARD_TOKEN_LIFETIME_IN_MINUTES = 15;
         private readonly IUserService _userService;
         private readonly IConfiguration _configuration;
         private readonly int _expirationInMinutes;
@@ -20,12 +19,14 @@ namespace PersonalFinanceManagement.BLL.Services
         {
             _userService = userService;
             _configuration = configuration;
-            _expirationInMinutes = int.TryParse(_configuration["JwtSettings:ExpirationInMinutes"], out int parsedValue)
-                ? parsedValue
-                : _STANDARD_TOKEN_LIFETIME_IN_MINUTES;
+
+            if (int.TryParse(_configuration["JwtSettings:ExpirationInMinutes"], out int parsedValue) && parsedValue > 0)
+                _expirationInMinutes = parsedValue;
+            else
+                _expirationInMinutes = _STANDARD_TOKEN_LIFETIME_IN_MINUTES;
         }
 
-        public async Task<JWToken> UserLogin(string email, string password, CancellationToken cancel = default)
+        public async Task<string> UserLogin(string email, string password, CancellationToken cancel = default)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(email))
                 throw new ArgumentException(string.IsNullOrWhiteSpace(email)
@@ -43,21 +44,14 @@ namespace PersonalFinanceManagement.BLL.Services
             return GenerateJWT(user);
         }
 
-        private JWToken GenerateJWT(User user)
+        private string GenerateJWT(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]);
             var tokenDescriptor = GetSecurityTokenDescriptor(user, key);
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            var loginResponse = new JWToken
-            {
-                Token = tokenHandler.WriteToken(token),
-                ExpiresIn = DateTime.UtcNow.AddMinutes(_expirationInMinutes),
-                Email = user.Email
-            };
-
-            return loginResponse;
+            return tokenHandler.WriteToken(token);
         }
 
         private SecurityTokenDescriptor GetSecurityTokenDescriptor(User user, byte[] key)
