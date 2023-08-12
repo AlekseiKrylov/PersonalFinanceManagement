@@ -26,14 +26,14 @@ namespace PersonalFinanceManagement.BLL.Services
                 _expirationInMinutes = _STANDARD_TOKEN_LIFETIME_IN_MINUTES;
         }
 
-        public async Task<string> UserLogin(string email, string password, CancellationToken cancel = default)
+        public async Task<string> UserLogin(string email, string password, CancellationToken cancel)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(email))
                 throw new ArgumentException(string.IsNullOrWhiteSpace(email)
                     ? $"{nameof(email)} cannot be null, empty, or contain only whitespace."
                     : $"{nameof(password)} cannot be null, empty, or contain only whitespace.");
 
-            if (!await _userService.ExistByEmailAsync(email, cancel))
+            if (!await _userService.ExistByEmailAsync(email, cancel).ConfigureAwait(false))
                 throw new UnauthorizedAccessException($"The user with the email '{email}' is not registered.");
 
             var user = await _userService.GetUserByEmailAsync(email, cancel).ConfigureAwait(false);

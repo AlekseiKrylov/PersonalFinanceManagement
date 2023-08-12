@@ -4,14 +4,16 @@ using PersonalFinanceManagement.BLL.Services.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.DTOModels;
 using PersonalFinanceManagement.Domain.Interfaces.Repository;
+using PersonalFinanceManagement.Domain.Interfaces.Services;
+using PersonalFinanceManagement.Interfaces.Base.Repositories;
 
 namespace PersonalFinanceManagement.BLL.Services
 {
-    public class CategoryService : EntityServiceBase<CategoryDTO, CategoryCreateDTO, Category>
+    public class CategoryService : EntityServiceBase<CategoryDTO, CategoryCreateDTO, Category>, ICategoryServise
     {
         private readonly ICategoryRepository _categoryRepository;
 
-        public CategoryService(ICategoryRepository categoryRepository, 
+        public CategoryService(ICategoryRepository categoryRepository,
             IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(categoryRepository, mapper)
         {
             if (!int.TryParse(httpContextAccessor.HttpContext.User.FindFirst("id")?.Value, out int userId) && userId <= 0)
@@ -42,6 +44,16 @@ namespace PersonalFinanceManagement.BLL.Services
                 throw new InvalidOperationException("Wallet or category not found.");
 
             return GetItem(await _categoryRepository.UpdateAsync(GetBase(item), cancel));
+        }
+
+        public async Task<IPage<CategoryDTO>> GetPageWithRestrictionsAsync(int pageIndex, int pageSize,
+            int? walletId = null, CancellationToken cancel = default)
+        {
+            var result = await _categoryRepository
+                .GetPageWithRestrictionsAsync(pageIndex, pageSize, walletId, cancel)
+                .ConfigureAwait(false);
+
+            return new Page(GetItem(result.Items), result.TotalCount, result.PageIndex, result.PageSize);
         }
     }
 }

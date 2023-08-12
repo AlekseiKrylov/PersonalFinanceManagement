@@ -30,7 +30,7 @@ namespace PersonalFinanceManagement.BLL.Services.Base
             public int TotalPagesCount => (int)Math.Ceiling((double)TotalCount / PageSize);
         };
 
-        public async Task<bool> ExistsByIdAsync(int id, CancellationToken cancel = default)
+        public async Task<bool> ExistsByIdAsync(int id, CancellationToken cancel)
         {
             if (id <= 0)
                 throw new ArgumentException($"Invalid {nameof(id)} value. ID must be greater than 0.");
@@ -38,7 +38,7 @@ namespace PersonalFinanceManagement.BLL.Services.Base
             return await _repository.ExistsByIdAsync(id, cancel).ConfigureAwait(false);
         }
 
-        public async Task<bool> ExistsAsync(T item, CancellationToken cancel = default)
+        public async Task<bool> ExistsAsync(T item, CancellationToken cancel)
         {
             if (item is null)
                 throw new ArgumentNullException(nameof(item));
@@ -46,29 +46,29 @@ namespace PersonalFinanceManagement.BLL.Services.Base
             return await _repository.ExistsAsync(GetBase(item), cancel).ConfigureAwait(false);
         }
 
-        public async Task<int> GetCountAsync(CancellationToken cancel = default)
+        public async Task<int> GetCountAsync(CancellationToken cancel)
         {
             return await _repository.GetCountAsync(cancel).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancel = default)
+        public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancel)
         {
             return GetItem(await _repository.GetAllAsync(cancel).ConfigureAwait(false));
         }
 
-        public async Task<IEnumerable<T>> GetAsync(int skip, int count, CancellationToken cancel = default)
+        public async Task<IEnumerable<T>> GetAsync(int skip, int count, CancellationToken cancel)
         {
             return GetItem(await _repository.GetAsync(skip, count, cancel).ConfigureAwait(false));
         }
 
-        public async Task<IPage<T>> GetPageAsync(int pageIndex, int pageSize, CancellationToken cancel = default)
+        public async Task<IPage<T>> GetPageAsync(int pageIndex, int pageSize, CancellationToken cancel)
         {
             var result = await _repository.GetPageAsync(pageIndex, pageSize, cancel).ConfigureAwait(false);
 
             return new Page(GetItem(result.Items), result.TotalCount, result.PageIndex, result.PageSize);
         }
 
-        public async Task<T> GetByIdAsync(int id, CancellationToken cancel = default)
+        public async Task<T> GetByIdAsync(int id, CancellationToken cancel)
         {
             if (id <= 0)
                 throw new ArgumentException($"Invalid {nameof(id)} value. ID must be greater than 0.");
@@ -76,7 +76,7 @@ namespace PersonalFinanceManagement.BLL.Services.Base
             return GetItem(await _repository.GetByIdAsync(id, cancel).ConfigureAwait(false));
         }
 
-        public virtual async Task<T> AddAsync(TCreate item, CancellationToken cancel = default)
+        public virtual async Task<T> AddAsync(TCreate item, CancellationToken cancel)
         {
             if (item is null)
                 throw new ArgumentNullException(nameof(item));
@@ -84,28 +84,28 @@ namespace PersonalFinanceManagement.BLL.Services.Base
             return GetItem(await _repository.AddAsync(GetBase(item), cancel).ConfigureAwait(false));
         }
 
-        public virtual async Task<T> UpdateAsync(T item, CancellationToken cancel = default)
+        public virtual async Task<T> UpdateAsync(T item, CancellationToken cancel)
         {
             if (item is null)
                 throw new ArgumentNullException(nameof(item));
 
-            return GetItem(await _repository.UpdateAsync(GetBase(item), cancel));
+            return GetItem(await _repository.UpdateAsync(GetBase(item), cancel).ConfigureAwait(false));
         }
 
-        public async Task<T> RemoveByIdAsync(int id, CancellationToken cancel = default)
+        public async Task<T> RemoveByIdAsync(int id, CancellationToken cancel)
         {
             if (id <= 0)
                 throw new ArgumentException($"Invalid {nameof(id)} value. ID must be greater than 0.");
 
-            return GetItem(await _repository.RemoveByIdAsync(id, cancel));
+            return GetItem(await _repository.RemoveByIdAsync(id, cancel).ConfigureAwait(false));
         }
 
-        public async Task<T> RemoveAsync(T item, CancellationToken cancel = default)
+        public async Task<T> RemoveAsync(T item, CancellationToken cancel)
         {
             if (item is null)
                 throw new ArgumentNullException(nameof(item));
 
-            return GetItem(await _repository.RemoveAsync(GetBase(item), cancel));
+            return GetItem(await _repository.RemoveAsync(GetBase(item), cancel).ConfigureAwait(false));
         }
     }
 }

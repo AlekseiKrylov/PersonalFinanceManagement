@@ -65,7 +65,7 @@ namespace PersonalFinanceManagement.BLL.Services
             return GetDTO(user);
         }
 
-        public async Task<bool> VerifyUserAsync(string verificationToken, CancellationToken cancel = default)
+        public async Task<bool> VerifyUserAsync(string verificationToken, CancellationToken cancel)
         {
             if (await GetUserByVerificationTokenAsync(verificationToken, cancel).ConfigureAwait(false) is not User user)
                 return false;

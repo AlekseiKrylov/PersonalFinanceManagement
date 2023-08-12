@@ -70,7 +70,7 @@ namespace PersonalFinanceManagement.API.Controllers
         {
             try
             {
-                return await _userService.VerifyUserAsync(verificationToken).ConfigureAwait(false)
+                return await _userService.VerifyUserAsync(verificationToken)
                     ? Ok("User verified.")
                     : NotFound();
             }
@@ -86,7 +86,7 @@ namespace PersonalFinanceManagement.API.Controllers
         {
             try
             {
-                return await _userService.ForgotPasswordAsync(email).ConfigureAwait(false)
+                return await _userService.ForgotPasswordAsync(email)
                     ? Ok("You may reset your password.")
                     : NotFound();
             }
@@ -102,7 +102,7 @@ namespace PersonalFinanceManagement.API.Controllers
         {
             try
             {
-                var result = await _userService.ResetPasswordAsync(userRegistration.Email, userRegistration.Password, token).ConfigureAwait(false);
+                var result = await _userService.ResetPasswordAsync(userRegistration.Email, userRegistration.Password, token);
 
                 return result is null ? NotFound() : (bool)result ? Ok("Password successfully changed.") : StatusCode(403, "Invalid reset token.");
             }

@@ -60,7 +60,7 @@ namespace PersonalFinanceManagement.DAL.Repositories.Base
             public int TotalPagesCount => (int)Math.Ceiling((double)TotalCount / PageSize);
         };
 
-        public async Task<IPage<T>> GetPageAsync(int pageIndex, int pageSize, CancellationToken cancel = default)
+        public virtual async Task<IPage<T>> GetPageAsync(int pageIndex, int pageSize, CancellationToken cancel = default)
         {
             if (pageSize <= 0)
                 return new Page(Enumerable.Empty<T>(), await GetCountAsync(cancel).ConfigureAwait(false), pageIndex, pageSize);

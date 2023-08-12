@@ -3,6 +3,7 @@ using PersonalFinanceManagement.DAL.Context;
 using PersonalFinanceManagement.DAL.Repositories.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.Interfaces.Repository;
+using PersonalFinanceManagement.Interfaces.Base.Repositories;
 
 namespace PersonalFinanceManagement.DAL.Repositories
 {
@@ -26,6 +27,34 @@ namespace PersonalFinanceManagement.DAL.Repositories
 
             var result = await query.AnyAsync(cancel).ConfigureAwait(false);
             return result;
+        }
+
+        public async Task<IPage<Category>> GetPageWithRestrictionsAsync(int pageIndex, int pageSize, int? walletId = null, CancellationToken cancel = default)
+        {
+            if (!walletId.HasValue)
+                return await base.GetPageAsync(pageIndex, pageSize, cancel).ConfigureAwait(false);
+
+            if (pageSize <= 0)
+                return new Page(Enumerable.Empty<Category>(), await GetCountAsync(cancel).ConfigureAwait(false), pageIndex, pageSize);
+
+            var query = Items;
+            if (walletId is not null)
+                query = query.Where(t => t.WalletId == walletId);
+
+            var totalCount = await query.CountAsync(cancel).ConfigureAwait(false);
+            if (totalCount == 0)
+                return new Page(Enumerable.Empty<Category>(), totalCount, pageIndex, pageSize);
+
+            if (query is not IOrderedQueryable<Category>)
+                query = query.OrderBy(i => i.Id);
+
+            if (pageIndex > 0)
+                query = query.Skip(pageIndex * pageSize);
+            query = query.Take(pageSize);
+
+            var items = await query.ToArrayAsync(cancel).ConfigureAwait(false);
+
+            return new Page(items, totalCount, pageIndex, pageSize);
         }
     }
 }

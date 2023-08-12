@@ -48,7 +48,7 @@ builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportsService, ReportsService>();
 builder.Services.AddScoped<IEntityService<WalletDTO, WalletCreateDTO, Wallet>, WalletService>();
-builder.Services.AddScoped<IEntityService<CategoryDTO, CategoryCreateDTO, Category>, CategoryService>();
+builder.Services.AddScoped<ICategoryServise, CategoryService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();

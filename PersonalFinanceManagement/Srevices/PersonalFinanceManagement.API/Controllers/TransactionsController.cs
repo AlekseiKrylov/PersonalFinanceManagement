@@ -3,6 +3,7 @@ using PersonalFinanceManagement.API.Controllers.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.DTOModels;
 using PersonalFinanceManagement.Domain.Interfaces.Services;
+using PersonalFinanceManagement.Interfaces.Base.Repositories;
 
 namespace PersonalFinanceManagement.API.Controllers
 {
@@ -29,5 +30,14 @@ namespace PersonalFinanceManagement.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<TransactionDTO>>> GetAllInCategory(int walletId, int categoryId) =>
             Ok(await _transactionService.GetAllInCategoryAsync(walletId, categoryId).ConfigureAwait(false));
+
+        [HttpGet("page-with-restriction")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IPage<TransactionDTO>>> GetPage(int pageIndex, int pageSize, int? walletId = null, int? categoryId = null)
+        {
+            var result = await _transactionService.GetPageWithRestrictionsAsync(pageIndex, pageSize, walletId, categoryId);
+            return result.Items.Any() ? Ok(result) : NotFound(result);
+        }
     }
 }

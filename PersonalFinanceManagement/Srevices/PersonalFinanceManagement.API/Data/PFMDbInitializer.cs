@@ -7,20 +7,25 @@ namespace PersonalFinanceManagement.API.Data
     public class PFMDbInitializer
     {
         private readonly PFMDbContext _db;
+        private readonly IWebHostEnvironment _env;
 
-        public PFMDbInitializer(PFMDbContext db)
+        public PFMDbInitializer(PFMDbContext db, IWebHostEnvironment env)
         {
             _db = db;
+            _env = env;
         }
 
         public void Initialize()
         {
             _db.Database.Migrate();
 
-            if (_db.Wallets.Any())
-                return;
+            if (_env.IsDevelopment())
+            {
+                if (_db.Wallets.Any())
+                    return;
 
-            FillTestData();
+                FillTestData();
+            }
         }
 
         private void FillTestData()
@@ -31,8 +36,7 @@ namespace PersonalFinanceManagement.API.Data
                 var user = new User
                 {
                     Email = $"testuser{i}@testmail.com",
-                    PasswordHash = "empty",
-                    VerificationToken = Guid.NewGuid().ToString(),
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("string", BCrypt.Net.BCrypt.GenerateSalt()),
                     VerifiedAt = DateTime.Now,
                 };
 
@@ -62,7 +66,7 @@ namespace PersonalFinanceManagement.API.Data
                             Name = $"Transaction {k}",
                             Note = $"Test transaction {k}",
                             Amount = Math.Round((decimal)rnd.NextDouble() * (10000 - 100) + 100, 2),
-                            Date = DateTime.Now.AddDays(-rnd.Next(0, 365)),
+                            Date = DateTime.Now.AddDays(-rnd.Next(0, 60)),
                             Category = category,
                             Wallet = wallet
                         };
