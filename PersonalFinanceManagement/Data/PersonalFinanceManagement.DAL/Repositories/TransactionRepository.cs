@@ -18,7 +18,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
 
         public void SetUserId(int userId) => _userId = userId;
 
-        public async Task<IEnumerable<Transaction>> GetWithCategoryAsync(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel = default)
+        public async Task<IEnumerable<Transaction>> GetPeriodWithCategoryAsync(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel = default)
         {
             if (endDate < startDate)
                 return Enumerable.Empty<Transaction>();
@@ -34,12 +34,17 @@ namespace PersonalFinanceManagement.DAL.Repositories
 
         public async Task<bool> MoveToAnotherCategoryAsync(int walletId, int sourceCategoryId, int targetCategoryId, CancellationToken cancel = default)
         {
-            var totalTransactionsToUpdate = await _db.Wallets
-                .Where(w => w.Id == walletId)
-                .SelectMany(w => w.Categories)
-                .Where(c => c.Id == sourceCategoryId || c.Id == targetCategoryId)
-                .SelectMany(c => c.Transactions).Where(t => t.CategoryId == sourceCategoryId)
-                .CountAsync(cancel).ConfigureAwait(false);
+            var uniqueCategoryCount = await Items
+                .Where(t => t.WalletId == walletId && (t.CategoryId == sourceCategoryId || t.CategoryId == targetCategoryId))
+                .Select(t => t.CategoryId)
+                .Distinct()
+                .CountAsync(cancel)
+                .ConfigureAwait(false);
+
+            if (uniqueCategoryCount != 2)
+                return false;
+
+            var totalTransactionsToUpdate = await GetCountInCategoryAsync(walletId, targetCategoryId, cancel);
 
             if (totalTransactionsToUpdate == 0)
                 return false;
@@ -107,7 +112,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
                 query = query.Where(t => t.CategoryId == categoryId);
 
             var totalCount = await query.CountAsync(cancel).ConfigureAwait(false);
-            if (totalCount == 0)
+            if (totalCount == 0 || pageIndex >= totalCount)
                 return new Page(Enumerable.Empty<Transaction>(), totalCount, pageIndex, pageSize);
 
             if (query is not IOrderedQueryable<Transaction>)

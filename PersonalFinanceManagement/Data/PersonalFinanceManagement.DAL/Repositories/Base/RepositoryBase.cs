@@ -67,7 +67,7 @@ namespace PersonalFinanceManagement.DAL.Repositories.Base
 
             var query = Items;
             var totalCount = await query.CountAsync(cancel).ConfigureAwait(false);
-            if (totalCount == 0)
+            if (totalCount == 0 || pageIndex >= totalCount)
                 return new Page(Enumerable.Empty<T>(), totalCount, pageIndex, pageSize);
 
             if (query is not IOrderedQueryable<T>)

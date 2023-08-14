@@ -42,7 +42,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
                 query = query.Where(t => t.WalletId == walletId);
 
             var totalCount = await query.CountAsync(cancel).ConfigureAwait(false);
-            if (totalCount == 0)
+            if (totalCount == 0 || pageIndex >= totalCount)
                 return new Page(Enumerable.Empty<Category>(), totalCount, pageIndex, pageSize);
 
             if (query is not IOrderedQueryable<Category>)
