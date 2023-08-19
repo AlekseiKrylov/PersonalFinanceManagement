@@ -16,11 +16,6 @@ namespace PersonalFinanceManagement.DAL.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Wallet>()
-                .HasMany<Transaction>()
-                .WithOne(c => c.Wallet)
-                .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<Category>()
                 .HasIndex(c => new { c.Name, c.WalletId })
                 .IsUnique();
@@ -32,6 +27,30 @@ namespace PersonalFinanceManagement.DAL.Context
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.VerificationToken)
                 .IsUnique();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var modifiedEntries = ChangeTracker.Entries<Transaction>()
+                .Where(t => t.State == EntityState.Added || (t.State == EntityState.Modified && t.Property(nameof(Transaction.Amount)).IsModified));
+            
+            if (modifiedEntries.Any())
+                foreach (var entry in modifiedEntries)
+                    entry.Entity.Amount = Math.Abs(entry.Entity.Amount);
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        public override int SaveChanges()
+        {
+            var modifiedEntries = ChangeTracker.Entries<Transaction>()
+                .Where(t => t.State == EntityState.Added || (t.State == EntityState.Modified && t.Property(nameof(Transaction.Amount)).IsModified));
+
+            if (modifiedEntries.Any())
+                foreach (var entry in modifiedEntries)
+                    entry.Entity.Amount = Math.Abs(entry.Entity.Amount);
+
+            return base.SaveChanges();
         }
     }
 }

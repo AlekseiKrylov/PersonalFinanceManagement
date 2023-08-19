@@ -97,7 +97,7 @@ namespace PersonalFinanceManagement.Tests.InMemory
                     Amount = category.IsIncome ? rnd.Next(50, 500) : rnd.Next(20, 200),
                     Date = DateTime.Now.Date.AddDays(-i),
                     CategoryId = category.Id,
-                    WalletId = category.WalletId,
+                    //WalletId = category.WalletId,
                 })
                 .ToArray();
 

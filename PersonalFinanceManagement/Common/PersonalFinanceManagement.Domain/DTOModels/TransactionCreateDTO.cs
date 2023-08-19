@@ -19,7 +19,5 @@ namespace PersonalFinanceManagement.Domain.DTOModels
         public DateTime Date { get; set; }
         [Required]
         public int CategoryId { get; set; }
-        [Required]
-        public int WalletId { get; set; }
     }
 }

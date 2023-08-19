@@ -26,12 +26,12 @@ namespace PersonalFinanceManagement.BLL.Services
 
         public async Task<bool> MoveToAnotherCategoryAsync(int walletId, int sourceCategoryId, int targetCategoryId, CancellationToken cancel)
         {
-            return await _transactionRepository.MoveToAnotherCategoryAsync(walletId, sourceCategoryId, targetCategoryId, cancel).ConfigureAwait(false);
+            return await _transactionRepository.MoveToAnotherCategoryOfSameWalletAsync(walletId, sourceCategoryId, targetCategoryId, cancel).ConfigureAwait(false);
         }
 
         public async Task<int> GetCountInCategoryAsync(int walletId, int categoryId, CancellationToken cancel)
         {
-            return await _transactionRepository.GetCountInCategoryAsync(walletId, categoryId, cancel).ConfigureAwait(false);
+            return await _transactionRepository.GetCountInCategoryAsync(categoryId, cancel).ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<TransactionDTO>> GetAllInCategoryAsync(int walletId, int categoryId, CancellationToken cancel)
@@ -44,8 +44,8 @@ namespace PersonalFinanceManagement.BLL.Services
             if (item is null)
                 throw new ArgumentNullException(nameof(item));
 
-            if (!await _transactionRepository.CheckEntitiesExistAsync(item.WalletId, item.CategoryId, null, cancel).ConfigureAwait(false))
-                throw new InvalidOperationException("Wallet or category not found.");
+            if (!await _transactionRepository.CheckEntitiesExistAsync(/*item.WalletId,*/ item.CategoryId, null, cancel).ConfigureAwait(false))
+                throw new InvalidOperationException("Category not found.");
 
             return GetItem(await _transactionRepository.AddAsync(GetBase(item), cancel).ConfigureAwait(false));
         }
@@ -55,8 +55,8 @@ namespace PersonalFinanceManagement.BLL.Services
             if (item is null)
                 throw new ArgumentNullException(nameof(item));
 
-            if (!await _transactionRepository.CheckEntitiesExistAsync(item.WalletId, item.CategoryId, item.Id, cancel).ConfigureAwait(false))
-                throw new InvalidOperationException("Wallet, category or transaction not found.");
+            if (!await _transactionRepository.CheckEntitiesExistAsync(/*item.WalletId,*/ item.CategoryId, item.Id, cancel).ConfigureAwait(false))
+                throw new InvalidOperationException("Category or transaction not found.");
 
             return GetItem(await _transactionRepository.UpdateAsync(GetBase(item), cancel).ConfigureAwait(false));
         }

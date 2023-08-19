@@ -9,6 +9,5 @@
         public DateTime Date { get; set; }
         public string CategoryName { get; set; }
         public bool CategoryIsIncome { get; set; }
-        public int WalletId { get; set; }
     }
 }

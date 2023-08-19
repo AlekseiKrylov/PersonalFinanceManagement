@@ -68,7 +68,7 @@ namespace PersonalFinanceManagement.API.Data
                             Amount = Math.Round((decimal)rnd.NextDouble() * (10000 - 100) + 100, 2),
                             Date = DateTime.Now.AddDays(-rnd.Next(0, 60)),
                             Category = category,
-                            Wallet = wallet
+                            //Wallet = wallet
                         };
                         transactions[k] = transaction;
                     }

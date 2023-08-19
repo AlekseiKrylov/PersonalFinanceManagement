@@ -12,7 +12,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
         private readonly PFMDbContext _db;
         private int _userId;
 
-        protected override IQueryable<Transaction> Items => _userId > 0 ? Set.Where(t => t.Wallet.UserId == _userId) : Set;
+        protected override IQueryable<Transaction> Items => _userId > 0 ? Set.Where(t => t.Category.Wallet.UserId == _userId) : Set;
 
         public TransactionRepository(PFMDbContext db) : base(db) => _db = db;
 
@@ -26,16 +26,16 @@ namespace PersonalFinanceManagement.DAL.Repositories
             var query = Items is IOrderedQueryable<Transaction> ? Items : Items.OrderBy(i => i.Id);
 
             return await query
-                .Where(t => t.Date.Date >= startDate.Date && t.Date.Date <= endDate.Date && t.WalletId == walletId)
+                .Where(t => t.Date.Date >= startDate.Date && t.Date.Date <= endDate.Date && t.Category.WalletId == walletId)
                 .Include(t => t.Category)
                 .ToArrayAsync(cancel)
                 .ConfigureAwait(false);
         }
 
-        public async Task<bool> MoveToAnotherCategoryAsync(int walletId, int sourceCategoryId, int targetCategoryId, CancellationToken cancel = default)
+        public async Task<bool> MoveToAnotherCategoryOfSameWalletAsync(int walletId, int sourceCategoryId, int targetCategoryId, CancellationToken cancel = default)
         {
             var uniqueCategoryCount = await Items
-                .Where(t => t.WalletId == walletId && (t.CategoryId == sourceCategoryId || t.CategoryId == targetCategoryId))
+                .Where(t => t.Category.WalletId == walletId && (t.CategoryId == sourceCategoryId || t.CategoryId == targetCategoryId))
                 .Select(t => t.CategoryId)
                 .Distinct()
                 .CountAsync(cancel)
@@ -44,7 +44,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
             if (uniqueCategoryCount != 2)
                 return false;
 
-            var totalTransactionsToUpdate = await GetCountInCategoryAsync(walletId, targetCategoryId, cancel);
+            var totalTransactionsToUpdate = await GetCountInCategoryAsync(targetCategoryId, cancel);
 
             if (totalTransactionsToUpdate == 0)
                 return false;
@@ -54,7 +54,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
             while (totalTransactionsToUpdate > 0)
             {
                 var transactionsToUpdate = await _db.Transactions
-                    .Where(t => t.WalletId == walletId && t.CategoryId == sourceCategoryId)
+                    .Where(t => t.Category.WalletId == walletId && t.CategoryId == sourceCategoryId)
                     .Take(batchSize).ToListAsync(cancel).ConfigureAwait(false);
 
                 foreach (var transaction in transactionsToUpdate)
@@ -67,29 +67,26 @@ namespace PersonalFinanceManagement.DAL.Repositories
             return true;
         }
 
-        public async Task<int> GetCountInCategoryAsync(int walletId, int categoryId, CancellationToken cancel = default)
+        public async Task<int> GetCountInCategoryAsync(int categoryId, CancellationToken cancel = default)
         {
-            return await Items.Where(t => t.WalletId == walletId && t.CategoryId == categoryId).CountAsync(cancel).ConfigureAwait(false);
+            return await Items.Where(t => t.CategoryId == categoryId).CountAsync(cancel).ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<Transaction>> GetAllInCategoryAsync(int walletId, int categoryId, CancellationToken cancel = default)
         {
             var query = Items is IOrderedQueryable<Transaction> ? Items : Items.OrderBy(i => i.Id);
             return await query
-                .Where(t => t.WalletId == walletId && t.CategoryId == categoryId)
+                .Where(t => t.Category.WalletId == walletId && t.CategoryId == categoryId)
                 .ToArrayAsync(cancel)
                 .ConfigureAwait(false);
         }
 
-        public async Task<bool> CheckEntitiesExistAsync(int walletId, int? categoryId, int? transactionId, CancellationToken cancel = default)
+        public async Task<bool> CheckEntitiesExistAsync(int categoryId, int? transactionId, CancellationToken cancel = default)
         {
-            var query = _db.Wallets.Where(w => w.UserId == _userId && w.Id == walletId);
-
-            if (categoryId.HasValue)
-                query = query.Join(_db.Categories.Where(c => c.WalletId == walletId && c.Id == categoryId), w => w.Id, c => c.WalletId, (w, c) => w);
+            var query = _db.Categories.Where(c => c.Wallet.UserId == _userId && c.Id == categoryId);
 
             if (transactionId.HasValue)
-                query = query.Join(_db.Transactions.Where(t => t.WalletId == walletId && t.Id == transactionId), w => w.Id, t => t.WalletId, (w, t) => w);
+                query = query.Join(_db.Transactions.Where(t => t.CategoryId == categoryId && t.Id == transactionId), c => c.Id, t => t.Category.WalletId, (c, t) => c);
 
             var result = await query.AnyAsync(cancel).ConfigureAwait(false);
             return result;
@@ -106,7 +103,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
 
             var query = Items;
             if (walletId is not null)
-                query = query.Where(t => t.WalletId == walletId);
+                query = query.Where(t => t.Category.WalletId == walletId);
 
             if (categoryId is not null)
                 query = query.Where(t => t.CategoryId == categoryId);

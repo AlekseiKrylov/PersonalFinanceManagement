@@ -32,7 +32,7 @@
             var repository = new TransactionRepository(context);
             repository.SetUserId(userId);
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
-            var totalInUserWallet = await context.Transactions.Where(c => c.WalletId == walletUser.Id).CountAsync();
+            var totalInUserWallet = await context.Transactions.Where(t => t.Category.WalletId == walletUser.Id).CountAsync();
             var startDate = DateTime.Now.Date.AddDays(-1);
             var endDate = DateTime.Now.Date;
 
@@ -54,11 +54,11 @@
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
             var sourceCategory = await context.Categories.FirstOrDefaultAsync(c => c.WalletId == walletUser.Id && c.IsIncome == true);
             var targetCategory = await context.Categories.FirstOrDefaultAsync(c => c.WalletId == walletUser.Id && c.IsIncome == false);
-            var transactionsInSourceCategoryBefore = await repository.GetCountInCategoryAsync(walletUser.Id, sourceCategory.Id);
+            var transactionsInSourceCategoryBefore = await repository.GetCountInCategoryAsync(sourceCategory.Id);
 
             // Act
-            var result = await repository.MoveToAnotherCategoryAsync(walletUser.Id, sourceCategory.Id, targetCategory.Id);
-            var transactionsInSourceCategoryAfter = await repository.GetCountInCategoryAsync(walletUser.Id, sourceCategory.Id);
+            var result = await repository.MoveToAnotherCategoryOfSameWalletAsync(walletUser.Id, sourceCategory.Id, targetCategory.Id);
+            var transactionsInSourceCategoryAfter = await repository.GetCountInCategoryAsync(sourceCategory.Id);
 
             // Assert
             Assert.True(result);
@@ -77,15 +77,103 @@
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
             var sourceCategory = await context.Categories.FirstOrDefaultAsync(c => c.WalletId == walletUser.Id && c.IsIncome == false);
             var targetCategory = await context.Categories.FirstOrDefaultAsync(c => c.WalletId != walletUser.Id && c.IsIncome == false);
-            var transactionsInSourceCategoryBefore = await repository.GetCountInCategoryAsync(walletUser.Id, sourceCategory.Id);
+            var transactionsInSourceCategoryBefore = await repository.GetCountInCategoryAsync(sourceCategory.Id);
 
             // Act
-            var result = await repository.MoveToAnotherCategoryAsync(walletUser.Id, sourceCategory.Id, targetCategory.Id);
-            var transactionsInSourceCategoryAfter = await repository.GetCountInCategoryAsync(walletUser.Id, sourceCategory.Id);
+            var result = await repository.MoveToAnotherCategoryOfSameWalletAsync(walletUser.Id, sourceCategory.Id, targetCategory.Id);
+            var transactionsInSourceCategoryAfter = await repository.GetCountInCategoryAsync(sourceCategory.Id);
 
             // Assert
             Assert.False(result);
             Assert.Equal(transactionsInSourceCategoryBefore, transactionsInSourceCategoryAfter);
+        }
+
+        [Fact]
+        public async Task CheckEntitiesExistAsync_ShouldReturnFalse_WhenCategoryBelongsToDifferentUser()
+        {
+            // Arrange
+            using var context = new PFMDbContext(_fixture.TestDbContextOptions);
+            int userId = 1;
+            var repository = new TransactionRepository(context);
+            repository.SetUserId(userId);
+            var wrongCategory = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId != userId);
+
+            // Act
+            var result = await repository.CheckEntitiesExistAsync(wrongCategory.Id, null);
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task CheckEntitiesExistAsync_ShouldReturnFalse_WhenTransactionBelongsToDifferentUser()
+        {
+            // Arrange
+            using var context = new PFMDbContext(_fixture.TestDbContextOptions);
+            int userId = 1;
+            var repository = new TransactionRepository(context);
+            repository.SetUserId(userId);
+            var category = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
+            var wrongTransaction = await context.Transactions.FirstOrDefaultAsync(t => t.Category.Wallet.UserId != userId);
+
+            // Act
+            var result = await repository.CheckEntitiesExistAsync(category.Id, wrongTransaction.Id);
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task CheckEntitiesExistAsync_ShouldReturnFalse_WhenTransactionBelongsToDifferentCategory()
+        {
+            // Arrange
+            using var context = new PFMDbContext(_fixture.TestDbContextOptions);
+            int userId = 1;
+            var repository = new TransactionRepository(context);
+            repository.SetUserId(userId);
+            var category = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
+            var wrongTransaction = await context.Transactions.FirstOrDefaultAsync(t => t.Category.Wallet.UserId == userId && t.Category.Id != category.Id);
+
+            // Act
+            var result = await repository.CheckEntitiesExistAsync(category.Id, wrongTransaction.Id);
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task CheckEntitiesExistAsync_ShouldReturnTrue_WhenCategoryBelongsToUser()
+        {
+            // Arrange
+            using var context = new PFMDbContext(_fixture.TestDbContextOptions);
+            int userId = 1;
+            var repository = new TransactionRepository(context);
+            repository.SetUserId(userId);
+            var category = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
+
+            // Act
+            var result = await repository.CheckEntitiesExistAsync(category.Id, null);
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task CheckEntitiesExistAsync_ShouldReturnTrue_WhenTransactionBelongsToCategory()
+        {
+            // Arrange
+            using var context = new PFMDbContext(_fixture.TestDbContextOptions);
+            int userId = 1;
+            var repository = new TransactionRepository(context);
+            repository.SetUserId(userId);
+            var category = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
+            var transaction = await context.Transactions.FirstOrDefaultAsync(t => t.Category.Wallet.UserId == userId && t.Category.Id == category.Id);
+
+            // Act
+            var result = await repository.CheckEntitiesExistAsync(category.Id, transaction.Id);
+
+            // Assert
+            Assert.True(result);
         }
     }
 }

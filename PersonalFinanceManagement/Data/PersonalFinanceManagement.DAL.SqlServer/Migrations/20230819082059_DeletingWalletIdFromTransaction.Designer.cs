@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PersonalFinanceManagement.DAL.Context;
 
@@ -11,9 +12,10 @@ using PersonalFinanceManagement.DAL.Context;
 namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
 {
     [DbContext(typeof(PFMDbContext))]
-    partial class PFMDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230819082059_DeletingWalletIdFromTransaction")]
+    partial class DeletingWalletIdFromTransaction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
