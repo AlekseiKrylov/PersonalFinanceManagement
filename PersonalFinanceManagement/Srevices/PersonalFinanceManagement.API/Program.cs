@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using PersonalFinanceManagement.API.CustomMiddleware;
 using PersonalFinanceManagement.API.Data;
 using PersonalFinanceManagement.API.Swagger;
 using PersonalFinanceManagement.BLL.Services;
@@ -78,6 +79,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.MapControllers();
 

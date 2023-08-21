@@ -24,4 +24,8 @@
     <ProjectReference Include="..\PersonalFinanceManagement.BLL\PersonalFinanceManagement.BLL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CustomMiddleware\ExceptionHandling\" />
+  </ItemGroup>
+
 </Project>

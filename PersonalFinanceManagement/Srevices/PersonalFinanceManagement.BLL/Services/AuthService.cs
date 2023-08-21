@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using PersonalFinanceManagement.BLL.Exceptions;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
@@ -34,12 +35,12 @@ namespace PersonalFinanceManagement.BLL.Services
                     : $"{nameof(password)} cannot be null, empty, or contain only whitespace.");
 
             if (!await _userService.ExistByEmailAsync(email, cancel).ConfigureAwait(false))
-                throw new UnauthorizedAccessException($"The user with the email '{email}' is not registered.");
+                throw new InvalidCredentialsException($"The user with the email '{email}' is not registered.");
 
             var user = await _userService.GetUserByEmailAsync(email, cancel).ConfigureAwait(false);
 
             if (!_userService.VerifyPassword(password, user.PasswordHash))
-                throw new UnauthorizedAccessException("Invalid password.");
+                throw new InvalidCredentialsException("Invalid password.");
 
             return GenerateJWT(user);
         }
