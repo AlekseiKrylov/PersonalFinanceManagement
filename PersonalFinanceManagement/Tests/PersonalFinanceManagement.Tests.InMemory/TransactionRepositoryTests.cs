@@ -3,15 +3,20 @@
     public class TransactionRepositoryTests : IClassFixture<TestInMemoryFixture>
     {
         private readonly TestInMemoryFixture _fixture;
+        private readonly Mock<ICurrentUserService> _currencyUserServiceMock;
 
-        public TransactionRepositoryTests(TestInMemoryFixture fixture) => _fixture = fixture;
+        public TransactionRepositoryTests(TestInMemoryFixture fixture)
+        {
+            _fixture = fixture;
+            _currencyUserServiceMock = new Mock<ICurrentUserService>();
+        }
 
         [Fact]
         public async Task GetPeriodWithCategoryAsync_ShouldReturnEmpty_WhenStartDateLaterThanEndDate()
         {
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            var repository = new TransactionRepository(context);
+            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
             int walletId = 1;
             var startDate = DateTime.Now.Date;
             var endDate = DateTime.Now.Date.AddDays(-1);
@@ -26,11 +31,12 @@
         [Fact]
         public async Task GetPeriodWithCategoryAsync_ShouldReturnReport_WhenStartDateEarlierThanEndDate()
         {
+            int userId = 2;
+            _currencyUserServiceMock.Setup(s => s.GetCurretUserId()).Returns(userId);
+
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            int userId = 2;
-            var repository = new TransactionRepository(context);
-            repository.SetUserId(userId);
+            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
             var totalInUserWallet = await context.Transactions.Where(t => t.Category.WalletId == walletUser.Id).CountAsync();
             var startDate = DateTime.Now.Date.AddDays(-1);
@@ -46,11 +52,12 @@
         [Fact]
         public async Task MoveToAnotherCategoryAsync_ShouldReturnTrue_WhenCategoriesBelongsToSameWallet()
         {
+            int userId = 1;
+            _currencyUserServiceMock.Setup(s => s.GetCurretUserId()).Returns(userId);
+
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            int userId = 1;
-            var repository = new TransactionRepository(context);
-            repository.SetUserId(userId);
+            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
             var sourceCategory = await context.Categories.FirstOrDefaultAsync(c => c.WalletId == walletUser.Id && c.IsIncome == true);
             var targetCategory = await context.Categories.FirstOrDefaultAsync(c => c.WalletId == walletUser.Id && c.IsIncome == false);
@@ -69,11 +76,12 @@
         [Fact]
         public async Task MoveToAnotherCategoryAsync_ShouldReturnFalse_WhenCategoriesBelongsToDifferentWallet()
         {
+            int userId = 1;
+            _currencyUserServiceMock.Setup(s => s.GetCurretUserId()).Returns(userId);
+
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            int userId = 1;
-            var repository = new TransactionRepository(context);
-            repository.SetUserId(userId);
+            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
             var sourceCategory = await context.Categories.FirstOrDefaultAsync(c => c.WalletId == walletUser.Id && c.IsIncome == false);
             var targetCategory = await context.Categories.FirstOrDefaultAsync(c => c.WalletId != walletUser.Id && c.IsIncome == false);
@@ -91,11 +99,12 @@
         [Fact]
         public async Task CheckEntitiesExistAsync_ShouldReturnFalse_WhenCategoryBelongsToDifferentUser()
         {
+            int userId = 1;
+            _currencyUserServiceMock.Setup(s => s.GetCurretUserId()).Returns(userId);
+
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            int userId = 1;
-            var repository = new TransactionRepository(context);
-            repository.SetUserId(userId);
+            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
             var wrongCategory = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId != userId);
 
             // Act
@@ -108,11 +117,12 @@
         [Fact]
         public async Task CheckEntitiesExistAsync_ShouldReturnFalse_WhenTransactionBelongsToDifferentUser()
         {
+            int userId = 1;
+            _currencyUserServiceMock.Setup(s => s.GetCurretUserId()).Returns(userId);
+
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            int userId = 1;
-            var repository = new TransactionRepository(context);
-            repository.SetUserId(userId);
+            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
             var wrongTransaction = await context.Transactions.FirstOrDefaultAsync(t => t.Category.Wallet.UserId != userId);
 
@@ -126,11 +136,12 @@
         [Fact]
         public async Task CheckEntitiesExistAsync_ShouldReturnFalse_WhenTransactionBelongsToDifferentCategory()
         {
+            int userId = 1;
+            _currencyUserServiceMock.Setup(s => s.GetCurretUserId()).Returns(userId);
+
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            int userId = 1;
-            var repository = new TransactionRepository(context);
-            repository.SetUserId(userId);
+            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
             var wrongTransaction = await context.Transactions.FirstOrDefaultAsync(t => t.Category.Wallet.UserId == userId && t.Category.Id != category.Id);
 
@@ -144,11 +155,12 @@
         [Fact]
         public async Task CheckEntitiesExistAsync_ShouldReturnTrue_WhenCategoryBelongsToUser()
         {
+            int userId = 1;
+            _currencyUserServiceMock.Setup(s => s.GetCurretUserId()).Returns(userId);
+
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            int userId = 1;
-            var repository = new TransactionRepository(context);
-            repository.SetUserId(userId);
+            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
 
             // Act
@@ -161,11 +173,12 @@
         [Fact]
         public async Task CheckEntitiesExistAsync_ShouldReturnTrue_WhenTransactionBelongsToCategory()
         {
+            int userId = 1;
+            _currencyUserServiceMock.Setup(s => s.GetCurretUserId()).Returns(userId);
+
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            int userId = 1;
-            var repository = new TransactionRepository(context);
-            repository.SetUserId(userId);
+            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
             var transaction = await context.Transactions.FirstOrDefaultAsync(t => t.Category.Wallet.UserId == userId && t.Category.Id == category.Id);
 

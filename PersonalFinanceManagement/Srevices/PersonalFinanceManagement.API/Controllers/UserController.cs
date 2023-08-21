@@ -5,8 +5,7 @@ using PersonalFinanceManagement.Domain.Interfaces;
 
 namespace PersonalFinanceManagement.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [ApiController, Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;

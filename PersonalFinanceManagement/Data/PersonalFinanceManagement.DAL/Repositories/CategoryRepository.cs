@@ -4,19 +4,24 @@ using PersonalFinanceManagement.DAL.Repositories.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.Interfaces.Repository;
 using PersonalFinanceManagement.Interfaces.Base.Repositories;
+using PersonalFinanceManagement.Interfaces.Services;
 
 namespace PersonalFinanceManagement.DAL.Repositories
 {
     public class CategoryRepository : RepositoryBase<Category>, ICategoryRepository
     {
-        private int _userId;
         private readonly PFMDbContext _db;
+        private readonly int _userId;
 
-        protected override IQueryable<Category> Items => _userId > 0 ? Set.Where(c => c.Wallet.UserId == _userId) : Set;
+        protected override IQueryable<Category> Items => _userId > 0
+            ? Set.Where(c => c.Wallet.UserId == _userId)
+            : Enumerable.Empty<Category>().AsQueryable();
 
-        public CategoryRepository(PFMDbContext db) : base(db) => _db = db;
-
-        public void SetUserId(int userId) => _userId = userId;
+        public CategoryRepository(PFMDbContext db, ICurrentUserService currentUserService) : base(db)
+        {
+            _db = db;
+            _userId = currentUserService.GetCurretUserId();
+        }
 
         public async Task<bool> CheckEntitiesExistAsync(int walletId, int? categoryId, CancellationToken cancel = default)
         {

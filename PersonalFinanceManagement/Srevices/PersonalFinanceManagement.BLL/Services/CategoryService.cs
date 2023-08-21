@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using PersonalFinanceManagement.BLL.Services.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.DTOModels;
@@ -13,16 +12,8 @@ namespace PersonalFinanceManagement.BLL.Services
     {
         private readonly ICategoryRepository _categoryRepository;
 
-        public CategoryService(ICategoryRepository categoryRepository,
-            IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(categoryRepository, mapper)
-        {
-            if (!int.TryParse(httpContextAccessor.HttpContext.User.FindFirst("id")?.Value, out int userId) && userId <= 0)
-                throw new UnauthorizedAccessException("User is not authorized.");
-
-            categoryRepository.SetUserId(userId);
-
-            _categoryRepository = categoryRepository;
-        }
+        public CategoryService(ICategoryRepository categoryRepository, IMapper mapper) : base(categoryRepository, mapper)
+            => _categoryRepository = categoryRepository;
 
         public override async Task<CategoryDTO> AddAsync(CategoryCreateDTO item, CancellationToken cancel = default)
         {
