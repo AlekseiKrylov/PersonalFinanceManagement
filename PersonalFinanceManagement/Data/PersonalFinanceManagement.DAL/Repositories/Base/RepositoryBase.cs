@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PersonalFinanceManagement.DAL.Context;
 using PersonalFinanceManagement.Domain.DALEntities.Base;
-using PersonalFinanceManagement.Interfaces.Base.Repositories;
+using PersonalFinanceManagement.Interfaces.Repositories;
 
 namespace PersonalFinanceManagement.DAL.Repositories.Base
 {

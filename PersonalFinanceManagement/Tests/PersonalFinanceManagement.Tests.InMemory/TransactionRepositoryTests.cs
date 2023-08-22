@@ -16,7 +16,7 @@
         {
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
+            var repository = new TransactionsRepository(context, _currencyUserServiceMock.Object);
             int walletId = 1;
             var startDate = DateTime.Now.Date;
             var endDate = DateTime.Now.Date.AddDays(-1);
@@ -36,7 +36,7 @@
 
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
+            var repository = new TransactionsRepository(context, _currencyUserServiceMock.Object);
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
             var totalInUserWallet = await context.Transactions.Where(t => t.Category.WalletId == walletUser.Id).CountAsync();
             var startDate = DateTime.Now.Date.AddDays(-1);
@@ -57,7 +57,7 @@
 
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
+            var repository = new TransactionsRepository(context, _currencyUserServiceMock.Object);
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
             var sourceCategory = await context.Categories.FirstOrDefaultAsync(c => c.WalletId == walletUser.Id && c.IsIncome == true);
             var targetCategory = await context.Categories.FirstOrDefaultAsync(c => c.WalletId == walletUser.Id && c.IsIncome == false);
@@ -81,7 +81,7 @@
 
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
+            var repository = new TransactionsRepository(context, _currencyUserServiceMock.Object);
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
             var sourceCategory = await context.Categories.FirstOrDefaultAsync(c => c.WalletId == walletUser.Id && c.IsIncome == false);
             var targetCategory = await context.Categories.FirstOrDefaultAsync(c => c.WalletId != walletUser.Id && c.IsIncome == false);
@@ -104,7 +104,7 @@
 
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
+            var repository = new TransactionsRepository(context, _currencyUserServiceMock.Object);
             var wrongCategory = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId != userId);
 
             // Act
@@ -122,7 +122,7 @@
 
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
+            var repository = new TransactionsRepository(context, _currencyUserServiceMock.Object);
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
             var wrongTransaction = await context.Transactions.FirstOrDefaultAsync(t => t.Category.Wallet.UserId != userId);
 
@@ -141,7 +141,7 @@
 
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
+            var repository = new TransactionsRepository(context, _currencyUserServiceMock.Object);
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
             var wrongTransaction = await context.Transactions.FirstOrDefaultAsync(t => t.Category.Wallet.UserId == userId && t.Category.Id != category.Id);
 
@@ -160,7 +160,7 @@
 
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
+            var repository = new TransactionsRepository(context, _currencyUserServiceMock.Object);
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
 
             // Act
@@ -178,7 +178,7 @@
 
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
-            var repository = new TransactionRepository(context, _currencyUserServiceMock.Object);
+            var repository = new TransactionsRepository(context, _currencyUserServiceMock.Object);
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
             var transaction = await context.Transactions.FirstOrDefaultAsync(t => t.Category.Wallet.UserId == userId && t.Category.Id == category.Id);
 

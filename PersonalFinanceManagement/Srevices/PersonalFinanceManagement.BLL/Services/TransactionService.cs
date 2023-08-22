@@ -2,17 +2,17 @@
 using PersonalFinanceManagement.BLL.Services.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.DTOModels;
-using PersonalFinanceManagement.Domain.Interfaces.Repository;
+using PersonalFinanceManagement.Domain.Interfaces.Repositories;
 using PersonalFinanceManagement.Domain.Interfaces.Services;
-using PersonalFinanceManagement.Interfaces.Base.Repositories;
+using PersonalFinanceManagement.Interfaces.Repositories;
 
 namespace PersonalFinanceManagement.BLL.Services
 {
-    public class TransactionService : EntityServiceBase<TransactionDTO, TransactionCreateDTO, Transaction>, ITransactionService
+    public class TransactionService : EntityServiceBase<TransactionDTO, TransactionCreateDTO, Transaction>, ITransactionsService
     {
-        private readonly ITransactionRepository _transactionRepository;
+        private readonly ITransactionsRepository _transactionRepository;
 
-        public TransactionService(ITransactionRepository transactionRepository, IMapper mapper) : base(transactionRepository, mapper)
+        public TransactionService(ITransactionsRepository transactionRepository, IMapper mapper) : base(transactionRepository, mapper)
             => _transactionRepository = transactionRepository;
 
         public async Task<bool> MoveToAnotherCategoryAsync(int walletId, int sourceCategoryId, int targetCategoryId, CancellationToken cancel)
@@ -20,14 +20,14 @@ namespace PersonalFinanceManagement.BLL.Services
             return await _transactionRepository.MoveToAnotherCategoryOfSameWalletAsync(walletId, sourceCategoryId, targetCategoryId, cancel).ConfigureAwait(false);
         }
 
-        public async Task<int> GetCountInCategoryAsync(int walletId, int categoryId, CancellationToken cancel)
+        public async Task<int> GetCountInCategoryAsync(int categoryId, CancellationToken cancel)
         {
             return await _transactionRepository.GetCountInCategoryAsync(categoryId, cancel).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<TransactionDTO>> GetAllInCategoryAsync(int walletId, int categoryId, CancellationToken cancel)
+        public async Task<IEnumerable<TransactionDTO>> GetAllInCategoryAsync(int categoryId, CancellationToken cancel)
         {
-            return GetItem(await _transactionRepository.GetAllInCategoryAsync(walletId, categoryId, cancel).ConfigureAwait(false));
+            return GetItem(await _transactionRepository.GetAllInCategoryAsync(categoryId, cancel).ConfigureAwait(false));
         }
 
         public override async Task<TransactionDTO> AddAsync(TransactionCreateDTO item, CancellationToken cancel)

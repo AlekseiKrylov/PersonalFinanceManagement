@@ -1,17 +1,17 @@
 ﻿using AutoMapper;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.DTOModels;
-using PersonalFinanceManagement.Domain.Interfaces;
-using PersonalFinanceManagement.Domain.Interfaces.Repository;
+using PersonalFinanceManagement.Domain.Interfaces.Repositories;
+using PersonalFinanceManagement.Domain.Interfaces.Services;
 
 namespace PersonalFinanceManagement.BLL.Services
 {
-    public class UserService : IUserService
+    public class UserService : IUsersService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUsersRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        public UserService(IUsersRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _mapper = mapper;

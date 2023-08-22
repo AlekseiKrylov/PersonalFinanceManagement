@@ -1,9 +1,9 @@
 ﻿using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.DTOModels;
 
-namespace PersonalFinanceManagement.Domain.Interfaces
+namespace PersonalFinanceManagement.Domain.Interfaces.Services
 {
-    public interface IUserService
+    public interface IUsersService
     {
         Task<bool> ExistByEmailAsync(string email, CancellationToken cancel = default);
         Task<UserDTO> RegisterUserAsync(string email, string password, CancellationToken cancel = default);

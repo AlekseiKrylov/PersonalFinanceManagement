@@ -2,13 +2,13 @@
 using PersonalFinanceManagement.DAL.Context;
 using PersonalFinanceManagement.DAL.Repositories.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
-using PersonalFinanceManagement.Domain.Interfaces.Repository;
-using PersonalFinanceManagement.Interfaces.Base.Repositories;
+using PersonalFinanceManagement.Domain.Interfaces.Repositories;
+using PersonalFinanceManagement.Interfaces.Repositories;
 using PersonalFinanceManagement.Interfaces.Services;
 
 namespace PersonalFinanceManagement.DAL.Repositories
 {
-    public class CategoryRepository : RepositoryBase<Category>, ICategoryRepository
+    public class CategoriesRepository : RepositoryBase<Category>, ICategoriesRepository
     {
         private readonly PFMDbContext _db;
         private readonly int _userId;
@@ -17,7 +17,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
             ? Set.Where(c => c.Wallet.UserId == _userId)
             : Enumerable.Empty<Category>().AsQueryable();
 
-        public CategoryRepository(PFMDbContext db, ICurrentUserService currentUserService) : base(db)
+        public CategoriesRepository(PFMDbContext db, ICurrentUserService currentUserService) : base(db)
         {
             _db = db;
             _userId = currentUserService.GetCurretUserId();

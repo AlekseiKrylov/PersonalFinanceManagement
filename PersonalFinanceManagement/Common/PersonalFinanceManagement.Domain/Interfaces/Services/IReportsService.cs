@@ -1,6 +1,6 @@
 ﻿using PersonalFinanceManagement.Domain.BLLModels.Reports;
 
-namespace PersonalFinanceManagement.Domain.Interfaces
+namespace PersonalFinanceManagement.Domain.Interfaces.Services
 {
     public interface IReportsService
     {

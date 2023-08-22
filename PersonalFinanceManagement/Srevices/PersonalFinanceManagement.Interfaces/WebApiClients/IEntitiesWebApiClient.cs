@@ -1,12 +1,14 @@
 ﻿using PersonalFinanceManagement.Interfaces.Entities;
 using PersonalFinanceManagement.Interfaces.Repositories;
 
-namespace PersonalFinanceManagement.Interfaces.Services
+namespace PersonalFinanceManagement.Interfaces.WebApiClients
 {
-    public interface IEntityService<T, TCreate, TBase> where T : IEntity where TCreate : IEntity where TBase : IEntity
+    public interface IEntitiesWebApiClient<T, TCreate>
+        where T : IEntity
+        where TCreate : IEntity
     {
-        Task<bool> ExistsByIdAsync(int id, CancellationToken cancel = default);
-        Task<bool> ExistsAsync(T item, CancellationToken cancel = default);
+        Task<bool> ExistIdAsync(int id, CancellationToken cancel = default);
+        Task<bool> ExistAsync(T item, CancellationToken cancel = default);
         Task<int> GetCountAsync(CancellationToken cancel = default);
         Task<IEnumerable<T>> GetAllAsync(CancellationToken cancel = default);
         Task<IEnumerable<T>> GetAsync(int skip, int count, CancellationToken cancel = default);
@@ -14,7 +16,7 @@ namespace PersonalFinanceManagement.Interfaces.Services
         Task<T> GetByIdAsync(int id, CancellationToken cancel = default);
         Task<T> AddAsync(TCreate item, CancellationToken cancel = default);
         Task<T> UpdateAsync(T item, CancellationToken cancel = default);
-        Task<T> RemoveByIdAsync(int id, CancellationToken cancel = default);
-        Task<T> RemoveAsync(T item, CancellationToken cancel = default);
+        Task<T> DeleteByIdAsync(int id, CancellationToken cancel = default);
+        Task<T> DeleteAsync(T item, CancellationToken cancel = default);
     }
 }

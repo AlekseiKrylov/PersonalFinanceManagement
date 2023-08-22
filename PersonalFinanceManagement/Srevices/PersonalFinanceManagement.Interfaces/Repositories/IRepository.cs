@@ -1,6 +1,6 @@
-﻿using PersonalFinanceManagement.Interfaces.Base.Entities;
+﻿using PersonalFinanceManagement.Interfaces.Entities;
 
-namespace PersonalFinanceManagement.Interfaces.Base.Repositories
+namespace PersonalFinanceManagement.Interfaces.Repositories
 {
     public interface IRepository<T> where T : IEntity
     {

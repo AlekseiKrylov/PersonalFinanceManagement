@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using PersonalFinanceManagement.Interfaces.Base.Entities;
-using PersonalFinanceManagement.Interfaces.Base.Repositories;
+using PersonalFinanceManagement.Interfaces.Entities;
+using PersonalFinanceManagement.Interfaces.Repositories;
 using PersonalFinanceManagement.Interfaces.Services;
 
 namespace PersonalFinanceManagement.BLL.Services.Base

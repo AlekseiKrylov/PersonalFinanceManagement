@@ -1,4 +1,4 @@
-﻿using PersonalFinanceManagement.Interfaces.Base.Entities;
+﻿using PersonalFinanceManagement.Interfaces.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

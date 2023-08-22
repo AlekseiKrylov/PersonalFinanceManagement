@@ -2,17 +2,17 @@
 using PersonalFinanceManagement.BLL.Services.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.DTOModels;
-using PersonalFinanceManagement.Domain.Interfaces.Repository;
+using PersonalFinanceManagement.Domain.Interfaces.Repositories;
 using PersonalFinanceManagement.Domain.Interfaces.Services;
-using PersonalFinanceManagement.Interfaces.Base.Repositories;
+using PersonalFinanceManagement.Interfaces.Repositories;
 
 namespace PersonalFinanceManagement.BLL.Services
 {
-    public class CategoryService : EntityServiceBase<CategoryDTO, CategoryCreateDTO, Category>, ICategoryServise
+    public class CategoryService : EntityServiceBase<CategoryDTO, CategoryCreateDTO, Category>, ICategoriesServise
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly ICategoriesRepository _categoryRepository;
 
-        public CategoryService(ICategoryRepository categoryRepository, IMapper mapper) : base(categoryRepository, mapper)
+        public CategoryService(ICategoriesRepository categoryRepository, IMapper mapper) : base(categoryRepository, mapper)
             => _categoryRepository = categoryRepository;
 
         public override async Task<CategoryDTO> AddAsync(CategoryCreateDTO item, CancellationToken cancel = default)

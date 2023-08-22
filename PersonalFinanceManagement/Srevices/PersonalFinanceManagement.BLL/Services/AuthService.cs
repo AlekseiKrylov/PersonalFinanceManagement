@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using PersonalFinanceManagement.BLL.Exceptions;
 using PersonalFinanceManagement.Domain.DALEntities;
-using PersonalFinanceManagement.Domain.Interfaces;
+using PersonalFinanceManagement.Domain.Interfaces.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,11 +12,11 @@ namespace PersonalFinanceManagement.BLL.Services
     public class AuthService : IAuthService
     {
         private const int _STANDARD_TOKEN_LIFETIME_IN_MINUTES = 15;
-        private readonly IUserService _userService;
+        private readonly IUsersService _userService;
         private readonly IConfiguration _configuration;
         private readonly int _expirationInMinutes;
 
-        public AuthService(IUserService userService, IConfiguration configuration)
+        public AuthService(IUsersService userService, IConfiguration configuration)
         {
             _userService = userService;
             _configuration = configuration;

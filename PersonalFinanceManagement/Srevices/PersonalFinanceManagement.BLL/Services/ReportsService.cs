@@ -2,17 +2,17 @@
 using PersonalFinanceManagement.Domain.BLLModels;
 using PersonalFinanceManagement.Domain.BLLModels.Reports;
 using PersonalFinanceManagement.Domain.DALEntities;
-using PersonalFinanceManagement.Domain.Interfaces;
-using PersonalFinanceManagement.Domain.Interfaces.Repository;
+using PersonalFinanceManagement.Domain.Interfaces.Repositories;
+using PersonalFinanceManagement.Domain.Interfaces.Services;
 
 namespace PersonalFinanceManagement.BLL.Services
 {
     public class ReportsService : IReportsService
     {
-        private readonly ITransactionRepository _transactionRepository;
+        private readonly ITransactionsRepository _transactionRepository;
         private readonly IMapper _mapper;
 
-        public ReportsService(ITransactionRepository transactionRepository, IMapper mapper)
+        public ReportsService(ITransactionsRepository transactionRepository, IMapper mapper)
         {
             _transactionRepository = transactionRepository;
             _mapper = mapper;

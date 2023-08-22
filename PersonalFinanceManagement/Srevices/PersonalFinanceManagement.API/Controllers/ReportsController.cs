@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonalFinanceManagement.Domain.BLLModels.Reports;
-using PersonalFinanceManagement.Domain.Interfaces;
+using PersonalFinanceManagement.Domain.Interfaces.Services;
 
 namespace PersonalFinanceManagement.API.Controllers
 {
     [Authorize]
     [ApiController, Route("api/[controller]")]
-    public class ReportController : ControllerBase
+    public class ReportsController : ControllerBase
     {
         private readonly IReportsService _reportsService;
 
-        public ReportController(IReportsService reportsService) => _reportsService = reportsService;
+        public ReportsController(IReportsService reportsService) => _reportsService = reportsService;
 
         [HttpGet("daily")]
         [ProducesResponseType(StatusCodes.Status200OK)]

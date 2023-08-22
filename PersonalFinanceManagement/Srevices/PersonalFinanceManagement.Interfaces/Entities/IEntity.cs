@@ -1,4 +1,4 @@
-﻿namespace PersonalFinanceManagement.Interfaces.Base.Entities
+﻿namespace PersonalFinanceManagement.Interfaces.Entities
 {
     public interface IEntity
     {

@@ -1,9 +1,9 @@
 ﻿using PersonalFinanceManagement.Domain.DALEntities;
-using PersonalFinanceManagement.Interfaces.Base.Repositories;
+using PersonalFinanceManagement.Interfaces.Repositories;
 
-namespace PersonalFinanceManagement.Domain.Interfaces.Repository
+namespace PersonalFinanceManagement.Domain.Interfaces.Repositories
 {
-    public interface IUserRepository : IRepository<User>
+    public interface IUsersRepository : IRepository<User>
     {
         Task<bool> ExistByEmailAsync(string email, CancellationToken cancel = default);
         Task<User> GetByEmailAsync(string email, CancellationToken cancel = default);

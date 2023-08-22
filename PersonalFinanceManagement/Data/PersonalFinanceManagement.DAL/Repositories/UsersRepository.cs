@@ -2,13 +2,13 @@
 using PersonalFinanceManagement.DAL.Context;
 using PersonalFinanceManagement.DAL.Repositories.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
-using PersonalFinanceManagement.Domain.Interfaces.Repository;
+using PersonalFinanceManagement.Domain.Interfaces.Repositories;
 
 namespace PersonalFinanceManagement.DAL.Repositories
 {
-    public class UserRepository : RepositoryBase<User>, IUserRepository
+    public class UsersRepository : RepositoryBase<User>, IUsersRepository
     {
-        public UserRepository(PFMDbContext db) : base(db) { }
+        public UsersRepository(PFMDbContext db) : base(db) { }
 
         public async Task<bool> ExistByEmailAsync(string email, CancellationToken cancel = default)
         {

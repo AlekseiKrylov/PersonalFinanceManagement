@@ -1,4 +1,4 @@
-﻿namespace PersonalFinanceManagement.Domain.Interfaces
+﻿namespace PersonalFinanceManagement.Domain.Interfaces.Services
 {
     public interface IAuthService
     {

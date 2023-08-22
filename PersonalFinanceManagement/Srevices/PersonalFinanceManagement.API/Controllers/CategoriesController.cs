@@ -7,6 +7,6 @@ namespace PersonalFinanceManagement.API.Controllers
 {
     public class CategoriesController : EntitiesController<CategoryDTO, CategoryCreateDTO, Category>
     {
-        public CategoriesController(ICategoryServise categoryService) : base(categoryService) { }
+        public CategoriesController(ICategoriesServise categoryService) : base(categoryService) { }
     }
 }

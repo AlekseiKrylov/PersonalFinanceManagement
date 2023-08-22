@@ -2,17 +2,17 @@
 using PersonalFinanceManagement.BLL.Services.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.DTOModels;
-using PersonalFinanceManagement.Domain.Interfaces.Repository;
+using PersonalFinanceManagement.Domain.Interfaces.Repositories;
 using PersonalFinanceManagement.Interfaces.Services;
 
 namespace PersonalFinanceManagement.BLL.Services
 {
     public class WalletService : EntityServiceBase<WalletDTO, WalletCreateDTO, Wallet>
     {
-        private readonly IWalletRepository _walletRepository;
+        private readonly IWalletsRepository _walletRepository;
         private readonly ICurrentUserService _currentUserService;
 
-        public WalletService(IWalletRepository walletRepository, IMapper mapper, ICurrentUserService currentUserService) : base(walletRepository, mapper)
+        public WalletService(IWalletsRepository walletRepository, IMapper mapper, ICurrentUserService currentUserService) : base(walletRepository, mapper)
         {
             _walletRepository = walletRepository;
             _currentUserService = currentUserService;

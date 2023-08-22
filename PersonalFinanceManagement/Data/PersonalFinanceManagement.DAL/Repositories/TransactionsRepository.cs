@@ -2,13 +2,13 @@
 using PersonalFinanceManagement.DAL.Context;
 using PersonalFinanceManagement.DAL.Repositories.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
-using PersonalFinanceManagement.Domain.Interfaces.Repository;
-using PersonalFinanceManagement.Interfaces.Base.Repositories;
+using PersonalFinanceManagement.Domain.Interfaces.Repositories;
+using PersonalFinanceManagement.Interfaces.Repositories;
 using PersonalFinanceManagement.Interfaces.Services;
 
 namespace PersonalFinanceManagement.DAL.Repositories
 {
-    public class TransactionRepository : RepositoryBase<Transaction>, ITransactionRepository
+    public class TransactionsRepository : RepositoryBase<Transaction>, ITransactionsRepository
     {
         private readonly PFMDbContext _db;
         private readonly int _userId;
@@ -17,7 +17,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
             ? Set.Where(t => t.Category.Wallet.UserId == _userId)
             : Enumerable.Empty<Transaction>().AsQueryable();
 
-        public TransactionRepository(PFMDbContext db, ICurrentUserService currentUserService) : base(db)
+        public TransactionsRepository(PFMDbContext db, ICurrentUserService currentUserService) : base(db)
         {
             _db = db;
             _userId = currentUserService.GetCurretUserId();
@@ -77,13 +77,10 @@ namespace PersonalFinanceManagement.DAL.Repositories
             return await Items.Where(t => t.CategoryId == categoryId).CountAsync(cancel).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Transaction>> GetAllInCategoryAsync(int walletId, int categoryId, CancellationToken cancel = default)
+        public async Task<IEnumerable<Transaction>> GetAllInCategoryAsync(int categoryId, CancellationToken cancel = default)
         {
             var query = Items is IOrderedQueryable<Transaction> ? Items : Items.OrderBy(i => i.Id);
-            return await query
-                .Where(t => t.Category.WalletId == walletId && t.CategoryId == categoryId)
-                .ToArrayAsync(cancel)
-                .ConfigureAwait(false);
+            return await query.Where(t => t.CategoryId == categoryId).ToArrayAsync(cancel).ConfigureAwait(false);
         }
 
         public async Task<bool> CheckEntitiesExistAsync(int categoryId, int? transactionId, CancellationToken cancel = default)

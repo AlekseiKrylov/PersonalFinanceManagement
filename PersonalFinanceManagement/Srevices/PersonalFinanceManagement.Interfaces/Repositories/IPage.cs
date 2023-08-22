@@ -1,4 +1,4 @@
-﻿namespace PersonalFinanceManagement.Interfaces.Base.Repositories
+﻿namespace PersonalFinanceManagement.Interfaces.Repositories
 {
     public interface IPage<T>
     {

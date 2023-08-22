@@ -20,7 +20,7 @@
 
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
             var walletAnoterUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId + 1);
-            var repository = new CategoryRepository(context, _currencyUserServiceMock.Object);
+            var repository = new CategoriesRepository(context, _currencyUserServiceMock.Object);
 
             // Act
             var result = await repository.CheckEntitiesExistAsync(walletAnoterUser.Id, null);
@@ -39,7 +39,7 @@
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
             var categoryAnoterUser = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId + 1);
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
-            var repository = new CategoryRepository(context, _currencyUserServiceMock.Object);
+            var repository = new CategoriesRepository(context, _currencyUserServiceMock.Object);
 
             // Act
             var result = await repository.CheckEntitiesExistAsync(walletUser.Id, categoryAnoterUser.Id);
@@ -57,7 +57,7 @@
 
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
-            var repository = new CategoryRepository(context, _currencyUserServiceMock.Object);
+            var repository = new CategoriesRepository(context, _currencyUserServiceMock.Object);
 
             // Act
             var result = await repository.CheckEntitiesExistAsync(walletUser.Id, null);
@@ -76,7 +76,7 @@
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
             var categoryUser = await context.Categories.FirstOrDefaultAsync(c => c.Wallet.UserId == userId);
-            var repository = new CategoryRepository(context, _currencyUserServiceMock.Object);
+            var repository = new CategoriesRepository(context, _currencyUserServiceMock.Object);
 
             // Act
             var result = await repository.CheckEntitiesExistAsync(walletUser.Id, categoryUser.Id);
@@ -94,7 +94,7 @@
             // Arrange
             using var context = new PFMDbContext(_fixture.TestDbContextOptions);
             var walletUser = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
-            var repository = new CategoryRepository(context, _currencyUserServiceMock.Object);
+            var repository = new CategoriesRepository(context, _currencyUserServiceMock.Object);
             var totalInDb = await context.Categories.CountAsync();
             var totalInUserWallet = await context.Categories.Where(c => c.WalletId == walletUser.Id).CountAsync();
             int pageSize = 3;
