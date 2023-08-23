@@ -33,7 +33,7 @@ namespace PersonalFinanceManagement.DAL.Context
         {
             var modifiedEntries = ChangeTracker.Entries<Transaction>()
                 .Where(t => t.State == EntityState.Added || (t.State == EntityState.Modified && t.Property(nameof(Transaction.Amount)).IsModified));
-            
+
             if (modifiedEntries.Any())
                 foreach (var entry in modifiedEntries)
                     entry.Entity.Amount = Math.Abs(entry.Entity.Amount);

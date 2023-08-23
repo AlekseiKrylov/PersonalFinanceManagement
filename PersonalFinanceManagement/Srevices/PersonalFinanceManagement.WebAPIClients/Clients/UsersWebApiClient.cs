@@ -1,7 +1,7 @@
 ﻿using PersonalFinanceManagement.Domain.BLLModels;
 using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
-using System.Net.Http.Json;
 using System.Net;
+using System.Net.Http.Json;
 
 namespace PersonalFinanceManagement.WebAPIClients.Clients
 {

@@ -76,7 +76,7 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients.Base
             var response = await _httpClient.PutAsJsonAsync("", item, cancel).ConfigureAwait(false);
             if (response.StatusCode == HttpStatusCode.NotFound)
                 return default;
-            
+
             return await response.EnsureSuccessStatusCode().Content
                                  .ReadFromJsonAsync<T>(cancellationToken: cancel)
                                  .ConfigureAwait(false);
@@ -88,7 +88,7 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients.Base
             {
                 Content = JsonContent.Create(item)
             };
-            
+
             var response = await _httpClient.SendAsync(request, cancel).ConfigureAwait(false);
             if (response.StatusCode == HttpStatusCode.NotFound)
                 return default;

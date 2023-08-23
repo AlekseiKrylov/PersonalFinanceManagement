@@ -10,6 +10,7 @@
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.20" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.21" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.20">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -21,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\PersonalFinanceManagement.Domain\PersonalFinanceManagement.Domain.csproj" />
     <ProjectReference Include="..\..\Data\PersonalFinanceManagement.DAL.SqlServer\PersonalFinanceManagement.DAL.SqlServer.csproj" />
+    <ProjectReference Include="..\..\UI\PersonalFinanceManagement.BlazorUI\PersonalFinanceManagement.BlazorUI.csproj" />
     <ProjectReference Include="..\PersonalFinanceManagement.BLL\PersonalFinanceManagement.BLL.csproj" />
   </ItemGroup>
 

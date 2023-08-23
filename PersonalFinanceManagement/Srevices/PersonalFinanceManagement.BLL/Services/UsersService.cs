@@ -6,12 +6,12 @@ using PersonalFinanceManagement.Domain.Interfaces.Services;
 
 namespace PersonalFinanceManagement.BLL.Services
 {
-    public class UserService : IUsersService
+    public class UsersService : IUsersService
     {
         private readonly IUsersRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IUsersRepository userRepository, IMapper mapper)
+        public UsersService(IUsersRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _mapper = mapper;

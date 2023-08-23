@@ -8,22 +8,32 @@ using PersonalFinanceManagement.Interfaces.Repositories;
 
 namespace PersonalFinanceManagement.BLL.Services
 {
-    public class CategoryService : EntityServiceBase<CategoryDTO, CategoryCreateDTO, Category>, ICategoriesServise
+    public class CategoriesService : EntitiesServiceBase<CategoryDTO, CategoryCreateDTO, Category>, ICategoriesServise
     {
-        private readonly ICategoriesRepository _categoryRepository;
+        private readonly ICategoriesRepository _categoriesRepository;
 
-        public CategoryService(ICategoriesRepository categoryRepository, IMapper mapper) : base(categoryRepository, mapper)
-            => _categoryRepository = categoryRepository;
+        public CategoriesService(ICategoriesRepository categoryRepository, IMapper mapper) : base(categoryRepository, mapper)
+            => _categoriesRepository = categoryRepository;
+
+        public async Task<int> GetCountInWalletAsync(int walletId, CancellationToken cancel)
+        {
+            return await _categoriesRepository.GetCountInWalletAsync(walletId, cancel).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<CategoryDTO>> GetAllInWalletAsync(int walletId, CancellationToken cancel)
+        {
+            return GetItem(await _categoriesRepository.GetAllInWalletAsync(walletId, cancel).ConfigureAwait(false));
+        }
 
         public override async Task<CategoryDTO> AddAsync(CategoryCreateDTO item, CancellationToken cancel = default)
         {
             if (item is null)
                 throw new ArgumentNullException(nameof(item));
 
-            if (!await _categoryRepository.CheckEntitiesExistAsync(item.WalletId, null, cancel))
+            if (!await _categoriesRepository.CheckEntitiesExistAsync(item.WalletId, null, cancel))
                 throw new InvalidOperationException("Wallet not found.");
 
-            return GetItem(await _categoryRepository.AddAsync(GetBase(item), cancel));
+            return GetItem(await _categoriesRepository.AddAsync(GetBase(item), cancel));
         }
 
         public override async Task<CategoryDTO> UpdateAsync(CategoryDTO item, CancellationToken cancel = default)
@@ -31,16 +41,16 @@ namespace PersonalFinanceManagement.BLL.Services
             if (item is null)
                 throw new ArgumentNullException(nameof(item));
 
-            if (!await _categoryRepository.CheckEntitiesExistAsync(item.WalletId, item.Id, cancel))
+            if (!await _categoriesRepository.CheckEntitiesExistAsync(item.WalletId, item.Id, cancel))
                 throw new InvalidOperationException("Wallet or category not found.");
 
-            return GetItem(await _categoryRepository.UpdateAsync(GetBase(item), cancel));
+            return GetItem(await _categoriesRepository.UpdateAsync(GetBase(item), cancel));
         }
 
         public async Task<IPage<CategoryDTO>> GetPageWithRestrictionsAsync(int pageIndex, int pageSize,
             int? walletId = null, CancellationToken cancel = default)
         {
-            var result = await _categoryRepository
+            var result = await _categoriesRepository
                 .GetPageWithRestrictionsAsync(pageIndex, pageSize, walletId, cancel)
                 .ConfigureAwait(false);
 

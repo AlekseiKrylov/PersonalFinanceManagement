@@ -5,7 +5,7 @@ using PersonalFinanceManagement.Interfaces.Services;
 
 namespace PersonalFinanceManagement.BLL.Services.Base
 {
-    public class EntityServiceBase<T, TCreate, TBase> : IEntityService<T, TCreate, TBase>
+    public class EntitiesServiceBase<T, TCreate, TBase> : IEntityService<T, TCreate, TBase>
         where T : IEntity
         where TCreate : IEntity
         where TBase : IEntity
@@ -13,7 +13,7 @@ namespace PersonalFinanceManagement.BLL.Services.Base
         private readonly IRepository<TBase> _repository;
         private readonly IMapper _mapper;
 
-        public EntityServiceBase(IRepository<TBase> repository, IMapper mapper)
+        public EntitiesServiceBase(IRepository<TBase> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

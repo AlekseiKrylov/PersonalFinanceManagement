@@ -7,14 +7,14 @@ using PersonalFinanceManagement.Interfaces.Services;
 
 namespace PersonalFinanceManagement.BLL.Services
 {
-    public class WalletService : EntityServiceBase<WalletDTO, WalletCreateDTO, Wallet>
+    public class WalletsService : EntitiesServiceBase<WalletDTO, WalletCreateDTO, Wallet>
     {
         private readonly IWalletsRepository _walletRepository;
         private readonly ICurrentUserService _currentUserService;
 
-        public WalletService(IWalletsRepository walletRepository, IMapper mapper, ICurrentUserService currentUserService) : base(walletRepository, mapper)
+        public WalletsService(IWalletsRepository walletsRepository, IMapper mapper, ICurrentUserService currentUserService) : base(walletsRepository, mapper)
         {
-            _walletRepository = walletRepository;
+            _walletRepository = walletsRepository;
             _currentUserService = currentUserService;
         }
 

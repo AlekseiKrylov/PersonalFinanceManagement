@@ -9,12 +9,12 @@ namespace PersonalFinanceManagement.BLL.Services
 {
     public class ReportsService : IReportsService
     {
-        private readonly ITransactionsRepository _transactionRepository;
+        private readonly ITransactionsRepository _transactionsRepository;
         private readonly IMapper _mapper;
 
-        public ReportsService(ITransactionsRepository transactionRepository, IMapper mapper)
+        public ReportsService(ITransactionsRepository transactionsRepository, IMapper mapper)
         {
-            _transactionRepository = transactionRepository;
+            _transactionsRepository = transactionsRepository;
             _mapper = mapper;
         }
 
@@ -22,7 +22,7 @@ namespace PersonalFinanceManagement.BLL.Services
 
         public async Task<DailyTransactionsReport> GetDailyReport(int walletId, DateTime date, CancellationToken cancel)
         {
-            var transactions = await _transactionRepository.GetPeriodWithCategoryAsync(walletId, date, date, cancel).ConfigureAwait(false);
+            var transactions = await _transactionsRepository.GetPeriodWithCategoryAsync(walletId, date, date, cancel).ConfigureAwait(false);
             decimal totalIncome = transactions.Where(t => t.Category.IsIncome).Sum(t => t.Amount);
             decimal totalExpenses = transactions.Where(t => !t.Category.IsIncome).Sum(t => t.Amount);
 
@@ -39,7 +39,7 @@ namespace PersonalFinanceManagement.BLL.Services
 
         public async Task<PeriodTransactionsReport> GetPeriodReport(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel)
         {
-            var transactions = await _transactionRepository.GetPeriodWithCategoryAsync(walletId, startDate, endDate, cancel).ConfigureAwait(false);
+            var transactions = await _transactionsRepository.GetPeriodWithCategoryAsync(walletId, startDate, endDate, cancel).ConfigureAwait(false);
             decimal totalIncome = transactions.Where(t => t.Category.IsIncome).Sum(t => t.Amount);
             decimal totalExpenses = transactions.Where(t => !t.Category.IsIncome).Sum(t => t.Amount);
 

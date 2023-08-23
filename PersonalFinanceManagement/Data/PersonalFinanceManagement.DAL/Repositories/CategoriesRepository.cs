@@ -23,6 +23,17 @@ namespace PersonalFinanceManagement.DAL.Repositories
             _userId = currentUserService.GetCurretUserId();
         }
 
+        public async Task<int> GetCountInWalletAsync(int walletId, CancellationToken cancel = default)
+        {
+            return await Items.Where(t => t.WalletId == walletId).CountAsync(cancel).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<Category>> GetAllInWalletAsync(int walletId, CancellationToken cancel = default)
+        {
+            var query = Items is IOrderedQueryable<Transaction> ? Items : Items.OrderBy(i => i.Id);
+            return await query.Where(t => t.WalletId == walletId).ToArrayAsync(cancel).ConfigureAwait(false);
+        }
+
         public async Task<bool> CheckEntitiesExistAsync(int walletId, int? categoryId, CancellationToken cancel = default)
         {
             var query = _db.Wallets.Where(w => w.UserId == _userId && w.Id == walletId);

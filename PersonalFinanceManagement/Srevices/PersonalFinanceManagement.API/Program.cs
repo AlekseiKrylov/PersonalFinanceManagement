@@ -47,11 +47,11 @@ builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 builder.Services.AddScoped<ITransactionsRepository, TransactionsRepository>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IReportsService, ReportsService>();
-builder.Services.AddScoped<IEntityService<WalletDTO, WalletCreateDTO, Wallet>, WalletService>();
-builder.Services.AddScoped<ICategoriesServise, CategoryService>();
-builder.Services.AddScoped<ITransactionsService, TransactionService>();
+builder.Services.AddScoped<IEntityService<WalletDTO, WalletCreateDTO, Wallet>, WalletsService>();
+builder.Services.AddScoped<ICategoriesServise, CategoriesService>();
+builder.Services.AddScoped<ITransactionsService, TransactionsService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<IUsersService, UserService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -70,6 +70,7 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseWebAssemblyDebugging();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -79,8 +80,12 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
+
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.MapControllers();
+app.MapFallbackToFile("index.html");
 
 app.Run();
