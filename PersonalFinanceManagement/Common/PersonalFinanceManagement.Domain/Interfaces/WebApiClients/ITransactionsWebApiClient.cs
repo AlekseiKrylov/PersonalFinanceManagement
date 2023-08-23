@@ -1,9 +1,10 @@
 ﻿using PersonalFinanceManagement.Domain.DTOModels;
 using PersonalFinanceManagement.Interfaces.Repositories;
+using PersonalFinanceManagement.Interfaces.WebApiClients;
 
 namespace PersonalFinanceManagement.Domain.Interfaces.WebApiClients
 {
-    public interface ITransactionsWebApiClient
+    public interface ITransactionsWebApiClient : IEntitiesWebApiClient<TransactionDTO, TransactionCreateDTO>
     {
         Task<bool> MoveTransactionsToAnotherCategory(int walletId, int sourceCategoryId, int targetCategoryId, CancellationToken cancel = default);
         Task<int> GetCountInCategory(int categoryId, CancellationToken cancel = default);

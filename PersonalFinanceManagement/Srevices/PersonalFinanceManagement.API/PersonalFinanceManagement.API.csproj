@@ -22,7 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\PersonalFinanceManagement.Domain\PersonalFinanceManagement.Domain.csproj" />
     <ProjectReference Include="..\..\Data\PersonalFinanceManagement.DAL.SqlServer\PersonalFinanceManagement.DAL.SqlServer.csproj" />
-    <ProjectReference Include="..\..\UI\PersonalFinanceManagement.BlazorUI\PersonalFinanceManagement.BlazorUI.csproj" />
+    <ProjectReference Include="..\..\UI\PersonalFinanceManagement.MudBlazorUI\PersonalFinanceManagement.MudBlazorUI.csproj" />
     <ProjectReference Include="..\PersonalFinanceManagement.BLL\PersonalFinanceManagement.BLL.csproj" />
   </ItemGroup>
 

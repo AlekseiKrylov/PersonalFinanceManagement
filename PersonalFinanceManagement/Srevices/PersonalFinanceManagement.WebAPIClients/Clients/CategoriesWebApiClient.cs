@@ -1,11 +1,12 @@
 ﻿using PersonalFinanceManagement.Domain.DTOModels;
+using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 using PersonalFinanceManagement.Interfaces.Repositories;
 using PersonalFinanceManagement.WebAPIClients.Clients.Base;
 using System.Net.Http.Json;
 
 namespace PersonalFinanceManagement.WebAPIClients.Clients
 {
-    public class CategoriesWebApiClient : EntitiesWebApiClient<CategoryDTO, CategoryCreateDTO>
+    public class CategoriesWebApiClient : EntitiesWebApiClient<CategoryDTO, CategoryCreateDTO>, ICategoriesWebApiClient
     {
         private readonly HttpClient _httpClient;
 
