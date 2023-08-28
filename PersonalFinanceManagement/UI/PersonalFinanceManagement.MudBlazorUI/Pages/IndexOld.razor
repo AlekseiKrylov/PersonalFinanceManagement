@@ -1,0 +1,166 @@
+﻿@page "/indexold"
+@    using PersonalFinanceManagement.Domain.BLLModels;
+@    using PersonalFinanceManagement.Domain.DTOModels;
+@    using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
+@    using PersonalFinanceManagement.Interfaces.WebApiClients;
+@    using PersonalFinanceManagement.MudBlazorUI.Servises;
+@    using System.IdentityModel.Tokens.Jwt;
+    using PersonalFinanceManagement.Domain.UIModels;
+@inject IEntitiesWebApiClient<WalletDTO, WalletCreateDTO> _walletsWebApiClient;
+@inject ICategoriesWebApiClient _categoriesWebApiClient
+@* @inject ITransactionsWebApiClient _transactionsWebApiClient; *@
+@inject IUsersWebApiClient _userWebApiClient;
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+@* @inject IJSRuntime js *@
+
+<PageTitle>Index</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
+<p></p>
+<EditForm class="form-signin" OnValidSubmit="OnSubmit" Model="loginRequest">
+    <label for="inputUsername" class="sr-only">Email</label>
+    <InputText id="inputUsername" class="form-control" @bind-Value="loginRequest.Email" autofocus placeholder="Email" />
+    <ValidationMessage For="@(() => loginRequest.Email)" />
+    <label for="inputPassword" class="sr-only">Password</label>
+    <InputText type="password" id="inputPassword" class="form-control" placeholder="Password" @bind-Value="loginRequest.Password" />
+    <ValidationMessage For="@(() => loginRequest.Password)" />
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    <label class="text-danger">@error</label>
+</EditForm>
+
+<AuthorizeView>
+    <Authorized>
+        <span>Hello, @context.User.Identity?.Name! You're authorized.</span>
+    </Authorized>
+    <NotAuthorized>
+        <span>Hello, Guest! You're not authorized. @token</span>
+    </NotAuthorized>
+</AuthorizeView>
+
+<p></p>
+
+@* <AuthorizeView>
+    <Authorized>
+        <br /><br />
+        <button class="btn btn-outline-primary" @onclick="DisplayGreetingAllert">Display Greeting Allert</button>
+    </Authorized>
+</AuthorizeView> *@
+<p></p>
+<MudSwitch @bind-Checked="_loading">Show Loading</MudSwitch>
+<MudTable Items="@_wallets" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Description</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Description">@context.Description</MudTd>
+    </RowTemplate>
+</MudTable>
+<p></p>
+<MudTable Items="@_transactions" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info" SortLabel="Sort By">
+    <ColGroup>
+        <col style="width:max-content" />
+        <col style="width:20%" />
+        <col />
+        <col style="width:fit-content" />
+        <col style="width:min-content" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<TransactionDTO, object>(x => x.Id)">Id</MudTableSortLabel></MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Note</MudTh>
+        <MudTh>Amount</MudTh>
+        <MudTh>Date</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Note">@context.Note</MudTd>
+        <MudTd DataLabel="Amount" Style="text-align:right">@context.Amount</MudTd>
+        <MudTd DataLabel="Date">@context.Date.Date</MudTd>
+    </RowTemplate>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+</MudTable>
+<p></p>
+<MudTable Items="@_categories" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Income</MudTh>
+        <MudTh>Wallet ID</MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Income">@context.IsIncome</MudTd>
+        <MudTd DataLabel="Wallet Id">@context.WalletId</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    private bool _loading;
+    private IEnumerable<WalletDTO> _wallets = new List<WalletDTO>();
+    private IList<CategoryDTO> _categories;
+    private IList<TransactionDTO> _transactions;
+
+    private MudTable<WalletDTO> mudTableWallet;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // await Task.Delay(5000);
+
+        // _wallets = (await _walletsWebApiClient.GetAllAsync()).ToList();
+        // _categories = (await _categoriesWebApiClient.GetAllAsync()).ToList();
+        // _transactions = (await _transactionsWebApiClient.GetAllAsync()).ToList();
+    }
+
+
+    UserLogin loginRequest = new UserLogin();
+    string error;
+    string token = string.Empty;
+    async Task OnSubmit()
+    {
+        error = null;
+        try
+        {
+            token = await _userWebApiClient.UserLoginAsync(loginRequest);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+
+            UserSession userSession = new()
+                {
+                    AccessToken = token,
+                    Name = jwtToken.Claims.FirstOrDefault(c => c.Type == "email").Value,
+                    Email = jwtToken.Claims.FirstOrDefault(c => c.Type == "email").Value,
+                    Role = "User",
+                    ExpiryTimeStamp = TimeZoneInfo.ConvertTimeFromUtc(jwtToken.ValidTo, TimeZoneInfo.Local)
+                };
+
+            await ((CustomAuthStateProvider)AuthStateProvider).UpdateAuthenticationStateAsync(userSession);
+            NavigationManager.NavigateTo("/", true);
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+    }
+
+    // [CascadingParameter]
+    // private Task<AuthenticationState> AuthenticationState { get; set; }
+
+    // private async Task DisplayGreetingAllert()
+    // {
+
+    //     // var authState = await AuthenticationState;
+    //     // var massage = $"Hello, {authState.User.Identity.Name}!";
+    //     // await js.InvokeVoidAsync("alert", massage);
+    // }
+}

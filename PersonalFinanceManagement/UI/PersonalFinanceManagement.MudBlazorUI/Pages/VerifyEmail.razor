@@ -1,0 +1,23 @@
+﻿@page "/verify"
+@using PersonalFinanceManagement.MudBlazorUI.ViewModels.RegistrationAndAuthorization;
+@inherits VerifyEmailViewModel
+
+<MudGrid>
+    <MudItem xs="12" sm="7">
+        <MudCard>
+            <MudForm @ref="_form" @bind-IsValid="@_success">
+                <MudCardContent>
+                    <MudTextField T="string" @bind-Value="_emailVerificationCode" Label="Enter the verification code" Required="true" RequiredError="Verification code is required!" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success)" Class="ml-auto" OnClick="EmailVerificationAsync">Verify</MudButton>
+                </MudCardActions>
+            </MudForm>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    bool _success;
+    MudForm _form;
+}

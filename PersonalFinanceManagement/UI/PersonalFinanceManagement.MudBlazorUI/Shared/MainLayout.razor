@@ -1,0 +1,55 @@
+﻿@using PersonalFinanceManagement.MudBlazorUI.Servises;
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudSpacer />
+        <MudIconButton @onclick="ToggleDarkMode" Color="Color.Inherit" Icon="@_modeIcon" />
+        <AuthorizeView>
+            <Authorized>
+                @* <MudLink Color="Color.Inherit" OnClick="@((e) => Logout())">Logout</MudLink> *@
+                <MudIconButton Color="Color.Inherit" Icon="@Icons.Material.Outlined.Logout" Href="/logout" OnClick="@((e) => Logout())" />
+            </Authorized>
+            <NotAuthorized>
+                @* <MudLink Color="Color.Inherit" Href="/login">Login</MudLink> *@
+                <MudIconButton Color="Color.Inherit" Icon="@Icons.Material.Outlined.Login" Href="/login" />
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Personal</MudText>
+            <MudText Typo="Typo.h6">Finance Management</MudText>
+        </MudDrawerHeader>
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    MudTheme _theme = new();
+    string _modeIcon => _isDarkMode ? Icons.Material.Outlined.DarkMode : Icons.Material.Outlined.LightMode;
+    bool _isDarkMode = true;
+    bool _drawerOpen = true;
+
+    void ToggleDarkMode() => _isDarkMode = !_isDarkMode;
+
+    void DrawerToggle() => _drawerOpen = !_drawerOpen;
+
+    private async Task Logout()
+    {
+        await ((CustomAuthStateProvider)AuthenticationStateProvider).UpdateAuthenticationStateAsync(null);
+        NavigationManager.NavigateTo("/", true);
+    }
+}
