@@ -8,6 +8,6 @@ namespace PersonalFinanceManagement.Domain.Interfaces.WebApiClients
         Task<string> UserLoginAsync(UserLogin userLogin, CancellationToken cancel = default);
         Task<bool> VerifyUserAsync(string verificationToken, CancellationToken cancel = default);
         Task<bool> ForgotPasswordAsync(string email, CancellationToken cancel = default);
-        Task<string> ResetPasswordAsync(UserRegistrationAndRestoration userResetPassword, string token, CancellationToken cancel = default);
+        Task<bool?> ResetPasswordAsync(UserRegistrationAndRestoration userResetPassword, string token, CancellationToken cancel = default);
     }
 }

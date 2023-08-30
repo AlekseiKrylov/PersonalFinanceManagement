@@ -36,21 +36,16 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<string> ResetPasswordAsync(UserRegistrationAndRestoration userRegistration, string token, CancellationToken cancel = default)
+        public async Task<bool?> ResetPasswordAsync(UserRegistrationAndRestoration userRestoration, string token, CancellationToken cancel = default)
         {
-            var response = await _httpClient.PostAsJsonAsync($"reset-password?token={token}", userRegistration, cancel);
-            if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                return null;
-            }
-            else if (response.IsSuccessStatusCode)
-            {
-                return "Password successfully changed.";
-            }
-            else if (response.StatusCode == HttpStatusCode.Forbidden)
-            {
-                return "Invalid reset token.";
-            }
+            var response = await _httpClient.PostAsJsonAsync($"reset-password?token={token}", userRestoration, cancel);
+            
+            if (response.IsSuccessStatusCode)
+                return true;
+            
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+                return false;
+            
             return null;
         }
     }

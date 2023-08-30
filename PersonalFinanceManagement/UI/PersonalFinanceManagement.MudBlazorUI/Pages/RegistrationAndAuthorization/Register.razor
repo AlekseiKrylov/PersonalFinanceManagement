@@ -1,0 +1,51 @@
+﻿@page "/register"
+@inherits RegisterViewModel
+
+<EditForm Model="@_registerReqest" OnValidSubmit="RegisterAsync">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Email" Class="mt-3"
+                                  @bind-Value="_registerReqest.Email" For="@(() => _registerReqest.Email)" />
+                    <MudTextField Label="Password" Class="mt-3"
+                                  @bind-Value="_registerReqest.Password" For="@(() => _registerReqest.Password)" InputType="PasswordInput"
+                                  Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" />
+                    <MudTextField Label="Confirm password" Class="mt-3"
+                                  @bind-Value="_registerReqest.ConfirmPassword" For="@(() => _registerReqest.ConfirmPassword)" InputType="PasswordInput"
+                                  Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Rgister</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12">
+            <MudButton Variant="Variant.Filled" Href="/login">Login</MudButton>
+            <MudButton Variant="Variant.Filled" Href="/forgot">Forgot password</MudButton>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    void ShowHidePassword()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+}

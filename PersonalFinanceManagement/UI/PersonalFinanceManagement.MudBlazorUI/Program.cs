@@ -22,8 +22,10 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>
 builder.Services.AddScoped<AuthorizationMessageHandler>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddApi<IUsersWebApiClient, UsersWebApiClient>("api/Users/");
-builder.Services.AddApi<IEntitiesWebApiClient<WalletDTO, WalletCreateDTO>, WalletsWebApiClient>("api/Wallets/");
-builder.Services.AddApi<ICategoriesWebApiClient, CategoriesWebApiClient>("api/Categories/");
+builder.Services.AddApi<IEntitiesWebApiClient<WalletDTO, WalletCreateDTO>, WalletsWebApiClient>("api/Wallets/")
+    .AddHttpMessageHandler<AuthorizationMessageHandler>();
+builder.Services.AddApi<ICategoriesWebApiClient, CategoriesWebApiClient>("api/Categories/")
+    .AddHttpMessageHandler<AuthorizationMessageHandler>();
 builder.Services.AddApi<ITransactionsWebApiClient, TransactionsWebApiClient>("api/Transactions/")
     .AddHttpMessageHandler<AuthorizationMessageHandler>();
 

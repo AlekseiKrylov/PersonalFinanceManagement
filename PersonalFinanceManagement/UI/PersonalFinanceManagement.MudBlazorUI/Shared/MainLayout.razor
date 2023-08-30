@@ -11,7 +11,7 @@
     <MudAppBar Elevation="0">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudSpacer />
-        <MudIconButton @onclick="ToggleDarkMode" Color="Color.Inherit" Icon="@_modeIcon" />
+        <MudIconButton @onclick="ToggleDarkMode" Color="Color.Inherit" Icon="@ModeIcon" />
         <AuthorizeView>
             <Authorized>
                 @* <MudLink Color="Color.Inherit" OnClick="@((e) => Logout())">Logout</MudLink> *@
@@ -25,8 +25,7 @@
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
         <MudDrawerHeader>
-            <MudText Typo="Typo.h6">Personal</MudText>
-            <MudText Typo="Typo.h6">Finance Management</MudText>
+            <MudText Typo="Typo.h6">Personal Finance Management</MudText><br>
         </MudDrawerHeader>
         <NavMenu />
     </MudDrawer>
@@ -39,9 +38,9 @@
 
 @code {
     MudTheme _theme = new();
-    string _modeIcon => _isDarkMode ? Icons.Material.Outlined.DarkMode : Icons.Material.Outlined.LightMode;
     bool _isDarkMode = true;
     bool _drawerOpen = true;
+    string ModeIcon => _isDarkMode ? Icons.Material.Outlined.DarkMode : Icons.Material.Outlined.LightMode;
 
     void ToggleDarkMode() => _isDarkMode = !_isDarkMode;
 

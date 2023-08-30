@@ -1,0 +1,18 @@
+﻿@page "/wallets"
+@inherits WalletsViewModel
+
+@if (_wallets is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <MudGrid Spacing="2" Justify="Justify.FlexStart">
+        @foreach (var wallet in _wallets)
+        {
+            <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+                <WalletCard Id="@wallet.Id" Name="@wallet.Name" Description="@wallet.Description" />
+            </MudItem>
+        }
+    </MudGrid>
+}

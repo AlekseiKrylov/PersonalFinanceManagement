@@ -1,0 +1,29 @@
+﻿
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Name</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Default" />
+            <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudText Typo="Typo.body2">@Description</MudText>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public string Name { get; set; } = "Test Wallet Name (50 chars include) test test-test" /* string.Empty */;
+    [Parameter]
+    public string Description { get; set; } = "Test Wallet Description (1000 chars include) test test-test test-test/test test test-test testtest test-test test-test/test test test-test test-test/test test test-test test-test/test test test-test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/testtesttest test-test test-test/test testtest test-test test-test/testtesttest test-test test-test/testtesttest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-testtest" /* string.Empty */;
+
+    public void Edit()
+    {
+        
+    }
+}

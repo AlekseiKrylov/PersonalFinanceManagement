@@ -1,5 +1,4 @@
 ﻿@page "/login"
-@using PersonalFinanceManagement.MudBlazorUI.ViewModels.RegistrationAndAuthorization
 @inherits LoginViewModel
 
 <EditForm Model="@_loginRequest" OnValidSubmit="AuthenticateAsync">
@@ -21,7 +20,7 @@
         </MudItem>
         <MudItem xs="12">
             <MudButton Variant="Variant.Filled" Href="/register">Register</MudButton>
-            <MudButton Variant="Variant.Filled">Forgot password</MudButton>
+            <MudButton Variant="Variant.Filled" Href="/forgot">Forgot password</MudButton>
             <MudButton Variant="Variant.Filled" Href="/verify">Verify email</MudButton>
         </MudItem>
     </MudGrid>
