@@ -1,48 +1,184 @@
 ﻿@page "/dashboard"
+@using System.Globalization;
+@using PersonalFinanceManagement.Domain.BLLModels;
+@inherits DashboardViewModel
 
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
     <MudGrid>
-        <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="d-flex align-center justify-center pa-4 mud-theme-primary" Style="height: 100px;">
-                <MudText Align="Align.Center">Current balance 440 000</MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="d-flex align-center justify-center pa-4 mud-theme-success" Style="height: 100px;">Income: 495 000</MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4 mud-theme-secondary" Style="height: 100px;">Expenses: 55 000</MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6">
+        <MudItem xs="12" sm="12">
             <MudGrid>
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4 border-solid border-2 mud-border-primary mud-theme-primary" Style="height: 200px;">
-                        <div rounded">
-                            <div class="d-block pa-2 mud-theme-primary">29.08.2023 Хлеб -3 лари</div>
-                            <div class="d-block pa-2 mud-theme-primary">28.08.2023 Корм для котов -63 лари</div>
-                        </div>                        
-                    </MudPaper>
+                <MudItem xs="12" sm="6">
+                    <MudStack Row="false">
+                        <WalletsDropdown />
+                        <MudRadioGroup T="RadioOptions" SelectedOptionChanged="RadioValueChangedAsync">
+                            <MudRadio Color="Color.Primary" Option="@RadioOptions.Day">Current Day</MudRadio>
+                            <MudRadio Color="Color.Primary" Option="@RadioOptions.Month">Current Month</MudRadio>
+                            <MudRadio Color="Color.Primary" Option="@RadioOptions.Period">Period</MudRadio>
+                        </MudRadioGroup>
+                    </MudStack>
                 </MudItem>
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+                <MudItem xs="12" sm="6">
+                    <MudStack Row="false">
+                        <MudDateRangePicker Disabled="@_datePickerDisable" @bind-DateRange="_dateRange" />
+                        <MudButton Variant="Variant.Filled" Disabled="@_datePickerDisable" OnClick="ConfirmPeriodAsync">Ok</MudButton>
+                    </MudStack>
                 </MudItem>
             </MudGrid>
         </MudItem>
         <MudItem xs="12" sm="6">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%"></MudPaper>
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudPaper Elevation="2" Class="d-flex align-center justify-center pa-4 mud-theme-success" Style="height: 100px;">
+                        @if (_loadData)
+                        {
+                            <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+                        }
+                        else
+                        {
+                            <MudText>Income: @_reportIncome.ToString("0,0.00", culture)</MudText>
+                        }
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudPaper Elevation="2" Class="d-flex align-center justify-center pa-4 mud-theme-secondary" Style="height: 100px;">
+                        @if (_loadData)
+                        {
+                            <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+                        }
+                        else
+                        {
+                            <MudText>Expenses: @_reportExpenses.ToString("0,0.00", culture)</MudText>
+                        }
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" sm="12">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 300px;">
+                        test2
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
         </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+                @if (_loadData)
+                {
+                    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+                }
+                else
+                {
+                    <MudChart ChartType="ChartType.Pie" InputData="@chartData" InputLabels="@chartLables" Width="300px" Height="300px" />
+                }
+            </MudPaper>
         </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+        <MudItem xs="12" sm="12">
+            <MudTable Items="@_transactions" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loadData" LoadingProgressColor="Color.Info" SortLabel="Sort By">
+                <HeaderContent>
+                    <MudTh><MudTableSortLabel SortBy="new Func<TransactionWithCategory, object>(x => x.Date)">Date</MudTableSortLabel></MudTh>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Note</MudTh>
+                    <MudTh>Amount</MudTh>
+                    <MudTh>Category</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Date">@context.Date.ToString("d", culture)</MudTd>
+                    <MudTd DataLabel="Name">@context.Name</MudTd>
+                    <MudTd DataLabel="Note">@context.Note</MudTd>
+                    <MudTd DataLabel="Amount" Style="text-align:right">@(context.CategoryIsIncome ? context.Amount.ToString("0,0.00", culture) : (context.Amount * -1).ToString("0,0.00", culture))</MudTd>
+                        <MudTd>@context.CategoryName</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
 
-@code {
+    @code {
+    private double[] chartData;
+    private string[] chartLables;
+    private bool _loadData = false;
+    private DateRange _dateRange = new DateRange(DateTime.Now.AddDays(-5).Date, DateTime.Now.Date);
+    private bool _datePickerDisable = true;
+    public CultureInfo culture = CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
 
+
+    public enum RadioOptions
+    {
+        Day,
+        Month,
+        Period
+    }
+
+    private async Task RadioValueChangedAsync(RadioOptions value)
+    {
+        switch (value)
+        {
+            case RadioOptions.Day:
+                _datePickerDisable = true;
+                _loadData = true;
+                ClearData();
+                await GetCurrentDayReportAsync(1);
+                GetDataForChart();
+                _loadData = false;
+                break;
+            case RadioOptions.Month:
+                _datePickerDisable = true;
+                _loadData = true;
+                ClearData();
+                await GetCurrentMonthReportAsync(1);
+                GetDataForChart();
+                _loadData = false;
+                break;
+            case RadioOptions.Period:
+                _datePickerDisable = false;
+                _loadData = true;
+                ClearData();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private async Task ConfirmPeriodAsync()
+    {
+        if (_dateRange.Start is not null && _dateRange.End is not null)
+        {
+            await GetPeriodReportAsync(1, (DateTime)_dateRange.Start, (DateTime)_dateRange.End);
+            GetDataForChart();
+        }
+
+        _loadData = false;
+    }
+
+    private void GetDataForChart()
+    {
+        List<CategorySummary> categorySummaries = _transactions
+            .GroupBy(t => t.CategoryName)
+            .Select(group => new CategorySummary
+                {
+                    CategoryName = group.Key,
+                    TotalAmount = group.Sum(t => (double)t.Amount)
+                })
+            .ToList();
+
+        int categoryCount = categorySummaries.Count;
+        chartData = new double[categoryCount];
+        chartLables = new string[categoryCount];
+
+        Console.WriteLine(categoryCount);
+        Console.WriteLine(chartData.Length);
+        Console.WriteLine(chartLables.Length);
+
+        for (int i = 0; i < categoryCount; i++)
+        {
+            chartData[i] = categorySummaries[i].TotalAmount;
+            Console.WriteLine(chartData[i]);
+            chartLables[i] = categorySummaries[i].CategoryName;
+            Console.WriteLine(chartLables[i]);
+        }
+    }
+
+    private void ClearChartData()
+    {
+        chartData = default;
+        chartLables = default;
+    }
 }

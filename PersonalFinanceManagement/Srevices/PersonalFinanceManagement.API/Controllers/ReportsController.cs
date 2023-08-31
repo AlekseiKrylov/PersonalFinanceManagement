@@ -13,14 +13,14 @@ namespace PersonalFinanceManagement.API.Controllers
 
         public ReportsController(IReportsService reportsService) => _reportsService = reportsService;
 
-        [HttpGet("daily")]
+        [HttpGet("daily[[{walletId:int}:{date}]]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<DailyTransactionsReport>> GetDailyReport(int walletId, DateTime date, CancellationToken cancel) =>
             Ok(await _reportsService.GetDailyReport(walletId, date, cancel));
 
-        [HttpGet("period")]
+        [HttpGet("period[[{walletId:int}:{startDate}:{endDate}]]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<PeriodTransactionsReport>> GetPeriodReport(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel) =>
-            Ok(await _reportsService.GetPeriodReport(walletId, startDate, endDate, cancel));
+            Ok(await _reportsService.GetPeriodReport(walletId, startDate.Date, endDate.Date, cancel));
     }
 }

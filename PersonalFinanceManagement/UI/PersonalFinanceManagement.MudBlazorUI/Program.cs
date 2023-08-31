@@ -28,6 +28,8 @@ builder.Services.AddApi<ICategoriesWebApiClient, CategoriesWebApiClient>("api/Ca
     .AddHttpMessageHandler<AuthorizationMessageHandler>();
 builder.Services.AddApi<ITransactionsWebApiClient, TransactionsWebApiClient>("api/Transactions/")
     .AddHttpMessageHandler<AuthorizationMessageHandler>();
+builder.Services.AddApi<IReportsWebApiClient, ReportsWebApiClient>("api/Reports/")
+    .AddHttpMessageHandler<AuthorizationMessageHandler>();
 
 builder.Services.AddMudServices();
 

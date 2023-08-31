@@ -88,7 +88,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
             var query = _db.Categories.Where(c => c.Wallet.UserId == _userId && c.Id == categoryId);
 
             if (transactionId.HasValue)
-                query = query.Join(_db.Transactions.Where(t => t.CategoryId == categoryId && t.Id == transactionId), c => c.Id, t => t.Category.WalletId, (c, t) => c);
+                query = query.Join(_db.Transactions.Where(t => t.CategoryId == categoryId && t.Id == transactionId), c => c.Id, t => t.CategoryId, (c, t) => c);
 
             var result = await query.AnyAsync(cancel).ConfigureAwait(false);
             return result;
