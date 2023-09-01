@@ -1,19 +1,9 @@
-﻿
-<MudSelect T="string" Label="Component" Margin="Margin.Dense" Dense="true" Value="@SelectedVallet" ValueChanged="OnSelectedTestComponent">
-    <MudSelectItem T="string" Value="@("MudIcon")">MudIcon</MudSelectItem>
-    <MudSelectItem T="string" Value="@("MudButton")">MudButton</MudSelectItem>
-    <MudSelectItem T="string" Value="@("MudIconButton")">MudIconButton</MudSelectItem>
-    <MudSelectItem T="string" Value="@("MudText")">MudText</MudSelectItem>
-    <MudSelectItem T="string" Value="@("MudAvatar")">MudAvatar</MudSelectItem>
-    <MudSelectItem T="string" Value="@("MudChip")">MudChip</MudSelectItem>
-</MudSelect>
+﻿@inherits WalletsDropdownViewModel
 
-@code {
-    public string SelectedVallet { get; set; } = "MudChip";
-
-    
-    public void OnSelectedTestComponent(string value)
+<MudSelect T="WalletDTO" ValueChanged="WalletChanged" Value="SelectedWallet" Label="Wallet" Variant="Variant.Outlined"
+           AdornmentIcon="@Icons.Material.Outlined.Wallet" AdornmentColor="Color.Primary">
+    @foreach (var selectItem in _wallets)
     {
-        SelectedVallet = value;
+        <MudSelectItem Value="@selectItem" />
     }
-}
+</MudSelect>
