@@ -1,77 +1,52 @@
 ﻿@page "/dashboard"
-@using System.Globalization;
-@using PersonalFinanceManagement.Domain.BLLModels;
 @inherits DashboardViewModel
 
-<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+<MudContainer Class="mt-2 px-2" MaxWidth="MaxWidth.False">
     <MudGrid>
-        <MudItem xs="12" sm="12">
-            <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <MudStack Row="false">
-                        <WalletsDropdown />
-                        <MudRadioGroup T="RadioOptions" SelectedOptionChanged="RadioValueChangedAsync">
-                            <MudRadio Color="Color.Primary" Option="@RadioOptions.Day">Current Day</MudRadio>
-                            <MudRadio Color="Color.Primary" Option="@RadioOptions.Month">Current Month</MudRadio>
-                            <MudRadio Color="Color.Primary" Option="@RadioOptions.Period">Period</MudRadio>
-                        </MudRadioGroup>
-                    </MudStack>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudStack Row="false">
-                        <MudDateRangePicker Disabled="@_datePickerDisable" @bind-DateRange="_dateRange" />
-                        <MudButton Variant="Variant.Filled" Disabled="@_datePickerDisable" OnClick="ConfirmPeriodAsync">Ok</MudButton>
-                    </MudStack>
-                </MudItem>
-            </MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudSelect T="WalletDTO" ValueChanged="OnWalletChangedAsync" Value="SelectedWallet" Label="Wallet" Variant="Variant.Outlined"
+                       AdornmentIcon="@Icons.Material.Outlined.Wallet" AdornmentColor="Color.Primary">
+                @foreach (var selectItem in _wallets)
+                {
+                    <MudSelectItem Value="@selectItem" />
+                }
+            </MudSelect>
         </MudItem>
         <MudItem xs="12" sm="6">
-            <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <MudPaper Elevation="2" Class="d-flex align-center justify-center pa-4 mud-theme-success" Style="height: 100px;">
-                        @if (_loadData)
-                        {
-                            <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-                        }
-                        else
-                        {
-                            <MudText>Income: @_reportIncome.ToString("0,0.00", culture)</MudText>
-                        }
-                    </MudPaper>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudPaper Elevation="2" Class="d-flex align-center justify-center pa-4 mud-theme-secondary" Style="height: 100px;">
-                        @if (_loadData)
-                        {
-                            <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-                        }
-                        else
-                        {
-                            <MudText>Expenses: @_reportExpenses.ToString("0,0.00", culture)</MudText>
-                        }
-                    </MudPaper>
-                </MudItem>
-                <MudItem xs="12" sm="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 300px;">
-                        test2
-                    </MudPaper>
-                </MudItem>
-            </MudGrid>
+            <MudStack Spacing="2" Row="true">
+                <MudDateRangePicker Variant="Variant.Outlined" Disabled="@(SelectedWallet is null)" @bind-DateRange="_dateRange" />
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Disabled="@(SelectedWallet is null)" OnClick="ConfirmPeriodAsync">Ok</MudButton>
+            </MudStack>
         </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
-                @if (_loadData)
-                {
-                    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-                }
-                else
-                {
-                    <MudChart ChartType="ChartType.Pie" InputData="@chartData" InputLabels="@chartLables" Width="300px" Height="300px" />
-                }
-            </MudPaper>
+        <MudItem xs="12" sm="6" md="4">
+            <SumPlate LoadingData="_loadData" Name="Change for the period" Amount="@(_reportIncome - _reportExpenses)"
+                      IsIncome="@((_reportIncome - _reportExpenses) == 0 ? null : (_reportIncome - _reportExpenses) > 0 ? true : false)" />
+        </MudItem>
+        <MudItem xs="6" sm="3" md="4">
+            <SumPlate Name="Income" Amount="_reportIncome" IsIncome="true" LoadingData="_loadData" />
+        </MudItem>
+        <MudItem xs="6" sm="3" md="4">
+            <SumPlate Name="Expenses" Amount="_reportExpenses" IsIncome="false" LoadingData="_loadData" />
+        </MudItem>
+        <MudItem xs="12">
+            @if (_addTransaction)
+            {
+                <MudButton Disabled="@(SelectedWallet is null)" Variant="Variant.Filled" Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Cancel" IconColor="Color.Warning"
+                           OnClick="AddTransactionToggle">Cancel</MudButton>
+            }
+            else
+            {
+                <MudButton Disabled="@(SelectedWallet is null)" Variant="Variant.Filled" Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.AddCircle" IconColor="Color.Success"
+                           OnClick="AddTransactionToggle">Add transaction</MudButton>
+            }
+        </MudItem>
+        <MudItem xs="12" hidden="@(!_addTransaction)">
+            <AddTransaction Categories="_categories.ToList()" TransactionCreateForm="_transactionCreateForm" CreateTransactionAsync="CreateTransactionAsync" />
         </MudItem>
         <MudItem xs="12" sm="12">
-            <MudTable Items="@_transactions" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loadData" LoadingProgressColor="Color.Info" SortLabel="Sort By">
+            <MudTable Items="@_transactions" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loadData" LoadingProgressColor="Color.Info" SortLabel="Sort By">
                 <HeaderContent>
                     <MudTh><MudTableSortLabel SortBy="new Func<TransactionWithCategory, object>(x => x.Date)">Date</MudTableSortLabel></MudTh>
                     <MudTh>Name</MudTh>
@@ -83,102 +58,75 @@
                     <MudTd DataLabel="Date">@context.Date.ToString("d", culture)</MudTd>
                     <MudTd DataLabel="Name">@context.Name</MudTd>
                     <MudTd DataLabel="Note">@context.Note</MudTd>
-                    <MudTd DataLabel="Amount" Style="text-align:right">@(context.CategoryIsIncome ? context.Amount.ToString("0,0.00", culture) : (context.Amount * -1).ToString("0,0.00", culture))</MudTd>
-                        <MudTd>@context.CategoryName</MudTd>
-                    </RowTemplate>
-                </MudTable>
-            </MudItem>
-        </MudGrid>
-    </MudContainer>
+                    <MudTd DataLabel="Amount" Style="text-align:right">
+                        @(context.CategoryIsIncome
+                            ? context.Amount.ToString("0,0.00", culture)
+                            : $"- {context.Amount.ToString("0,0.00", culture)}")
+                    </MudTd>
+                    <MudTd>@context.CategoryName</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
 
-    @code {
-    private double[] chartData;
-    private string[] chartLables;
+@code {
     private bool _loadData = false;
-    private DateRange _dateRange = new DateRange(DateTime.Now.AddDays(-5).Date, DateTime.Now.Date);
-    private bool _datePickerDisable = true;
+    private bool _addTransaction = false;
     public CultureInfo culture = CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
+    private DateRange _dateRange = new()
+        {
+            Start = new(DateTime.Now.Year, DateTime.Now.Month, 1),
+            End = DateTime.Now.AddMonths(1).AddDays(-1).Date
+        };
 
+    private WalletDTO SelectedWallet { get; set; }
+    private CreateTransactionForm _transactionCreateForm = new();
 
-    public enum RadioOptions
+    private void AddTransactionToggle()
     {
-        Day,
-        Month,
-        Period
+        _addTransaction = !_addTransaction;
+        ClearCreateForm();
     }
 
-    private async Task RadioValueChangedAsync(RadioOptions value)
+    private async Task OnWalletChangedAsync(WalletDTO wallet)
     {
-        switch (value)
-        {
-            case RadioOptions.Day:
-                _datePickerDisable = true;
-                _loadData = true;
-                ClearData();
-                await GetCurrentDayReportAsync(1);
-                GetDataForChart();
-                _loadData = false;
-                break;
-            case RadioOptions.Month:
-                _datePickerDisable = true;
-                _loadData = true;
-                ClearData();
-                await GetCurrentMonthReportAsync(1);
-                GetDataForChart();
-                _loadData = false;
-                break;
-            case RadioOptions.Period:
-                _datePickerDisable = false;
-                _loadData = true;
-                ClearData();
-                break;
-            default:
-                break;
-        }
+        SelectedWallet = wallet;
+        await ConfirmPeriodAsync();
+        await GetCatigoriesInWallet(wallet.Id);
     }
 
     private async Task ConfirmPeriodAsync()
     {
+        _loadData = true;
+
         if (_dateRange.Start is not null && _dateRange.End is not null)
         {
-            await GetPeriodReportAsync(1, (DateTime)_dateRange.Start, (DateTime)_dateRange.End);
-            GetDataForChart();
+            await GetPeriodReportAsync(SelectedWallet.Id, (DateTime)_dateRange.Start, (DateTime)_dateRange.End);
         }
 
         _loadData = false;
     }
 
-    private void GetDataForChart()
+    private async Task CreateTransactionAsync()
     {
-        List<CategorySummary> categorySummaries = _transactions
-            .GroupBy(t => t.CategoryName)
-            .Select(group => new CategorySummary
-                {
-                    CategoryName = group.Key,
-                    TotalAmount = group.Sum(t => (double)t.Amount)
-                })
-            .ToList();
+        var newTransaction = new TransactionCreateDTO
+            {
+                CategoryId = _transactionCreateForm.Category.Id,
+                Name = _transactionCreateForm.Name,
+                Note = _transactionCreateForm.Note,
+                Date = (DateTime)_transactionCreateForm.Date!,
+                Amount = (decimal)_transactionCreateForm.Amount!
+            };
 
-        int categoryCount = categorySummaries.Count;
-        chartData = new double[categoryCount];
-        chartLables = new string[categoryCount];
+        await AddTransactionAsync(newTransaction);
 
-        Console.WriteLine(categoryCount);
-        Console.WriteLine(chartData.Length);
-        Console.WriteLine(chartLables.Length);
-
-        for (int i = 0; i < categoryCount; i++)
+        if (newTransaction.Date >= _dateRange.Start && newTransaction.Date.Date <= _dateRange.End)
         {
-            chartData[i] = categorySummaries[i].TotalAmount;
-            Console.WriteLine(chartData[i]);
-            chartLables[i] = categorySummaries[i].CategoryName;
-            Console.WriteLine(chartLables[i]);
+            await GetPeriodReportAsync(SelectedWallet.Id, (DateTime)_dateRange.Start, (DateTime)_dateRange.End);
         }
+        ClearCreateForm();
     }
 
-    private void ClearChartData()
-    {
-        chartData = default;
-        chartLables = default;
-    }
+    private void ClearCreateForm() => _transactionCreateForm = new();
 }

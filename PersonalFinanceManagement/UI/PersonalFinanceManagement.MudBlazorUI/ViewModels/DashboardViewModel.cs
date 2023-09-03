@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using PersonalFinanceManagement.Domain.BLLModels;
 using PersonalFinanceManagement.Domain.BLLModels.Reports;
+using PersonalFinanceManagement.Domain.DTOModels;
 using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
+using PersonalFinanceManagement.Interfaces.WebApiClients;
 
 namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
 {
@@ -9,41 +11,40 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
     {
         protected decimal _reportIncome;
         protected decimal _reportExpenses;
+        protected IEnumerable<WalletDTO> _wallets = new List<WalletDTO>();
+        protected IEnumerable<CategoryDTO> _categories = new List<CategoryDTO>();
         protected List<TransactionWithCategory> _transactions = new();
-        protected DailyTransactionsReport _currentDayTransactionsReport = new();
-        protected PeriodTransactionsReport _currentMonthTransactionsReport = new();
         protected PeriodTransactionsReport _periodTransactionsReport = new();
 
-        [Inject] IReportsWebApiClient ReportsWebApiClient { get; set; }
+        [Inject] IReportsWebApiClient ReportsWebApiClient { get; init; }
+        [Inject] IEntitiesWebApiClient<WalletDTO, WalletCreateDTO> WalletsWebAtiClient { get; init; }
+        [Inject] ICategoriesWebApiClient CategoriesWebAtiClient { get; init; }
+        [Inject] ITransactionsWebApiClient TransactionsWebApiClient { get; init; }
 
-        //protected override async Task OnInitializedAsync()
-        //{
-        //    _dailyTransactionsReport = await ReportsWebApiClient.GetDailyReport(1, DateTime.Now.Date);
-        //}
-
-        protected async Task GetCurrentDayReportAsync(int walletId)
+        protected override async Task OnInitializedAsync()
         {
-            _currentDayTransactionsReport = await ReportsWebApiClient.GetDailyReport(walletId, DateTime.Now.Date);
-            SetData(_currentDayTransactionsReport);
+            _wallets = await WalletsWebAtiClient.GetAllAsync();
+            await base.OnInitializedAsync();
         }
 
-        protected async Task GetCurrentMonthReportAsync(int walletId)
+        protected async Task GetCatigoriesInWallet(int walletId)
         {
-            DateTime firstDayOfMonth = new(DateTime.Now.Year, DateTime.Now.Month, 1);
-            DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
-            Console.WriteLine(firstDayOfMonth.ToString());
-            Console.WriteLine(lastDayOfMonth.ToString());
-            _currentMonthTransactionsReport = await ReportsWebApiClient.GetPeriodReport(walletId, firstDayOfMonth, lastDayOfMonth);
-            SetData(_currentMonthTransactionsReport);
+            _categories = await CategoriesWebAtiClient.GetAllInWallet(walletId);
         }
 
         protected async Task GetPeriodReportAsync(int walletId, DateTime startDate, DateTime endDate)
         {
+            ClearData();
             _periodTransactionsReport = await ReportsWebApiClient.GetPeriodReport(walletId, startDate, endDate);
             SetData(_periodTransactionsReport);
         }
 
-        protected void ClearData()
+        protected async Task AddTransactionAsync(TransactionCreateDTO transaction)
+        {
+            var newTransaction = await TransactionsWebApiClient.AddAsync(transaction);
+        }
+
+        private void ClearData()
         {
             _reportIncome = default;
             _reportExpenses = default;

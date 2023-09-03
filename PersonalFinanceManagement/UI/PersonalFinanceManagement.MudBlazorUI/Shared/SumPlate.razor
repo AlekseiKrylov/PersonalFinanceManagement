@@ -1,0 +1,43 @@
+﻿
+<MudPaper Elevation="2" Class="d-flex align-center justify-center pa-2 mud-theme-default" Style="height: 100px;">
+    @if (LoadingData)
+    {
+        <MudProgressCircular Color="ProgressColor" Indeterminate="true" />
+    }
+    else
+    {
+        <MudStack Spacing="1" Row="false" AlignItems="AlignItems.Center" Justify="Justify.Center">
+            <MudText Color="NameColor" Align="Align.Center" hidden="@(string.IsNullOrWhiteSpace(Name))">@Name</MudText>
+            <MudText Color="_amountColor" Align="Align.Center" Style="font-size: 20px;">@_formatedStringAmount</MudText>
+        </MudStack>
+    }
+</MudPaper>
+
+@code {
+    private decimal _amount;
+    private CultureInfo _culture;
+    private string _formatedStringAmount;
+    private Color _amountColor;
+
+    [Parameter] public decimal Amount { get => _amount; set => _amount = Math.Abs(value); }
+    [Parameter] public bool? IsIncome { get; set; } = null;
+    [Parameter] public CultureInfo? Culture { get; set; } = null;
+    [Parameter] public string Name { get; set; } = string.Empty;
+    [Parameter] public bool LoadingData { get; set; } = false;
+    [Parameter] public Color ProgressColor { get; set; } = Color.Default;
+    [Parameter] public Color NameColor { get; set; } = Color.Default;
+    [Parameter] public Color? AmountColor { get; set; } = null;
+
+    protected override void OnParametersSet()
+    {
+        _culture = Culture ?? CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
+
+        _formatedStringAmount = (IsIncome is null) ? Amount.ToString("0,0.00", _culture)
+                                  : (bool)IsIncome ? Amount.ToString("0,0.00", _culture)
+                                    : $"- {Amount.ToString("0,0.00", _culture)}";
+        _amountColor = AmountColor ?? ((IsIncome is null) ? Color.Default
+                                         : (bool)IsIncome ? Color.Success
+                                            : Color.Error);
+        base.OnParametersSet();
+    }
+}
