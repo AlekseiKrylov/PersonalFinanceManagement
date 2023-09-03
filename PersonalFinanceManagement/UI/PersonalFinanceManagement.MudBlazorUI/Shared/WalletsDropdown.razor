@@ -1,9 +1,0 @@
-﻿@inherits WalletsDropdownViewModel
-
-<MudSelect T="WalletDTO" ValueChanged="WalletChanged" Value="SelectedWallet" Label="Wallet" Variant="Variant.Outlined"
-           AdornmentIcon="@Icons.Material.Outlined.Wallet" AdornmentColor="Color.Primary">
-    @foreach (var selectItem in _wallets)
-    {
-        <MudSelectItem Value="@selectItem" />
-    }
-</MudSelect>

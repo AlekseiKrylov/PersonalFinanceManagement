@@ -3,7 +3,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
-<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
+<MudThemeProvider @bind-IsDarkMode="@DarkModeToggle" Theme="_theme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -11,14 +11,14 @@
     <MudAppBar Elevation="0">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudSpacer />
-        <MudIconButton @onclick="ToggleDarkMode" Color="Color.Inherit" Icon="@ModeIcon" />
+        <MudToggleIconButton @bind-Toggled="@DarkModeToggle"
+                             Icon="@Icons.Material.Outlined.DarkMode" Color="@Color.Inherit"
+                             ToggledIcon="@Icons.Material.Outlined.LightMode" ToggledColor="@Color.Inherit" />
         <AuthorizeView>
             <Authorized>
-                @* <MudLink Color="Color.Inherit" OnClick="@((e) => Logout())">Logout</MudLink> *@
                 <MudIconButton Color="Color.Inherit" Icon="@Icons.Material.Outlined.Logout" Href="/logout" OnClick="@((e) => Logout())" />
             </Authorized>
             <NotAuthorized>
-                @* <MudLink Color="Color.Inherit" Href="/login">Login</MudLink> *@
                 <MudIconButton Color="Color.Inherit" Icon="@Icons.Material.Outlined.Login" Href="/login" />
             </NotAuthorized>
         </AuthorizeView>
@@ -38,11 +38,9 @@
 
 @code {
     MudTheme _theme = new();
-    bool _isDarkMode = true;
     bool _drawerOpen = true;
-    string ModeIcon => _isDarkMode ? Icons.Material.Outlined.DarkMode : Icons.Material.Outlined.LightMode;
 
-    void ToggleDarkMode() => _isDarkMode = !_isDarkMode;
+    bool DarkModeToggle { get; set; } = true;
 
     void DrawerToggle() => _drawerOpen = !_drawerOpen;
 

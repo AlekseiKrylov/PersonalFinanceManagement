@@ -1,0 +1,87 @@
+﻿<MudGrid>
+    <MudItem xs="12" sm="12">
+        <MudPaper Class="pa-4">
+            <MudForm @bind-IsValid="@success">
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudSelect Label="Category" Variant="Variant.Outlined" OnOpen="@ToggleOpen" OnClose="@ToggleOpen"
+                                   Required="true" RequiredError="Category is required!"
+                                   AdornmentIcon="@Icons.Material.Outlined.Interests" AdornmentColor="Color.Primary"
+                                   @bind-Value="TransactionCreateForm.Category">
+                            <MudSelectItem T="CategoryDTO" Value="null" Disabled="true">
+                                <MudPopover Open="@_isOpen" AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.BottomCenter">
+                                    <MudButtonGroup Size=Size.Small Variant="Variant.Filled" OverrideStyles="false">
+                                        <MudButton Color="Color.Primary" OnClick="@(() => _selectedTypeCategory = TypesCategory.All)">All</MudButton>
+                                        <MudButton Color="Color.Success" OnClick="@(() => _selectedTypeCategory = TypesCategory.Income)">Income</MudButton>
+                                        <MudButton Color="Color.Error" OnClick="@(() => _selectedTypeCategory = TypesCategory.Expense)">Expense</MudButton>
+                                    </MudButtonGroup>
+                                </MudPopover>
+                            </MudSelectItem>
+                            @foreach (var selectItem in Categories)
+                            {
+                                <MudSelectItem T="CategoryDTO" Value="@selectItem">@selectItem.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudDatePicker Label="Date" Variant="Variant.Outlined"
+                                       Required="true" RequiredError="Date is required!"
+                                       Culture="_culture" AdornmentColor="Color.Primary"
+                                       @bind-Date="TransactionCreateForm.Date" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudTextField T="string" Label="Title" Variant="Variant.Outlined"
+                                      Required="true" RequiredError="Title is required!"
+                                      @bind-Value="TransactionCreateForm.Name" />
+                        <MudNumericField Label="Enter amount" Format="F2" Culture="_culture"
+                                         Required="true" Variant="Variant.Outlined" Immediate="false"
+                                         @bind-Value="TransactionCreateForm.Amount" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudTextField Label="Note" Lines="2" Variant="Variant.Outlined"
+                                      @bind-Value="TransactionCreateForm.Note" />
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                   Disabled="@(!success || TransactionCreateForm.Amount is null || TransactionCreateForm.Amount == 0)" Class="my-1"
+                                   OnClick="CreateTransactionAsync">Create</MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private bool success;
+    private bool _isOpen;
+    private CultureInfo _culture;
+    private List<CategoryDTO> _categories = new();
+    private TypesCategory _selectedTypeCategory = TypesCategory.All;
+    private enum TypesCategory { All, Income, Expense }
+
+    [Parameter] public Func<Task> CreateTransactionAsync { get; set; }
+    [Parameter] public CultureInfo? Culture { get; set; } = null;
+    [Parameter] public CreateTransactionForm TransactionCreateForm { get; set; } = new();
+    [Parameter] public List<CategoryDTO> Categories
+    {
+        get => _selectedTypeCategory switch
+        {
+            TypesCategory.Income => _categories.Where(c => c.IsIncome == true).ToList(),
+            TypesCategory.Expense => _categories.Where(c => c.IsIncome == false).ToList(),
+            _ => _categories,
+        };
+        set => _categories = value;
+    }
+
+    protected override void OnParametersSet()
+    {
+        _culture = Culture ?? CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
+        
+        base.OnParametersSet();
+    }
+
+    private void ToggleOpen()
+    {
+        if (!_isOpen)
+            _selectedTypeCategory = TypesCategory.All;
+
+        _isOpen = !_isOpen;
+    }
+}
