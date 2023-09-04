@@ -1,0 +1,130 @@
+﻿
+<MudTable Items="@Transactions" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+          Loading="@_loadingData" LoadingProgressColor="Color.Info" SortLabel="Sort By"
+          GroupBy="_groupDefinition" GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
+          CanCancelEdit="true" @bind-SelectedItem="_selectedTransaction" OnCommitEditClick="UpdateTransactionAsync"
+          EditButtonPosition="TableEditButtonPosition.Start" EditTrigger="TableEditTrigger.EditButton"
+          ApplyButtonPosition="TableApplyButtonPosition.Start"
+          RowEditPreview="BackupTransaction" RowEditCancel="ResetTransactionToBackupValues">
+          <ColGroup>
+        <col style="width:50px;" />
+        <col style="width:100px;" />
+        <col style="width:100px;" />
+        <col style="width:100px;" />
+        <col style="width:100px;" />
+          </ColGroup>
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Amount</MudTh>
+        <MudTh>Category</MudTh>
+        <MudTh>Note</MudTh>
+    </HeaderContent>
+    <GroupHeaderTemplate>
+        <MudTh Class="mud-table-cell-custom-group" colspan="5">@(((DateTime)context.Key).ToString("d", Culture))</MudTh>
+        </GroupHeaderTemplate>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Amount" Style="text-align:right">
+                <MudText Typo="Typo.inherit" Color="@(context.CategoryIsIncome ? Color.Success : Color.Error)">
+                    @(context.CategoryIsIncome
+                    ? context.Amount.ToString("0,0.00", Culture)
+                    : $"- {context.Amount.ToString("0,0.00", Culture)}")
+            </MudText>
+        </MudTd>
+        <MudTd DataLabel="Category">@context.CategoryName</MudTd>
+        <MudTd DataLabel="Note">@context.Note</MudTd>
+    </RowTemplate>
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="@context.Name" Required />
+        </MudTd>
+         <MudTd DataLabel="Amount">
+             <MudNumericField @bind-Value="@context.Amount" Required />
+         </MudTd>
+         <MudTd DataLabel="Category">
+             <MudTextField @bind-Value="@context.CategoryName" Required />
+         </MudTd>
+         <MudTd DataLabel="Note">
+             <MudTextField @bind-Value="@context.Note" />
+         </MudTd>
+    </RowEditingTemplate>
+     <EditButtonContent Context="button">
+         <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
+     </EditButtonContent>
+</MudTable>
+
+@code {
+    private bool _loadingData = false;
+    private CultureInfo _culture;
+    private TransactionWithCategory? _selectedTransaction = null;
+    private TransactionWithCategory? _transactionBeforeEdit;
+    private List<TransactionWithCategory> _transactions = new()
+    {
+        new TransactionWithCategory { Id=1, Date=DateTime.Today, Amount=150000, Name="Test_name_1", Note="Test_note_1",
+        CategoryName="Test_category_name_1", CategoryIsIncome=true },
+        new TransactionWithCategory { Id=2, Date=DateTime.Today, Amount=1000, Name="Test_name_2", Note="Test_note_2",
+        CategoryName="Test_category_name_2", CategoryIsIncome=false },
+        new TransactionWithCategory { Id=3, Date=DateTime.Today, Amount=1000, Name="Test_name_3", Note="Test_note_3",
+        CategoryName="Test_category_name_2", CategoryIsIncome=false },
+        new TransactionWithCategory { Id=4, Date=DateTime.Today, Amount=105000, Name="Test_name_4", Note="Test_note_4",
+        CategoryName="Test_category_name_1", CategoryIsIncome=true },
+        new TransactionWithCategory { Id=5, Date=DateTime.Today.AddDays(-1), Amount=10000, Name="Test_name_5", Note="Test_note_5",
+        CategoryName="Test_category_name_1", CategoryIsIncome=true },
+        new TransactionWithCategory { Id=6, Date=DateTime.Today.AddDays(-1), Amount=1000, Name="Test_name_6", Note="Test_note_6",
+        CategoryName="Test_category_name_1", CategoryIsIncome=true },
+        new TransactionWithCategory { Id=7, Date=DateTime.Today.AddDays(-4), Amount=11000, Name="Test_name_7", Note="Test_note_7",
+        CategoryName="Test_category_name_2", CategoryIsIncome=false },
+        new TransactionWithCategory { Id=8, Date=DateTime.Today.AddDays(-4), Amount=12000, Name="Test_name_8", Note="Test_note_8",
+        CategoryName="Test_category_name_1", CategoryIsIncome=true },
+        new TransactionWithCategory { Id=9, Date=DateTime.Today.AddDays(-30), Amount=10400, Name="Test_name_9", Note="Test_note_9",
+        CategoryName="Test_category_name_2", CategoryIsIncome=false },
+        new TransactionWithCategory { Id=10, Date=DateTime.Today.AddDays(-25), Amount=1001, Name="Test Test TestTestTest (50 chars include) testtest", Note="Test Test Test TestTest (1000 chars include) test test-test test-test/test test test-test testtest test-test test-test/test test test-test test-test/test test test-test test-test/test test test-test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/testtesttest test-test test-test/test testtest test-test test-test/testtesttest test-test test-test/testtesttest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-testtest",
+        CategoryName="Test Test TestTestTest (50 chars include) testtest", CategoryIsIncome=true },
+    };
+
+    [Parameter] public Func<Task> UpdateTransactionAsync { get; set; }
+    [Parameter] public Func<Task> DeleteTransactionAsync { get; set; }
+
+    private TableGroupDefinition<TransactionWithCategory> _groupDefinition = new()
+        {
+            GroupName = "Day",
+            Indentation = false,
+            Expandable = false,
+            Selector = (t) => t.Date
+        };
+
+
+    [Parameter] public CultureInfo? Culture { get; set; } = null;
+    [Parameter] public List<TransactionWithCategory> Transactions { get => _transactions; set => _transactions = value; }
+
+    protected override void OnParametersSet()
+    {
+        _culture = Culture ?? CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
+
+        base.OnParametersSet();
+    }
+
+    private void BackupTransaction(object item)
+    {
+        _transactionBeforeEdit = new()
+            {
+                Id = ((TransactionWithCategory)item).Id,
+                Name = ((TransactionWithCategory)item).Name,
+                Note = ((TransactionWithCategory)item).Note,
+                Amount = ((TransactionWithCategory)item).Amount,
+                CategoryName = ((TransactionWithCategory)item).CategoryName,
+                CategoryIsIncome = ((TransactionWithCategory)item).CategoryIsIncome
+            };
+    }
+
+    private void ResetTransactionToBackupValues(object item)
+    {
+        ((TransactionWithCategory)item).Id = _transactionBeforeEdit.Id;
+        ((TransactionWithCategory)item).Name = _transactionBeforeEdit.Name;
+        ((TransactionWithCategory)item).Note = _transactionBeforeEdit.Note;
+        ((TransactionWithCategory)item).Amount = _transactionBeforeEdit.Amount;
+        ((TransactionWithCategory)item).CategoryName = _transactionBeforeEdit.CategoryName;
+        ((TransactionWithCategory)item).CategoryIsIncome = _transactionBeforeEdit.CategoryIsIncome;
+
+    }
+}
