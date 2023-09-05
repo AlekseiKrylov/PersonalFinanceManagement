@@ -13,5 +13,15 @@ namespace PersonalFinanceManagement.Domain.DTOModels
         public bool IsIncome { get; set; }
         [Required]
         public int WalletId { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            var other = obj as CategoryDTO;
+            return other?.Id == Id;
+        }
+
+        public override int GetHashCode() => Id.GetHashCode();
+
+        public override string ToString() => Name is null ? string.Empty : Name;
     }
 }

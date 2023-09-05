@@ -44,6 +44,25 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
             var newTransaction = await TransactionsWebApiClient.AddAsync(transaction);
         }
 
+        protected async Task UpdateTransactionAsync(TransactionWithCategory transaction)
+        {
+            var updatedTransaction = new TransactionDTO
+            {
+                Id = transaction.Id,
+                Name = transaction.Name,
+                Note = transaction.Note,
+                Amount = transaction.Amount,
+                Date = (DateTime)transaction.Date,
+                CategoryId = transaction.Category.Id,
+            };
+            var updated = await TransactionsWebApiClient.UpdateAsync(updatedTransaction);
+        }
+
+        protected async Task RemoveTransactionAsync(int id)
+        {
+            var deleted = await TransactionsWebApiClient.DeleteByIdAsync(id);
+        }
+
         private void ClearData()
         {
             _reportIncome = default;

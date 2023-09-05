@@ -1,41 +1,109 @@
 ﻿@page "/devboard"
 
+<TestTable Transactions="_testTransactions" OnTransactionDeleted="HandleTransactionDeleted" />
+
+@* <MudItem xs="12" sm="12">
+    <TransactionsTable />
+</MudItem> *@
+
+@* <CategoriesDropdown Categories="_categories" SelectedCategory="_selectedCategory" SelectedCategoryChanged="HandleSelectedCategoryChanged" /> *@
+@* <CategoriesDropdown Categories="_categories" @bind-SelectedCategory="_selectedCategory" />
+@if (_selectedCategory is not null)
+{
+    <br />
+    <MudAlert Severity="Severity.Info">@(_selectedCategory.Name) was selected</MudAlert>
+} *@
+
+
 <MudGrid Spacing="1">
+    @*
+    <AddTransaction Categories="_categories" />
+    <MudGrid Spacing="2" Justify="Justify.Center">
+    <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+    <WalletCard />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+    <WalletCard />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+    <WalletCard />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+    <WalletCard />
+    </MudItem>
+    </MudGrid>
 
-<WalletsDropdown />
-
-<MudGrid Spacing="2" Justify="Justify.Center">
-    <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
-        <WalletCard />
+    <MudGrid Spacing="2" Justify="Justify.Center">
+    <MudItem xs="6" sm="4" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+    <CategoryCard IsIncome="true"/>
     </MudItem>
-    <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
-        <WalletCard />
+    <MudItem xs="6" sm="4" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+    <CategoryCard />
     </MudItem>
-    <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
-        <WalletCard />
+    <MudItem xs="6" sm="4" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+    <CategoryCard IsIncome="true"/>
     </MudItem>
-    <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
-        <WalletCard />
+    <MudItem xs="6" sm="4" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+    <CategoryCard />
     </MudItem>
+    </MudGrid>
+    *@
 </MudGrid>
 
-<MudGrid Spacing="2" Justify="Justify.Center">
-    <MudItem xs="6" sm="4" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
-        <CategoryCard IsIncome="true"/>
-    </MudItem>
-    <MudItem xs="6" sm="4" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
-        <CategoryCard />
-    </MudItem>
-    <MudItem xs="6" sm="4" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
-        <CategoryCard IsIncome="true"/>
-    </MudItem>
-    <MudItem xs="6" sm="4" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-8">
-        <CategoryCard />
-    </MudItem>
-</MudGrid>
-
-</MudGrid>
 
 @code {
+    private List<TestTransaction> _testTransactions;
+    private List<TransactionWithCategory> _transactions;
+    private List<CategoryDTO> _categories = new();
+    private TransactionWithCategory? _selectedTransaction = null;
+    private CategoryDTO _selectedCategory;
 
+    protected override void OnInitialized()
+    {
+        _categories = new()
+    {
+    new CategoryDTO { Id=1, Name="Test_category_name_1", IsIncome=true, WalletId=1 },
+    new CategoryDTO { Id=2, Name="Test_category_name_2", IsIncome=false, WalletId=1 },
+    };
+
+        _transactions = new()
+    {
+    new TransactionWithCategory { Id=1, Date=DateTime.Today, Amount=150000, Name="Test_name_1", Note="Test_note_1", Category=_categories[0] },
+    new TransactionWithCategory { Id=2, Date=DateTime.Today, Amount=1000, Name="Test_name_2", Note="Test_note_2", Category=_categories[1] },
+    new TransactionWithCategory { Id=3, Date=DateTime.Today, Amount=1000, Name="Test_name_3", Note="Test_note_3", Category=_categories[1] },
+    new TransactionWithCategory { Id=4, Date=DateTime.Today, Amount=105000, Name="Test_name_4", Note="Test_note_4", Category=_categories[0] },
+    new TransactionWithCategory { Id=5, Date=DateTime.Today.AddDays(-1), Amount=10000, Name="Test_name_5", Note="Test_note_5", Category=_categories[0] },
+    new TransactionWithCategory { Id=6, Date=DateTime.Today.AddDays(-1), Amount=1000, Name="Test_name_6", Note="Test_note_6", Category=_categories[0] },
+    new TransactionWithCategory { Id=7, Date=DateTime.Today.AddDays(-4), Amount=11000, Name="Test_name_7", Note="Test_note_7", Category=_categories[1] },
+    new TransactionWithCategory { Id=8, Date=DateTime.Today.AddDays(-4), Amount=12000, Name="Test_name_8", Note="Test_note_8", Category=_categories[0] },
+    new TransactionWithCategory { Id=9, Date=DateTime.Today.AddDays(-30), Amount=10400, Name="Test_name_9", Note="Test_note_9", Category=_categories[1] },
+    new TransactionWithCategory { Id=10, Date=DateTime.Today.AddDays(-25), Amount=1001, Name="Test Test TestTestTest (50 chars include) testtest", Note="Test Test Test TestTest (1000 chars include) test test-test test-test/test test test-test testtest test-test test-test/test test test-test test-test/test test test-test test-test/test test test-test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/testtesttest test-test test-test/test testtest test-test test-test/testtesttest test-test test-test/testtesttest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-test test-test/test testtest test-testtest",
+    Category=_categories[1] },
+    };
+
+        _testTransactions = new()
+        {
+            new TestTransaction { Id = 1, Date = DateTime.Now.Date, Amount = 100.00M },
+            new TestTransaction { Id = 2, Date = DateTime.Now.Date.AddDays(-1), Amount = 50.00M }
+        };
+
+    
+
+        base.OnInitialized();
+    }
+
+    private void HandleTransactionDeleted(TestTransaction deletedTransaction)
+    {
+        // Здесь обрабатывайте удаление транзакции.
+        // Вызовите метод API или выполните другие необходимые действия.
+        // Пример:
+        // DeleteTransactionFromApi(deletedTransaction.Id);
+    }
+
+    public class TestTransaction
+    {
+        public int Id { get; set; }
+        public DateTime? Date { get; set; }
+        public decimal Amount { get; set; }
+    }
 }

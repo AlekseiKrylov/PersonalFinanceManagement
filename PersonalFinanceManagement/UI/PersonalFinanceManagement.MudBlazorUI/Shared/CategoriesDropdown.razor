@@ -1,0 +1,61 @@
+﻿<MudSelect T="CategoryDTO" Label="Category" Variant="_variant" OnOpen="@ToggleOpen" OnClose="@ToggleOpen"
+           Required="true" RequiredError="Category is required!" Dense="true"
+           AdornmentIcon="@Icons.Material.Outlined.Interests" AdornmentColor="Color.Primary"
+           Value="SelectedCategory" ValueChanged="SetSelectedCategoryAsync">
+    <MudSelectItem T="CategoryDTO" Value="null" Disabled="true">
+        <MudPopover Open="@_isOpen" AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.BottomCenter">
+            <MudButtonGroup Size=Size.Small Variant="Variant.Filled" OverrideStyles="false">
+                <MudButton Color="Color.Primary" OnClick="@(() => _selectedTypeCategory = TypesCategory.All)">All</MudButton>
+                <MudButton Color="Color.Success" OnClick="@(() => _selectedTypeCategory = TypesCategory.Income)">Income</MudButton>
+                <MudButton Color="Color.Error" OnClick="@(() => _selectedTypeCategory = TypesCategory.Expense)">Expense</MudButton>
+            </MudButtonGroup>
+        </MudPopover>
+    </MudSelectItem>
+    @foreach (var selectItem in Categories)
+    {
+        <MudSelectItem T="CategoryDTO" Value="@selectItem" />
+    }
+</MudSelect>
+
+@code {
+    private bool _isOpen;
+    private Variant _variant;
+    private TypesCategory _selectedTypeCategory = TypesCategory.All;
+    private enum TypesCategory { All, Income, Expense };
+    private List<CategoryDTO> _categories = new();
+
+    
+    [Parameter] public Variant? DropdownVariant { get; set; } = null;
+    [Parameter] public CategoryDTO SelectedCategory { get; set; }
+    [Parameter] public EventCallback<CategoryDTO> SelectedCategoryChanged { get; set; }
+    [Parameter] public List<CategoryDTO> Categories
+    {
+        get => _selectedTypeCategory switch
+        {
+            TypesCategory.Income => _categories.Where(c => c.IsIncome == true).ToList(),
+            TypesCategory.Expense => _categories.Where(c => c.IsIncome == false).ToList(),
+            _ => _categories,
+        };
+        set => _categories = value;
+    }
+
+    protected override void OnInitialized()
+    {
+        _variant = DropdownVariant ?? Variant.Text;
+        base.OnInitialized();
+    }
+
+    private void ToggleOpen()
+    {
+        if (!_isOpen)
+            _selectedTypeCategory = TypesCategory.All;
+
+        _isOpen = !_isOpen;
+    }
+
+    private async Task SetSelectedCategoryAsync(CategoryDTO newValue)
+    {
+        SelectedCategory = newValue;
+        await SelectedCategoryChanged.InvokeAsync(newValue);
+    }
+}

@@ -46,6 +46,9 @@
             <AddTransaction Categories="_categories.ToList()" TransactionCreateForm="_transactionCreateForm" CreateTransactionAsync="CreateTransactionAsync" />
         </MudItem>
         <MudItem xs="12" sm="12">
+            <TransactionsTable Transactions="_transactions" Categories="_categories.ToList()" OnDeleteTransaction="RemoveAsync" />
+        </MudItem>
+        <MudItem xs="12" sm="12">
             <MudTable Items="@_transactions" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loadData" LoadingProgressColor="Color.Info" SortLabel="Sort By">
                 <HeaderContent>
                     <MudTh><MudTableSortLabel SortBy="new Func<TransactionWithCategory, object>(x => x.Date)">Date</MudTableSortLabel></MudTh>
@@ -55,15 +58,15 @@
                     <MudTh>Category</MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd DataLabel="Date">@context.Date.ToString("d", culture)</MudTd>
+                    <MudTd DataLabel="Date">@(((DateTime)context.Date!).ToString("d", culture))</MudTd>
                     <MudTd DataLabel="Name">@context.Name</MudTd>
                     <MudTd DataLabel="Note">@context.Note</MudTd>
                     <MudTd DataLabel="Amount" Style="text-align:right">
-                        @(context.CategoryIsIncome
+                        @(context.Category.IsIncome
                             ? context.Amount.ToString("0,0.00", culture)
                             : $"- {context.Amount.ToString("0,0.00", culture)}")
                     </MudTd>
-                    <MudTd>@context.CategoryName</MudTd>
+                    <MudTd>@context.Category.Name</MudTd>
                 </RowTemplate>
             </MudTable>
         </MudItem>
@@ -82,6 +85,16 @@
 
     private WalletDTO SelectedWallet { get; set; }
     private CreateTransactionForm _transactionCreateForm = new();
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     if (_wallets.Count() == 1)
+    //     {
+    //         SelectedWallet = _wallets.First();
+    //         StateHasChanged();
+    //     }
+    //     await base.OnInitializedAsync();
+    // }
 
     private void AddTransactionToggle()
     {
@@ -129,4 +142,16 @@
     }
 
     private void ClearCreateForm() => _transactionCreateForm = new();
+
+    private async Task UpdateAsync(TransactionWithCategory transaction)
+    {
+        await UpdateTransactionAsync(transaction);
+    }
+
+    private async Task RemoveAsync(TransactionWithCategory transaction)
+    {
+        await RemoveTransactionAsync(transaction.Id);
+        
+        _transactions.Remove(transaction);
+    }
 }
