@@ -19,14 +19,14 @@
             </MudStack>
         </MudItem>
         <MudItem xs="12" sm="6" md="4">
-            <SumPlate LoadingData="_loadData" Name="Change for the period" Amount="@(_reportIncome - _reportExpenses)"
+            <SumPlate LoadingData="_loadingData" Name="Change for the period" Amount="@(_reportIncome - _reportExpenses)"
                       IsIncome="@((_reportIncome - _reportExpenses) == 0 ? null : (_reportIncome - _reportExpenses) > 0 ? true : false)" />
         </MudItem>
         <MudItem xs="6" sm="3" md="4">
-            <SumPlate Name="Income" Amount="_reportIncome" IsIncome="true" LoadingData="_loadData" />
+            <SumPlate Name="Income" Amount="_reportIncome" IsIncome="true" LoadingData="_loadingData" />
         </MudItem>
         <MudItem xs="6" sm="3" md="4">
-            <SumPlate Name="Expenses" Amount="_reportExpenses" IsIncome="false" LoadingData="_loadData" />
+            <SumPlate Name="Expenses" Amount="_reportExpenses" IsIncome="false" LoadingData="_loadingData" />
         </MudItem>
         <MudItem xs="12">
             @if (_addTransaction)
@@ -45,11 +45,74 @@
         <MudItem xs="12" hidden="@(!_addTransaction)">
             <AddTransaction Categories="_categories.ToList()" TransactionCreateForm="_transactionCreateForm" CreateTransactionAsync="CreateTransactionAsync" />
         </MudItem>
-        <MudItem xs="12" sm="12">
-            <TransactionsTable Transactions="_transactions" Categories="_categories.ToList()" OnDeleteTransaction="RemoveAsync" />
+        <MudItem xs="12" sm="12"> @* START TEST *@
+            <MudTable Items="_transactions" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                      Loading="_loadingData" LoadingProgressColor="Color.Info" SortLabel="Sort By"
+                      GroupBy="_groupDefinition" GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
+                      CanCancelEdit="true" @bind-SelectedItem="_selectedTransaction" RowEditCommit="UpdateAsync"
+                      EditButtonPosition="TableEditButtonPosition.Start" EditTrigger="TableEditTrigger.EditButton"
+                      ApplyButtonPosition="TableApplyButtonPosition.Start"
+                      RowEditPreview="BackupTransaction" RowEditCancel="ResetTransactionToBackupValues" Bordered="false">
+                <ColGroup>
+                    <col style="width:100px;" />
+                    <col style="width:12%;" />
+                    <col style="width:12%;" />
+                    <col style="width:12%;" />
+                    <col style="width:15%;" />
+                    <col style="width:0%;" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh Style="text-align:right">Amount</MudTh>
+                    <MudTh>Date</MudTh>
+                    <MudTh>Category</MudTh>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Note</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <GroupHeaderTemplate>
+                    <MudTh Class="mud-table-cell-custom-group" colspan="6">@(((DateTime)context.Key).ToString("d", culture))</MudTh>
+                    </GroupHeaderTemplate>
+                    <RowTemplate>
+                        <MudTd DataLabel="Amount" Style="text-align:right">
+                            <MudText Typo="Typo.inherit" Color="@(context.Category.IsIncome ? Color.Success : Color.Error)">
+                                @(context.Category.IsIncome
+                                ? context.Amount.ToString("0,0.00", culture)
+                                : $"- {context.Amount.ToString("0,0.00", culture)}")
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Date">@(((DateTime)context.Date!).ToString("d", culture))</MudTd>
+                        <MudTd DataLabel="Category">@context.Category.Name</MudTd>
+                        <MudTd DataLabel="Name">@context.Name</MudTd>
+                        <MudTd DataLabel="Note">@context.Note</MudTd>
+                        <MudTd DataLabel="Delete" Class="mud-table-cell-align-right mud-typography-nowrap">
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Outlined" Color="Color.Error" Size="Size.Small"
+                                           OnClick="async() => await RemoveAsync(context)" />
+                        </MudTd>
+                    </RowTemplate>
+                    <RowEditingTemplate>
+                        <MudTd DataLabel="Amount">
+                            <MudNumericField @bind-Value="@context.Amount" Required />
+                     </MudTd>
+                     <MudTd DataLabel="Date">
+                         <MudDatePicker Required Culture="culture" AdornmentColor="Color.Primary" @bind-Date="@context.Date" />
+                     </MudTd>
+                     <MudTd DataLabel="Category">
+                         <CategoriesDropdown Categories="_categories.ToList()" @bind-SelectedCategory="context.Category" />
+                     </MudTd>
+                     <MudTd DataLabel="Name">
+                         <MudTextField @bind-Value="@context.Name" Required />
+                     </MudTd>
+                     <MudTd DataLabel="Note">
+                         <MudTextField Lines="2" @bind-Value="@context.Note" />
+                     </MudTd>
+                 </RowEditingTemplate>
+                 <EditButtonContent Context="button">
+                     <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
+                 </EditButtonContent>
+             </MudTable>
         </MudItem>
-        <MudItem xs="12" sm="12">
-            <MudTable Items="@_transactions" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loadData" LoadingProgressColor="Color.Info" SortLabel="Sort By">
+        <MudItem xs="12" sm="12"> @* END TEST *@
+            <MudTable Items="@_transactions" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loadingData" LoadingProgressColor="Color.Info" SortLabel="Sort By">
                 <HeaderContent>
                     <MudTh><MudTableSortLabel SortBy="new Func<TransactionWithCategory, object>(x => x.Date)">Date</MudTableSortLabel></MudTh>
                     <MudTh>Name</MudTh>
@@ -74,7 +137,7 @@
 </MudContainer>
 
 @code {
-    private bool _loadData = false;
+    private bool _loadingData = false;
     private bool _addTransaction = false;
     public CultureInfo culture = CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
     private DateRange _dateRange = new()
@@ -96,6 +159,41 @@
     //     await base.OnInitializedAsync();
     // }
 
+    // STRAT TEST
+    private TransactionWithCategory _selectedTransaction;
+    private TransactionWithCategory _transactionBeforeEdit;
+    private TableGroupDefinition<TransactionWithCategory> _groupDefinition = new()
+        {
+            GroupName = "Day",
+            Indentation = false,
+            Expandable = false,
+            Selector = (t) => t.Date
+        };
+
+    private void BackupTransaction(object item)
+    {
+        _transactionBeforeEdit = new()
+            {
+                Id = ((TransactionWithCategory)item).Id,
+                Name = ((TransactionWithCategory)item).Name,
+                Note = ((TransactionWithCategory)item).Note,
+                Amount = ((TransactionWithCategory)item).Amount,
+                Date = ((TransactionWithCategory)item).Date,
+                Category = ((TransactionWithCategory)item).Category,
+            };
+    }
+
+    private void ResetTransactionToBackupValues(object item)
+    {
+        ((TransactionWithCategory)item).Id = _transactionBeforeEdit.Id;
+        ((TransactionWithCategory)item).Name = _transactionBeforeEdit.Name;
+        ((TransactionWithCategory)item).Note = _transactionBeforeEdit.Note;
+        ((TransactionWithCategory)item).Amount = _transactionBeforeEdit.Amount;
+        ((TransactionWithCategory)item).Date = _transactionBeforeEdit.Date;
+        ((TransactionWithCategory)item).Category = _transactionBeforeEdit.Category;
+    }
+    // END TEST
+
     private void AddTransactionToggle()
     {
         _addTransaction = !_addTransaction;
@@ -111,14 +209,14 @@
 
     private async Task ConfirmPeriodAsync()
     {
-        _loadData = true;
+        _loadingData = true;
 
         if (_dateRange.Start is not null && _dateRange.End is not null)
         {
             await GetPeriodReportAsync(SelectedWallet.Id, (DateTime)_dateRange.Start, (DateTime)_dateRange.End);
         }
 
-        _loadData = false;
+        _loadingData = false;
     }
 
     private async Task CreateTransactionAsync()
@@ -143,9 +241,9 @@
 
     private void ClearCreateForm() => _transactionCreateForm = new();
 
-    private async Task UpdateAsync(TransactionWithCategory transaction)
+    private async void UpdateAsync(object transaction)
     {
-        await UpdateTransactionAsync(transaction);
+        await UpdateTransactionAsync((TransactionWithCategory)transaction);
     }
 
     private async Task RemoveAsync(TransactionWithCategory transaction)
