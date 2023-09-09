@@ -13,7 +13,7 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
         protected decimal _reportExpenses;
         protected IEnumerable<WalletDTO> _wallets = new List<WalletDTO>();
         protected IEnumerable<CategoryDTO> _categories = new List<CategoryDTO>();
-        protected List<TransactionWithCategory> _transactions = new();
+        protected IEnumerable<TransactionWithCategory> _transactions = new List<TransactionWithCategory>();
         protected PeriodTransactionsReport _periodTransactionsReport = new();
 
         [Inject] IReportsWebApiClient ReportsWebApiClient { get; init; }
@@ -29,7 +29,7 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
 
         protected async Task GetCatigoriesInWallet(int walletId)
         {
-            _categories = await CategoriesWebAtiClient.GetAllInWallet(walletId);
+            _categories = await CategoriesWebAtiClient.GetAllInWalletAsync(walletId);
         }
 
         protected async Task GetPeriodReportAsync(int walletId, DateTime startDate, DateTime endDate)
@@ -67,7 +67,7 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
         {
             _reportIncome = default;
             _reportExpenses = default;
-            _transactions = new();
+            _transactions = new List<TransactionWithCategory>();
         }
 
         private void SetData(TransactionsReport report)

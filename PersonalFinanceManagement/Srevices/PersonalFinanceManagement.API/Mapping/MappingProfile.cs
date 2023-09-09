@@ -16,7 +16,7 @@ namespace PersonalFinanceManagement.API.Mapping
                 //.ForMember(dest => dest.CategoryIsIncome, opt => opt.MapFrom(src => src.Category.IsIncome));
             CreateMap<Category, CategoryDTO>().ReverseMap();
             CreateMap<CategoryCreateDTO, Category>();
-            CreateMap<Wallet, WalletDTO>().ReverseMap();
+            CreateMap<Wallet, Domain.DTOModels.WalletDTO>().ReverseMap();
             CreateMap<WalletCreateDTO, Wallet>();
             CreateMap<User, UserDTO>();
         }

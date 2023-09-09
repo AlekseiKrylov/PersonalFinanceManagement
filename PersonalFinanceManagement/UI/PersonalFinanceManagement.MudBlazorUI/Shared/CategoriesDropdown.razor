@@ -1,5 +1,5 @@
 ﻿<MudSelect T="CategoryDTO" Label="Category" Variant="_variant" OnOpen="@ToggleOpen" OnClose="@ToggleOpen"
-           Required="true" RequiredError="Category is required!" Dense="true"
+           Required="IsRequired" RequiredError="Category is required!" Dense="true"
            AdornmentIcon="@Icons.Material.Outlined.Interests" AdornmentColor="Color.Primary"
            Value="SelectedCategory" ValueChanged="SetSelectedCategoryAsync">
     <MudSelectItem T="CategoryDTO" Value="null" Disabled="true">
@@ -25,6 +25,7 @@
     private List<CategoryDTO> _categories = new();
 
     
+    [Parameter] public bool IsRequired { get; set; } = true;
     [Parameter] public Variant? DropdownVariant { get; set; } = null;
     [Parameter] public CategoryDTO SelectedCategory { get; set; }
     [Parameter] public EventCallback<CategoryDTO> SelectedCategoryChanged { get; set; }

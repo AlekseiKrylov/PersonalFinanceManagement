@@ -26,6 +26,7 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.RegistrationAndAuthor
             var jwtToken = tokenHandler.ReadJwtToken(loginResponse);
 
             _userSession.AccessToken = loginResponse;
+            _userSession.UserId = int.TryParse(jwtToken.Claims.FirstOrDefault(c => c.Type == "id").Value, out int id) ? id : throw new Exception("Error authentication");
             _userSession.Name = jwtToken.Claims.FirstOrDefault(c => c.Type == "email").Value;
             _userSession.Email = jwtToken.Claims.FirstOrDefault(c => c.Type == "email").Value;
             _userSession.Role = "User";
