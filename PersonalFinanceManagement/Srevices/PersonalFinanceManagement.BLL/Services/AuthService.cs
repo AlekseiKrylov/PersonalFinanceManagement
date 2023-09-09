@@ -63,7 +63,7 @@ namespace PersonalFinanceManagement.BLL.Services
                 Audience = _configuration["JwtSettings:Audience"],
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim("Id", user.Id.ToString()),
+                    new Claim("id", user.Id.ToString()),
                     new Claim(ClaimTypes.Email, user.Email),
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(_expirationInMinutes),

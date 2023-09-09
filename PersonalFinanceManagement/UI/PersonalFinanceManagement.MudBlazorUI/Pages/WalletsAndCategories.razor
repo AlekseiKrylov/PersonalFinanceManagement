@@ -1,0 +1,217 @@
+﻿@page "/wallets-and-categories"
+@inherits WalletsAndCategoriesViewModel
+@inject IDialogService DialogService
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudGrid Spacing="1" Justify="Justify.Center">
+            @foreach (var wallet in _wallets)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full">
+                    <MudButton FullWidth="true" OnClick="async() => await SetWalletAndLoadCategoriesAsync(wallet.Id)">
+                        <WalletCard Wallet="wallet" OnDelete="HandleDeleteWalletAsync " OnUpdate="HandleUpdateWalletAsync" />
+                    </MudButton>
+                    <MudElement>
+                        @if (_selectedWallet is null || _selectedWallet.Id != wallet.Id)
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.ArrowDropUp" Color="Color.Default" Size="Size.Medium" />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.ArrowDropUp" Color="Color.Success" Size="Size.Large" />
+                        }
+                    </MudElement>
+                </MudItem>
+            }
+            @if (_wallets.Count < 4)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-2">
+                    <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="async() => await HandleCreateWalletAsync()" />
+                </MudItem>
+            }
+        </MudGrid>
+    </MudItem>
+    <MudItem xs="12">
+        @if (_addCategory)
+        {
+            <MudButton Disabled="@(_selectedWallet is null)" Variant="Variant.Filled" Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Cancel" IconColor="Color.Warning"
+                       OnClick="AddCategoryToggle">Cancel</MudButton>
+        }
+        else
+        {
+            <MudButton Disabled="@(_selectedWallet is null)" Variant="Variant.Filled" Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.AddCircle" IconColor="Color.Success"
+                       OnClick="AddCategoryToggle">Add category</MudButton>
+        }
+    </MudItem>
+    <MudItem xs="12" hidden="@(!_addCategory)">
+        <MudForm @bind-IsValid="@_isValidAddCategoryForm">
+            <MudGrid>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudTextField Label="Name" Variant="Variant.Outlined" Counter="50" MaxLength="50" Immediate="true"
+                                  Required="true" RequiredError="Name is required!"
+                    @bind-Value="_addCategoryForm.Name" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCheckBox @bind-Checked="_addCategoryForm.IsIncome" Color="Color.Primary">Income</MudCheckBox>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                               Disabled="@(!_isValidAddCategoryForm || string.IsNullOrWhiteSpace(_addCategoryForm.Name))" Class="my-1"
+                               OnClick="CreateCategoryAsync">Create</MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </MudItem>
+    <MudItem xs="12" Class="mud-width-full">
+        <MudDataGrid Items="_categoriesSelectedWallet" Dense="true" Groupable="true" GroupExpanded="true" Loading="_loadingData" ColumnResizeMode="ResizeMode.None">
+            <Columns>
+                <TemplateColumn Resizable="false" CellStyle="width:100px;">
+                    <CellTemplate>
+                        <MudStack Row="true">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
+                                           OnClick="async() => await UpdateCategoryDialogAsync(context.Item)" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Outlined" Color="Color.Error" Size="Size.Small"
+                                           OnClick="async() => await DeleteCategoryDialogAsync(context.Item)" />
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
+                <PropertyColumn Property="с => с.Name" Grouping GroupBy="_groupBy" Resizable="false">
+                     <GroupTemplate>
+                         <span style="font-weight:bold">@(context.Grouping.Key is true ? "Income" : "Expense")</span>
+                    </GroupTemplate>
+                </PropertyColumn>
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="CategoryDTO" />
+            </PagerContent>
+        </MudDataGrid>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private bool _loadingData = false;
+    private bool _addCategory = false;
+    private bool _isValidAddCategoryForm;
+    private WalletDTO _selectedWallet;
+    private CategoryCreateDTO _addCategoryForm = new();
+    private Func<CategoryDTO, object> _groupBy = x => x.IsIncome;
+
+    private async Task SetWalletAndLoadCategoriesAsync(int id)
+    {
+        _selectedWallet = _wallets.Find(w => w.Id == id) ?? new();
+        _loadingData = true;
+        await GetWalletCategoriesAsync(id);
+        _loadingData = false;
+    }
+
+    private void AddCategoryToggle()
+    {
+        _addCategory = !_addCategory;
+        ClearAddCategoryForm();
+    }
+
+    private void ClearAddCategoryForm()
+    {
+        _addCategoryForm = new();
+        _isValidAddCategoryForm = false;
+    }
+
+    private async Task HandleCreateWalletAsync()
+    {
+        var newWallet = new WalletDTO();
+
+        var parameters = new DialogParameters<AddEditWalletDialog>();
+        parameters.Add(d => d.Wallet, newWallet);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<AddEditWalletDialog>("Add", parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Canceled)
+            return;
+
+        var createdWallet = await AddWalletAsync(newWallet);
+        _wallets.Add(createdWallet);
+    }
+
+    private async Task HandleUpdateWalletAsync(WalletDTO wallet)
+    {
+        var updatedWallet = await UpdateWalletAsync(wallet);
+        int index = _wallets.FindIndex(item => item.Id == updatedWallet.Id);
+        if (index != -1)
+            _wallets[index] = updatedWallet;
+    }
+
+    private async Task HandleDeleteWalletAsync(WalletDTO wallet)
+    {
+        var deletedWallet = await DeleteWalletAsync(wallet);
+        _wallets.Remove(deletedWallet);
+    }
+
+    private async Task CreateCategoryAsync()
+    {
+        _addCategoryForm.WalletId = _selectedWallet.Id;
+        var createdCategory = await AddCategoryAsync(_addCategoryForm);
+        ClearAddCategoryForm();
+
+        if (_selectedWallet.Id == createdCategory.WalletId)
+            _categoriesSelectedWallet.Add(createdCategory);
+    }
+
+    private async Task UpdateCategoryDialogAsync(CategoryDTO category)
+    {
+        var editableCategory = new CategoryDTO()
+            {
+                Id = category.Id,
+                Name = category.Name,
+                IsIncome = category.IsIncome,
+                WalletId = _selectedWallet.Id
+            };
+
+        var parameters = new DialogParameters<EditCategoryDialog>();
+        parameters.Add(d => d.Category, editableCategory);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<EditCategoryDialog>("Edit", parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Canceled)
+            return;
+
+        var updatedCategory = await UpdateCategoryAsync(editableCategory);
+
+        int index = _categoriesSelectedWallet.FindIndex(item => item.Id == updatedCategory.Id);
+        if (index != -1)
+            _categoriesSelectedWallet[index] = updatedCategory;
+    }
+
+    private async Task DeleteCategoryDialogAsync(CategoryDTO category)
+    {
+        var categoriesWithoutCurrent = _categoriesSelectedWallet.Where(c => c.Id != category.Id).ToList();
+        categoriesWithoutCurrent.Insert(0, new CategoryDTO { Id = -1, Name = "Nowhere" });
+
+        CategoryDTO selectedCategory = categoriesWithoutCurrent[0];
+
+        var parameters = new DialogParameters<DeleteCategoryDialog>();
+        parameters.Add(d => d.Categories, categoriesWithoutCurrent);
+        parameters.Add(d => d.SelectedCategory, selectedCategory);
+        parameters.Add(d => d.ContentText, $"Are you sure you want to delete transaction '{category.Name}'?");
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<DeleteCategoryDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Canceled)
+            return;
+
+        if (result.DataType == typeof(int) || (int)result.Data > 0)
+            await MoveTransactioncAndDeleteCategory(_selectedWallet.Id, category.Id, (int)result.Data);
+        else
+            await DeleteCategoryAsync(category);
+
+        _categoriesSelectedWallet.Remove(category);
+    }
+}

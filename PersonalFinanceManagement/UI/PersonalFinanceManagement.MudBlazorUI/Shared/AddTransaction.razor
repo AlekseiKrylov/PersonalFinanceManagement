@@ -12,15 +12,17 @@
                                        @bind-Date="TransactionCreateForm.Date" />
                     </MudItem>
                     <MudItem xs="12" sm="6" md="4">
-                        <MudTextField T="string" Label="Title" Variant="Variant.Outlined"
-                                      Required="true" RequiredError="Title is required!"
-                                      @bind-Value="TransactionCreateForm.Name" />
                         <MudNumericField Label="Enter amount" Format="F2" Culture="_culture"
                                          Required="true" Variant="Variant.Outlined" Immediate="false"
                                          @bind-Value="TransactionCreateForm.Amount" />
+                        <MudTextField Label="Name" Variant="Variant.Outlined"
+                                      Counter="50" MaxLength="50" Immediate="true"
+                                      Required="true" RequiredError="Name is required!"
+                                      @bind-Value="TransactionCreateForm.Name" />
                     </MudItem>
                     <MudItem xs="12" sm="6" md="4">
                         <MudTextField Label="Note" Lines="2" Variant="Variant.Outlined"
+                                      Counter="1000" MaxLength="1000" Immediate="true"
                                       @bind-Value="TransactionCreateForm.Note" />
                         <MudButton Variant="Variant.Filled" Color="Color.Primary"
                                    Disabled="@(!success || TransactionCreateForm.Amount is null || TransactionCreateForm.Amount == 0)" Class="my-1"

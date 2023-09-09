@@ -12,13 +12,13 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
 
         public CategoriesWebApiClient(HttpClient httpClient) : base(httpClient) => _httpClient = httpClient;
 
-        public async Task<int> GetCountInWallet(int walletId, CancellationToken cancel = default) =>
+        public async Task<int> GetCountInWalletAsync(int walletId, CancellationToken cancel = default) =>
                await _httpClient.GetFromJsonAsync<int>($"count-in-wallet[{walletId}]", cancel);
 
-        public async Task<IEnumerable<CategoryDTO>> GetAllInWallet(int walletId, CancellationToken cancel = default) =>
+        public async Task<IEnumerable<CategoryDTO>> GetAllInWalletAsync(int walletId, CancellationToken cancel = default) =>
             await _httpClient.GetFromJsonAsync<IEnumerable<CategoryDTO>>($"categories-in-wallet[{walletId}]", cancel).ConfigureAwait(false);
 
-        public async Task<IPage<CategoryDTO>> GetPage(int pageIndex, int pageSize, int? walletId = null, CancellationToken cancel = default)
+        public async Task<IPage<CategoryDTO>> GetPageAsync(int pageIndex, int pageSize, int? walletId = null, CancellationToken cancel = default)
         {
             var url = $"page-with-restriction[{pageIndex}:{pageSize}]";
 

@@ -1,0 +1,41 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudForm @bind-IsValid="@success">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="Name" Variant="Variant.Outlined"
+                                  Counter="50" MaxLength="50" Immediate="true"
+                                  Required="true" RequiredError="Name is required!"
+                                  @bind-Value="Wallet.Name" />
+                    <MudTextField Label="Description" Lines="2" Variant="Variant.Outlined"
+                                  Counter="1000" MaxLength="1000" Immediate="true"
+                                  @bind-Value="Wallet.Description" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Success" OnClick="Submit" Disabled="@(!success)">Confirm</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private bool success;
+    private CultureInfo _culture;
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public WalletDTO Wallet { get; set; } = new();
+    [Parameter] public CultureInfo? Culture { get; set; } = null;
+
+    protected override void OnParametersSet()
+    {
+        _culture = Culture ?? CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
+
+        base.OnParametersSet();
+    }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+}
