@@ -11,9 +11,9 @@
             </MudButtonGroup>
         </MudPopover>
     </MudSelectItem>
-    @foreach (var selectItem in Categories)
+    @foreach (var item in Categories)
     {
-        <MudSelectItem T="CategoryDTO" Value="@selectItem" />
+        <MudSelectItem T="CategoryDTO" Value="@item" />
     }
 </MudSelect>
 

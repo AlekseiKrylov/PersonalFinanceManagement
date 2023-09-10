@@ -27,6 +27,7 @@
             {
                 <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex flex-column align-center justify-center mud-width-full py-2">
                     <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="async() => await HandleCreateWalletAsync()" />
+                    <MudElement Style="height:28px"></MudElement>
                 </MudItem>
             }
         </MudGrid>
@@ -95,6 +96,15 @@
     private WalletDTO _selectedWallet;
     private CategoryCreateDTO _addCategoryForm = new();
     private Func<CategoryDTO, object> _groupBy = x => x.IsIncome;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetWalletsAsync();
+        if (_wallets.Count() == 1)
+            await SetWalletAndLoadCategoriesAsync(_wallets[0].Id);
+        
+        await base.OnInitializedAsync();
+    }
 
     private async Task SetWalletAndLoadCategoriesAsync(int id)
     {

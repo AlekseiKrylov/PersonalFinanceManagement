@@ -5,6 +5,7 @@ using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 using PersonalFinanceManagement.Domain.UIModels;
 using PersonalFinanceManagement.Interfaces.WebApiClients;
 using PersonalFinanceManagement.MudBlazorUI.Infrastructure.Extensions;
+using PersonalFinanceManagement.WebAPIClients.Clients;
 
 namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
 {
@@ -18,8 +19,7 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
         [Inject] ITransactionsWebApiClient TransactionsWebApiClient { get; init; }
         [Inject] ISessionStorageService SessionStorageService { get; init; }
 
-
-        protected override async Task OnInitializedAsync()
+        protected async Task GetWalletsAsync()
         {
             _wallets = (await WalletsWebApiClient.GetAllAsync().ConfigureAwait(false)).ToList();
         }

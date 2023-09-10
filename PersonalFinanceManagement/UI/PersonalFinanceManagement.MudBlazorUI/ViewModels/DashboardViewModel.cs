@@ -17,19 +17,18 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
         protected PeriodTransactionsReport _periodTransactionsReport = new();
 
         [Inject] IReportsWebApiClient ReportsWebApiClient { get; init; }
-        [Inject] IEntitiesWebApiClient<WalletDTO, WalletCreateDTO> WalletsWebAtiClient { get; init; }
-        [Inject] ICategoriesWebApiClient CategoriesWebAtiClient { get; init; }
+        [Inject] IEntitiesWebApiClient<WalletDTO, WalletCreateDTO> WalletsWebApiClient { get; init; }
+        [Inject] ICategoriesWebApiClient CategoriesWebApiClient { get; init; }
         [Inject] ITransactionsWebApiClient TransactionsWebApiClient { get; init; }
 
-        protected override async Task OnInitializedAsync()
+        protected async Task GetWalletsAsync()
         {
-            _wallets = await WalletsWebAtiClient.GetAllAsync();
-            await base.OnInitializedAsync();
+            _wallets = await WalletsWebApiClient.GetAllAsync();
         }
 
         protected async Task GetCatigoriesInWallet(int walletId)
         {
-            _categories = await CategoriesWebAtiClient.GetAllInWalletAsync(walletId);
+            _categories = await CategoriesWebApiClient.GetAllInWalletAsync(walletId);
         }
 
         protected async Task GetPeriodReportAsync(int walletId, DateTime startDate, DateTime endDate)

@@ -4,7 +4,7 @@
 <MudContainer Class="mt-2 px-2" MaxWidth="MaxWidth.False">
     <MudGrid>
         <MudItem xs="12" sm="6">
-            <MudSelect T="Domain.DTOModels.WalletDTO" ValueChanged="OnWalletChangedAsync" Value="SelectedWallet" Label="Wallet" Variant="Variant.Outlined"
+            <MudSelect T="WalletDTO" ValueChanged="OnWalletChangedAsync" Value="SelectedWallet" Label="Wallet" Variant="Variant.Outlined"
                        AdornmentIcon="@Icons.Material.Outlined.Wallet" AdornmentColor="Color.Primary">
                 @foreach (var selectItem in _wallets)
                 {
@@ -65,16 +65,16 @@
     private WalletDTO SelectedWallet { get; set; }
     private CreateTransactionForm _transactionCreateForm = new();
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
+        await GetWalletsAsync();
         if (_wallets.Count() == 1)
         {
             SelectedWallet = _wallets.First();
             await GetReportAsync();
             await GetCatigoriesInWallet(SelectedWallet.Id);
         }
-        await base.OnParametersSetAsync();
-
+        await base.OnInitializedAsync();
     }
 
     private void AddTransactionToggle()

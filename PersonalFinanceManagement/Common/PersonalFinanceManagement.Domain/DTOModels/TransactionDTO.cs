@@ -18,5 +18,15 @@ namespace PersonalFinanceManagement.Domain.DTOModels
         public DateTime Date { get; set; }
         [Required]
         public int CategoryId { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            var other = obj as TransactionDTO;
+            return other?.Id == Id;
+        }
+
+        public override int GetHashCode() => Id.GetHashCode();
+
+        public override string ToString() => Name is null ? string.Empty : Name;
     }
 }
