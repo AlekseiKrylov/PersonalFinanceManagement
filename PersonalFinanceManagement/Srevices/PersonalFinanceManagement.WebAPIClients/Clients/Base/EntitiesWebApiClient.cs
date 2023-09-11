@@ -1,5 +1,6 @@
-﻿using PersonalFinanceManagement.Interfaces.Entities;
-using PersonalFinanceManagement.Interfaces.Repositories;
+﻿using PersonalFinanceManagement.Domain.UIModels;
+using PersonalFinanceManagement.Interfaces.Common;
+using PersonalFinanceManagement.Interfaces.Entities;
 using PersonalFinanceManagement.Interfaces.WebApiClients;
 using System.Net;
 using System.Net.Http.Json;
@@ -13,11 +14,6 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients.Base
         private readonly HttpClient _httpClient;
 
         public EntitiesWebApiClient(HttpClient httpClient) => _httpClient = httpClient;
-
-        protected record PageItems(IEnumerable<T> Items, int TotalCount, int PageIndex, int PageSize) : IPage<T>
-        {
-            public int TotalPagesCount => (int)Math.Ceiling((double)TotalCount / PageSize);
-        };
 
         public async Task<bool> ExistIdAsync(int id, CancellationToken cancel = default)
         {
@@ -44,10 +40,10 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients.Base
         {
             var response = await _httpClient.GetAsync($"page[{pageIndex}:{pageSize}]", cancel).ConfigureAwait(false);
             if (response.StatusCode == HttpStatusCode.NotFound)
-                return new PageItems(Enumerable.Empty<T>(), 0, pageIndex, pageSize);
+                return new PageItems<T>(Enumerable.Empty<T>(), 0, pageIndex, pageSize);
 
             return await response.EnsureSuccessStatusCode().Content
-                                 .ReadFromJsonAsync<PageItems>(cancellationToken: cancel)
+                                 .ReadFromJsonAsync<PageItems<T>>(cancellationToken: cancel)
                                  .ConfigureAwait(false);
         }
 

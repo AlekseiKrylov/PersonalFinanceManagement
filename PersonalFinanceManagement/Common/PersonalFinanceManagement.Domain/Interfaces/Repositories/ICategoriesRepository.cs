@@ -1,4 +1,5 @@
 ﻿using PersonalFinanceManagement.Domain.DALEntities;
+using PersonalFinanceManagement.Interfaces.Common;
 using PersonalFinanceManagement.Interfaces.Repositories;
 
 namespace PersonalFinanceManagement.Domain.Interfaces.Repositories

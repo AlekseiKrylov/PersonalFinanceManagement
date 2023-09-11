@@ -1,4 +1,5 @@
 ﻿@page "/transactions"
+@using PersonalFinanceManagement.Interfaces.Common;
 @inherits TransactionsViewModel
 @inject IDialogService DialogService
 
@@ -11,11 +12,12 @@
             <CategoriesDropdown Categories="Categories" DropdownVariant="Variant.Text" IsRequired="false" @bind-SelectedCategory="_selectedCategory" />
         </MudItem>
         <MudItem xs="2" sm="2" md="2" Class="d-flex flex-column align-start justify-end mud-width-full">
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="GetTransactionAsync">Ok</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="_dataGrid.ReloadServerData">Ok</MudButton>
         </MudItem>
     </MudGrid>
     <MudItem xs="12" Class="mud-width-full">
-        <MudDataGrid Items="_transactions" Dense="true" Groupable="true" GroupExpanded="true" Loading="_loadingData" ColumnResizeMode="ResizeMode.None">
+        <MudDataGrid ServerData="LoadGridData" T="TransactionDTO" @ref="_dataGrid"
+                     Dense="true" Groupable="true" GroupExpanded="true" Loading="_loadingData" ColumnResizeMode="ResizeMode.None">
             <Columns>
                 <TemplateColumn Resizable="false" CellStyle="width:100px;">
                     <CellTemplate>
@@ -58,6 +60,59 @@
                 <MudDataGridPager T="TransactionDTO" />
             </PagerContent>
         </MudDataGrid>
+
+        <MudTable ServerData="@(new Func<TableState, Task<TableData<TransactionDTO>>>(ServerReload))"
+                  Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                  Loading="_loadingData" LoadingProgressColor="Color.Info" Bordered="true"
+                  GroupBy="_groupDefinition" GroupHeaderStyle="background-color:var(--mud-palette-background-grey)">
+            <ColGroup>
+                <col style="width:50px;" />
+                <col style="width:12%;" />
+                <col style="width:12%;" />
+                <col style="width:12%;" />
+                <col style="width:15%;" />
+                <col style="width:0%;" />
+                <col style="width:50px;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh Style="text-align:right">Amount</MudTh>
+                <MudTh>Date</MudTh>
+                <MudTh>Category</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Note</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <GroupHeaderTemplate>
+                <MudTh Class="mud-table-cell-custom-group" colspan="7">@(((DateTime)context.Key).ToString("d", _culture))</MudTh>
+                </GroupHeaderTemplate>
+                <RowTemplate>
+                    <MudTd Class="mud-table-cell-align-right mud-typography-nowrap">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
+                                       OnClick="async() => await UpdateTransactionAsync(context)" />
+                    </MudTd>
+                    <MudTd DataLabel="Amount" Style="text-align:right">
+                        <MudText Typo="Typo.inherit"
+                                 Color="@(_categories.Where(c => c.Id == context.CategoryId).First().IsIncome
+                                            ? Color.Success : Color.Error)">
+                            @(_categories.Where(c => c.Id == context.CategoryId).First().IsIncome
+                            ? context.Amount.ToString("0,0.00", _culture)
+                            : $"- {context.Amount.ToString("0,0.00", _culture)}")
+                    </MudText>
+                </MudTd>
+                <MudTd DataLabel="Date">@(((DateTime)context.Date!).ToString("d", _culture))</MudTd>
+                    <MudTd DataLabel="Category">@(_categories.Where(c => c.Id == context.CategoryId).First().Name)</MudTd>
+                    <MudTd DataLabel="Name">@context.Name</MudTd>
+                    <MudTd DataLabel="Note" Style="white-space: pre-line">@context.Note</MudTd>
+                    <MudTd Class="mud-table-cell-align-right mud-typography-nowrap">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Outlined" Color="Color.Error" Size="Size.Small"
+                                       OnClick="async() => await DeleteTransactionAsync(context)" />
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
     </MudItem>
 </MudGrid>
 
@@ -67,6 +122,7 @@
     private WalletDTO _selectedWallet;
     private CategoryDTO _selectedCategory;
     private Func<TransactionDTO, object> _groupBy = x => x.Date.Date;
+    private MudDataGrid<TransactionDTO>? _dataGrid;
 
     public List<WalletDTO> Wallets
     {
@@ -99,7 +155,7 @@
     {
         await GetWalletsAsync();
         await GetCatigoriesAsync();
-        await GetTransactionAsync();
+        //await GetTransactionAsync();
 
         _selectedWallet = Wallets.Count > 0 ? Wallets[0] : new();
         _selectedCategory = Categories.Count > 0 ? Categories[0] : new();
@@ -112,6 +168,20 @@
         _culture = CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
 
         base.OnParametersSet();
+    }
+
+    private async Task<GridData<TransactionDTO>> LoadGridData(GridState<TransactionDTO> gridState)
+    {
+        var page = await GetPageAsync(gridState.Page, gridState.PageSize,
+                                      _selectedWallet?.Id > 0 ? _selectedWallet.Id : null,
+                                      _selectedCategory?.Id > 0 ? _selectedCategory.Id : null);
+        GridData<TransactionDTO> data = new()
+        {
+            Items = page.Items,
+            TotalItems = page.TotalItems
+        };
+        
+        return data;
     }
 
     private async Task DeleteTransactionAsync(TransactionDTO transaction)
@@ -166,4 +236,22 @@
         if (index != -1)
             _transactions[index] = updatedTransaction;
     }
+
+
+    private async Task<TableData<TransactionDTO>> ServerReload(TableState state)
+    {
+
+        var page = await GetPageAsync(state.Page, state.PageSize,
+                                      _selectedWallet?.Id > 0 ? _selectedWallet.Id : null,
+                                      _selectedCategory?.Id > 0 ? _selectedCategory.Id : null);
+        return new TableData<TransactionDTO>() { TotalItems = page.TotalItems, Items = page.Items };
+    }
+
+    private TableGroupDefinition<TransactionDTO> _groupDefinition = new()
+        {
+            GroupName = "Day",
+            Indentation = false,
+            Expandable = false,
+            Selector = (t) => t.Date
+        };
 }

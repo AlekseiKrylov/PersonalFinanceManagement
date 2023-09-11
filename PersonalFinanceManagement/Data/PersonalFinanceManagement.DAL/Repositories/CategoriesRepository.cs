@@ -3,7 +3,7 @@ using PersonalFinanceManagement.DAL.Context;
 using PersonalFinanceManagement.DAL.Repositories.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.Interfaces.Repositories;
-using PersonalFinanceManagement.Interfaces.Repositories;
+using PersonalFinanceManagement.Interfaces.Common;
 using PersonalFinanceManagement.Interfaces.Services;
 
 namespace PersonalFinanceManagement.DAL.Repositories

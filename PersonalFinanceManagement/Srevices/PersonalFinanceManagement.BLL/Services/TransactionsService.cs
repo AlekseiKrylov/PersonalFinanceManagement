@@ -4,7 +4,7 @@ using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.DTOModels;
 using PersonalFinanceManagement.Domain.Interfaces.Repositories;
 using PersonalFinanceManagement.Domain.Interfaces.Services;
-using PersonalFinanceManagement.Interfaces.Repositories;
+using PersonalFinanceManagement.Interfaces.Common;
 
 namespace PersonalFinanceManagement.BLL.Services
 {
@@ -58,7 +58,7 @@ namespace PersonalFinanceManagement.BLL.Services
             var result = await _transactionsRepository
                 .GetPageWithRestrictionsAsync(pageIndex, pageSize, walletId, categoryId, cancel).ConfigureAwait(false);
 
-            return new Page(GetItem(result.Items), result.TotalCount, result.PageIndex, result.PageSize);
+            return new Page(GetItem(result.Items), result.TotalItems, result.PageIndex, result.PageSize);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PersonalFinanceManagement.Interfaces.Common;
 using PersonalFinanceManagement.Interfaces.Entities;
-using PersonalFinanceManagement.Interfaces.Repositories;
 using PersonalFinanceManagement.Interfaces.Services;
 
 namespace PersonalFinanceManagement.API.Controllers.Base

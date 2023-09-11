@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PersonalFinanceManagement.DAL.Context;
 using PersonalFinanceManagement.Domain.DALEntities.Base;
+using PersonalFinanceManagement.Interfaces.Common;
 using PersonalFinanceManagement.Interfaces.Repositories;
 
 namespace PersonalFinanceManagement.DAL.Repositories.Base
@@ -55,9 +56,9 @@ namespace PersonalFinanceManagement.DAL.Repositories.Base
             return await query.Take(count).ToArrayAsync(cancel).ConfigureAwait(false);
         }
 
-        protected record Page(IEnumerable<T> Items, int TotalCount, int PageIndex, int PageSize) : IPage<T>
+        protected record Page(IEnumerable<T> Items, int TotalItems, int PageIndex, int PageSize) : IPage<T>
         {
-            public int TotalPagesCount => (int)Math.Ceiling((double)TotalCount / PageSize);
+            public int TotalPagesCount => (int)Math.Ceiling((double)TotalItems / PageSize);
         };
 
         public virtual async Task<IPage<T>> GetPageAsync(int pageIndex, int pageSize, CancellationToken cancel = default)

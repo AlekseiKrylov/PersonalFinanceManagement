@@ -1,5 +1,5 @@
-﻿using PersonalFinanceManagement.Interfaces.Entities;
-using PersonalFinanceManagement.Interfaces.Repositories;
+﻿using PersonalFinanceManagement.Interfaces.Common;
+using PersonalFinanceManagement.Interfaces.Entities;
 
 namespace PersonalFinanceManagement.Interfaces.Services
 {

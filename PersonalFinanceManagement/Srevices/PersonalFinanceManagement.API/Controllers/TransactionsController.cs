@@ -3,7 +3,7 @@ using PersonalFinanceManagement.API.Controllers.Base;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.DTOModels;
 using PersonalFinanceManagement.Domain.Interfaces.Services;
-using PersonalFinanceManagement.Interfaces.Repositories;
+using PersonalFinanceManagement.Interfaces.Common;
 
 namespace PersonalFinanceManagement.API.Controllers
 {

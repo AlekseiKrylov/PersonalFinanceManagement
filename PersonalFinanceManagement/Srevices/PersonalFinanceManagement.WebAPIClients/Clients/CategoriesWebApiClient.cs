@@ -1,6 +1,7 @@
 ﻿using PersonalFinanceManagement.Domain.DTOModels;
 using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
-using PersonalFinanceManagement.Interfaces.Repositories;
+using PersonalFinanceManagement.Domain.UIModels;
+using PersonalFinanceManagement.Interfaces.Common;
 using PersonalFinanceManagement.WebAPIClients.Clients.Base;
 using System.Net.Http.Json;
 
@@ -25,7 +26,7 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
             if (walletId.HasValue)
                 url += $"?walletId={walletId}";
 
-            return await _httpClient.GetFromJsonAsync<IPage<CategoryDTO>>(url, cancel);
+            return await _httpClient.GetFromJsonAsync<PageItems<CategoryDTO>>(url, cancel);
         }
     }
 }

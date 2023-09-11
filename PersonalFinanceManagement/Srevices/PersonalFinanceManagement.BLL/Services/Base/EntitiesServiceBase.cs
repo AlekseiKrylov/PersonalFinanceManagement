@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using PersonalFinanceManagement.Interfaces.Common;
 using PersonalFinanceManagement.Interfaces.Entities;
 using PersonalFinanceManagement.Interfaces.Repositories;
 using PersonalFinanceManagement.Interfaces.Services;
@@ -24,10 +25,10 @@ namespace PersonalFinanceManagement.BLL.Services.Base
         protected virtual T GetItem(TBase item) => _mapper.Map<T>(item);
         protected virtual IEnumerable<TBase> GetBase(IEnumerable<T> items) => _mapper.Map<IEnumerable<TBase>>(items);
         protected virtual IEnumerable<T> GetItem(IEnumerable<TBase> items) => _mapper.Map<IEnumerable<T>>(items);
-        protected IPage<T> GetItem(IPage<TBase> tPage) => new Page(GetItem(tPage.Items), tPage.TotalCount, tPage.PageIndex, tPage.PageSize);
-        protected record Page(IEnumerable<T> Items, int TotalCount, int PageIndex, int PageSize) : IPage<T>
+        protected IPage<T> GetItem(IPage<TBase> tPage) => new Page(GetItem(tPage.Items), tPage.TotalItems, tPage.PageIndex, tPage.PageSize);
+        protected record Page(IEnumerable<T> Items, int TotalItems, int PageIndex, int PageSize) : IPage<T>
         {
-            public int TotalPagesCount => (int)Math.Ceiling((double)TotalCount / PageSize);
+            public int TotalPagesCount => (int)Math.Ceiling((double)TotalItems / PageSize);
         };
 
         public async Task<bool> ExistsByIdAsync(int id, CancellationToken cancel)
@@ -65,7 +66,7 @@ namespace PersonalFinanceManagement.BLL.Services.Base
         {
             var result = await _repository.GetPageAsync(pageIndex, pageSize, cancel).ConfigureAwait(false);
 
-            return new Page(GetItem(result.Items), result.TotalCount, result.PageIndex, result.PageSize);
+            return new Page(GetItem(result.Items), result.TotalItems, result.PageIndex, result.PageSize);
         }
 
         public async Task<T> GetByIdAsync(int id, CancellationToken cancel)

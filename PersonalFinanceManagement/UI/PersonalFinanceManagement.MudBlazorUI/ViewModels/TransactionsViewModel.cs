@@ -3,6 +3,8 @@ using PersonalFinanceManagement.Domain.BLLModels;
 using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.DTOModels;
 using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
+using PersonalFinanceManagement.Domain.UIModels;
+using PersonalFinanceManagement.Interfaces.Common;
 using PersonalFinanceManagement.Interfaces.WebApiClients;
 
 namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
@@ -50,6 +52,12 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
         protected async Task<TransactionDTO> RemoveTransactionAsync(int id)
         {
             return await TransactionsWebApiClient.DeleteByIdAsync(id);
+        }
+
+        protected async Task<PageItems<TransactionDTO>> GetPageAsync(int pageIndex, int pageSize, int? walletId = null, int? categoryId = null)
+        {
+            var response = await TransactionsWebApiClient.GetPage(pageIndex, pageSize, walletId, categoryId).ConfigureAwait(false);
+            return (PageItems<TransactionDTO>)response;
         }
     }
 }

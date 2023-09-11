@@ -1,9 +1,9 @@
-﻿namespace PersonalFinanceManagement.Interfaces.Repositories
+﻿namespace PersonalFinanceManagement.Interfaces.Common
 {
     public interface IPage<T>
     {
         IEnumerable<T> Items { get; }
-        int TotalCount { get; }
+        int TotalItems { get; }
         int PageIndex { get; }
         int PageSize { get; }
         int TotalPagesCount { get; }

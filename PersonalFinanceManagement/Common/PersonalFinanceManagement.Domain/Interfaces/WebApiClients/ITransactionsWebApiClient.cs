@@ -1,5 +1,5 @@
 ﻿using PersonalFinanceManagement.Domain.DTOModels;
-using PersonalFinanceManagement.Interfaces.Repositories;
+using PersonalFinanceManagement.Interfaces.Common;
 using PersonalFinanceManagement.Interfaces.WebApiClients;
 
 namespace PersonalFinanceManagement.Domain.Interfaces.WebApiClients
