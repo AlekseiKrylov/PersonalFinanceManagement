@@ -2,7 +2,7 @@
 using PersonalFinanceManagement.Domain.BLLModels;
 using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 
-namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.RegistrationAndAuthorization
+namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
 {
     public class RegisterViewModel : ComponentBase
     {

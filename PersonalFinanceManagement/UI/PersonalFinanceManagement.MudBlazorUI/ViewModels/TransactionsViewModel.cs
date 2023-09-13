@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using PersonalFinanceManagement.Domain.BLLModels;
-using PersonalFinanceManagement.Domain.DALEntities;
 using PersonalFinanceManagement.Domain.DTOModels;
 using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 using PersonalFinanceManagement.Domain.UIModels;
-using PersonalFinanceManagement.Interfaces.Common;
 using PersonalFinanceManagement.Interfaces.WebApiClients;
 
 namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
@@ -14,7 +12,7 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
         protected IEnumerable<WalletDTO> _wallets = new List<WalletDTO>();
         protected IEnumerable<CategoryDTO> _categories = new List<CategoryDTO>();
         protected List<TransactionDTO> _transactions = new List<TransactionDTO>();
-        
+
         [Inject] IEntitiesWebApiClient<WalletDTO, WalletCreateDTO> WalletsWebApiClient { get; init; }
         [Inject] ICategoriesWebApiClient CategoriesWebApiClient { get; init; }
         [Inject] ITransactionsWebApiClient TransactionsWebApiClient { get; init; }
@@ -45,7 +43,7 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
                 Date = (DateTime)transaction.Date,
                 CategoryId = transaction.Category.Id,
             };
-            
+
             return await TransactionsWebApiClient.UpdateAsync(updatedTransaction);
         }
 

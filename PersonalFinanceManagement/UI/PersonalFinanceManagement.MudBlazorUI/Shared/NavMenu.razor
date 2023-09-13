@@ -1,14 +1,9 @@
 ﻿<MudNavMenu>
-    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <AuthorizeView>
-        <NotAuthorized>
-            <MudNavLink Href="login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.Login">Login</MudNavLink>
-        </NotAuthorized>
         <Authorized>
             <MudNavLink Href="dashboard" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.Dashboard">Dashboard</MudNavLink>
             <MudNavLink Href="wallets-and-categories" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.Wallet">Wallets & Categories</MudNavLink>
             <MudNavLink Href="transactions" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.Payments">Transactions</MudNavLink>
         </Authorized>
     </AuthorizeView>
-    <MudNavLink Href="devboard" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.DeveloperBoard">DevBoard</MudNavLink>
 </MudNavMenu>

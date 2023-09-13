@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using PersonalFinanceManagement.Domain.BLLModels;
-using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 using PersonalFinanceManagement.Domain.UIModels;
+using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 using PersonalFinanceManagement.MudBlazorUI.Servises;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.RegistrationAndAuthorization
+namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
 {
     public class LoginViewModel : ComponentBase
     {
@@ -21,7 +21,7 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.RegistrationAndAuthor
             var loginResponse = await UsersWebApiClient.UserLoginAsync(_loginRequest);
             if (string.IsNullOrWhiteSpace(loginResponse))
                 return;
-            
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(loginResponse);
 

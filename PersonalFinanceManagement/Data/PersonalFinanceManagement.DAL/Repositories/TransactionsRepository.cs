@@ -14,7 +14,7 @@ namespace PersonalFinanceManagement.DAL.Repositories
         private readonly int _userId;
 
         protected override IQueryable<Transaction> Items => _userId > 0
-            ? Set.Where(t => t.Category.Wallet.UserId == _userId)
+            ? Set.Where(t => t.Category.Wallet.UserId == _userId).OrderByDescending(t => t.Date)
             : Enumerable.Empty<Transaction>().AsQueryable();
 
         public TransactionsRepository(PFMDbContext db, ICurrentUserService currentUserService) : base(db)

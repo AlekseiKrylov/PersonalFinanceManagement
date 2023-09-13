@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace PersonalFinanceManagement.MudBlazorUI.Infrastructure.Extensions
 {
-    internal static class ServicesExtensions
+    internal static class ServiceExtensions
     {
         public static IHttpClientBuilder AddApi<IInterface, IClient>(this IServiceCollection services, string adress)
             where IInterface : class where IClient : class, IInterface => services

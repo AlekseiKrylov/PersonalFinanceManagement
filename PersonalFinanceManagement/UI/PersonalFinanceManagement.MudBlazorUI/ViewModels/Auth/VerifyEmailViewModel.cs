@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
+﻿using MudBlazor;
+using Microsoft.AspNetCore.Components;
 using System.ComponentModel.DataAnnotations;
+using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 
-namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.RegistrationAndAuthorization
+namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
 {
     public class VerifyEmailViewModel : ComponentBase
     {
@@ -19,7 +19,7 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.RegistrationAndAuthor
             var response = await UsersWebApiClient.VerifyUserAsync(_emailVerificationCode);
 
             await ResultDialog(response ? "Email successfully verified" : "Wrong verify code");
-            
+
             if (response)
                 NavigationManager.NavigateTo("/login");
         }

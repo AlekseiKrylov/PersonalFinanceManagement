@@ -1,4 +1,5 @@
 ﻿using PersonalFinanceManagement.BLL.Exceptions;
+using PersonalFinanceManagement.Domain.APIModels;
 using System.Net;
 using System.Text.Json;
 
@@ -51,7 +52,13 @@ namespace PersonalFinanceManagement.API.CustomMiddleware
                     break;
             }
 
-            await response.WriteAsync(JsonSerializer.Serialize(new { message = errorMessage }));
+            var errorResponse = new ApiError
+            {
+                Message = errorMessage,
+                StatusCode = response.StatusCode,
+            };
+
+            await response.WriteAsync(JsonSerializer.Serialize(errorResponse));
         }
     }
 }

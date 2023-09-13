@@ -1,14 +1,8 @@
 ﻿@page "/"
+@attribute [Authorize]
+@inject NavigationManager NavigationManager
 
-<AuthorizeView>
-    <Authorized>
-        <MudText Typo="Typo.h3">
-            Hello, @context.User.Identity?.Name! You're authorized.
-        </MudText>
-    </Authorized>
-    <NotAuthorized>
-        <MudText Typo="Typo.h3">
-            Hello, Guest! You're not authorized.
-        </MudText>
-    </NotAuthorized>
-</AuthorizeView>
+
+@code {
+    protected override void OnInitialized() => NavigationManager.NavigateTo("/dashboard");
+}

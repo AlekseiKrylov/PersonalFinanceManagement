@@ -1,5 +1,4 @@
-﻿@using PersonalFinanceManagement.MudBlazorUI.Servises;
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
@@ -7,34 +6,52 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<MudLayout>
-    <MudAppBar Elevation="0">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudSpacer />
-        <MudToggleIconButton @bind-Toggled="@DarkModeToggle"
-                             Icon="@Icons.Material.Outlined.DarkMode" Color="@Color.Inherit"
-                             ToggledIcon="@Icons.Material.Outlined.LightMode" ToggledColor="@Color.Inherit" />
-        <AuthorizeView>
-            <Authorized>
+<AuthorizeView>
+    <Authorized>
+        <MudLayout>
+            <MudAppBar Elevation="0">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+                <MudSpacer />
+                <MudToggleIconButton @bind-Toggled="@DarkModeToggle"
+                                     Icon="@Icons.Material.Outlined.DarkMode" Color="@Color.Inherit"
+                                     ToggledIcon="@Icons.Material.Outlined.LightMode" ToggledColor="@Color.Inherit" />
                 <MudIconButton Color="Color.Inherit" Icon="@Icons.Material.Outlined.Logout" Href="/logout" OnClick="@((e) => Logout())" />
-            </Authorized>
-            <NotAuthorized>
+            </MudAppBar>
+            <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
+                <MudDrawerHeader>
+                    <MudText Typo="Typo.h6">Personal Finance Management</MudText><br>
+                </MudDrawerHeader>
+                <NavMenu />
+            </MudDrawer>
+            <MudMainContent>
+                <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
+                    @Body
+                </MudContainer>
+            </MudMainContent>
+        </MudLayout>
+    </Authorized>
+    <NotAuthorized>
+        <MudLayout>
+            <MudAppBar Elevation="0">
+                <MudSpacer />
+                <MudToggleIconButton @bind-Toggled="@DarkModeToggle"
+                                     Icon="@Icons.Material.Outlined.DarkMode" Color="@Color.Inherit"
+                                     ToggledIcon="@Icons.Material.Outlined.LightMode" ToggledColor="@Color.Inherit" />
                 <MudIconButton Color="Color.Inherit" Icon="@Icons.Material.Outlined.Login" Href="/login" />
-            </NotAuthorized>
-        </AuthorizeView>
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
-        <MudDrawerHeader>
-            <MudText Typo="Typo.h6">Personal Finance Management</MudText><br>
-        </MudDrawerHeader>
-        <NavMenu />
-    </MudDrawer>
-    <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
-            @Body
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
+            </MudAppBar>
+            <MudMainContent>
+                <MudContainer MaxWidth="MaxWidth.Small" Class="justify-content-center align-items-center mud-width-full">
+                    <MudStack Spacing="1" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudText Class="py-5" Typo="Typo.h5">
+                            Welcome to Personal Finance Management
+                        </MudText>
+                        @Body
+                    </MudStack>
+                </MudContainer>
+            </MudMainContent>
+        </MudLayout>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     MudTheme _theme = new();

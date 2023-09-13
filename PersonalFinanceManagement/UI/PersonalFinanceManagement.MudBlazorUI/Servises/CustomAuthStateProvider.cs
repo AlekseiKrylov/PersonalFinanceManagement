@@ -1,7 +1,6 @@
 ﻿using Blazored.SessionStorage;
 using PersonalFinanceManagement.Domain.UIModels;
 using PersonalFinanceManagement.MudBlazorUI.Infrastructure.Extensions;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace PersonalFinanceManagement.MudBlazorUI.Servises

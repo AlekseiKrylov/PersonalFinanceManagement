@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
+﻿using MudBlazor;
+using Microsoft.AspNetCore.Components;
 using PersonalFinanceManagement.Domain.BLLModels;
-using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 using PersonalFinanceManagement.Domain.UIModels;
+using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 
-namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.RegistrationAndAuthorization
+namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
 {
     public class ResetPasswordViewModel : ComponentBase
     {

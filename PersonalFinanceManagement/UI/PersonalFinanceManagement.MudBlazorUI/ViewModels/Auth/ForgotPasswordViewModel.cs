@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
+﻿using MudBlazor;
+using Microsoft.AspNetCore.Components;
 using System.ComponentModel.DataAnnotations;
+using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 
-namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.RegistrationAndAuthorization
+namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
 {
     public class ForgotPasswordViewModel : ComponentBase
     {

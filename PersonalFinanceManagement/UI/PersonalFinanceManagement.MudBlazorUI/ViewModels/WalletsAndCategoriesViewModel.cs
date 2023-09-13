@@ -5,7 +5,6 @@ using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 using PersonalFinanceManagement.Domain.UIModels;
 using PersonalFinanceManagement.Interfaces.WebApiClients;
 using PersonalFinanceManagement.MudBlazorUI.Infrastructure.Extensions;
-using PersonalFinanceManagement.WebAPIClients.Clients;
 
 namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
 {
