@@ -30,7 +30,7 @@ builder.Services.AddApi<ITransactionsWebApiClient, TransactionsWebApiClient>("ap
     .AddHttpMessageHandler<AuthorizationMessageHandler>();
 builder.Services.AddApi<IReportsWebApiClient, ReportsWebApiClient>("api/Reports/")
     .AddHttpMessageHandler<AuthorizationMessageHandler>();
-
+builder.Services.AddScoped<NotificationService>();
 builder.Services.AddMudServices();
 
 await builder.Build().RunAsync();

@@ -7,7 +7,7 @@ using System.Net.Http.Json;
 
 namespace PersonalFinanceManagement.WebAPIClients.Clients.Base
 {
-    public class EntitiesWebApiClient<T, TCreate> : IEntitiesWebApiClient<T, TCreate>
+    public class EntitiesWebApiClient<T, TCreate> : WebApiClientBase, IEntitiesWebApiClient<T, TCreate>
         where T : IEntity
         where TCreate : IEntity
     {

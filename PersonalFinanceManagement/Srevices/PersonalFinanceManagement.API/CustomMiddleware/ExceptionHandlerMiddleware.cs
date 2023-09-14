@@ -14,7 +14,7 @@ namespace PersonalFinanceManagement.API.CustomMiddleware
             _next = next;
         }
 
-        public async Task Invoke(HttpContext httpContext)
+        public async Task InvokeAsync(HttpContext httpContext)
         {
             try
             {
@@ -34,8 +34,16 @@ namespace PersonalFinanceManagement.API.CustomMiddleware
 
             switch (exception)
             {
+                case TaskCanceledException:
+                    response.StatusCode = 499;
+                    errorMessage = "The request was canceled by the client.";
+                    break;
                 case UnauthorizedAccessException:
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    errorMessage = exception.Message;
+                    break;
+                case InvalidOperationException:
+                    response.StatusCode = (int)HttpStatusCode.Forbidden;
                     errorMessage = exception.Message;
                     break;
                 case InvalidCredentialsException:

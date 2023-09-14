@@ -4,10 +4,10 @@ namespace PersonalFinanceManagement.Domain.Interfaces.WebApiClients
 {
     public interface IUsersWebApiClient
     {
-        Task RegisterUserAsync(UserRegistrationAndRestoration userRegistration, CancellationToken cancel = default);
+        Task<string> RegisterUserAsync(UserRegistrationAndRestoration userRegistration, CancellationToken cancel = default);
         Task<string> UserLoginAsync(UserLogin userLogin, CancellationToken cancel = default);
         Task<bool> VerifyUserAsync(string verificationToken, CancellationToken cancel = default);
         Task<bool> ForgotPasswordAsync(string email, CancellationToken cancel = default);
-        Task<bool?> ResetPasswordAsync(UserRegistrationAndRestoration userResetPassword, string token, CancellationToken cancel = default);
+        Task<bool> ResetPasswordAsync(UserRegistrationAndRestoration userResetPassword, string token, CancellationToken cancel = default);
     }
 }

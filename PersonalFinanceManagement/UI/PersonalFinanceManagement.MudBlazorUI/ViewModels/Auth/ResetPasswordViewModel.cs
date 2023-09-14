@@ -28,9 +28,9 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
 
 
             var response = await UsersWebApiClient.ResetPasswordAsync(_resetReqest, _resetPasswordToken);
-            await ResultDialog(response is null ? "User not found"
-                             : response is true ? "Password successfully changed"
-                             : "Wrong reset code");
+            //await ResultDialog(response is null ? "User not found"
+            //                 : response is true ? "Password successfully changed"
+            //                 : "Wrong reset code");
 
             if (response is true)
                 NavigationManager.NavigateTo("/login");
