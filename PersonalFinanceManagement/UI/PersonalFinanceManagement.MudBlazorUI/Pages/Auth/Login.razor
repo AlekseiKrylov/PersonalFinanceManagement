@@ -1,7 +1,8 @@
 ﻿@page "/login"
 @inherits LoginViewModel
+@inject ISnackbar Snackbar
 
-<EditForm Model="@_loginRequest" OnValidSubmit="AuthenticateAsync">
+<EditForm Model="@_loginRequest" OnValidSubmit="HandleAuthenticateAsync">
     <DataAnnotationsValidator />
     <MudGrid>
         <MudItem xs="12">
@@ -11,7 +12,7 @@
                     @bind-Value="_loginRequest.Email" For="@(() => _loginRequest.Email)" />
                     <MudTextField Label="Password" Class="mt-3"
                     @bind-Value="_loginRequest.Password" For="@(() => _loginRequest.Password)" InputType="PasswordInput"
-                    Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" />
+                                  Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
@@ -31,7 +32,7 @@
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
-    void ShowHidePassword()
+    private void ShowHidePassword()
     {
         @if (isShow)
         {
@@ -44,6 +45,21 @@
             isShow = true;
             PasswordInputIcon = Icons.Material.Filled.Visibility;
             PasswordInput = InputType.Text;
+        }
+    }
+
+    private async Task HandleAuthenticateAsync()
+    {
+        var response = await AuthenticateAsync();
+
+        switch (response.Status)
+        {
+            case ApiResultStatus.Failure:
+                Snackbar.Add(response.GetErrorString, Severity.Warning);
+                break;
+            case ApiResultStatus.Partial:
+                Snackbar.Add(response.GetErrorString, Severity.Info);
+                break;
         }
     }
 }

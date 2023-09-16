@@ -35,12 +35,12 @@ namespace PersonalFinanceManagement.BLL.Services
                     : $"{nameof(password)} cannot be null, empty, or contain only whitespace.");
 
             if (!await _userService.ExistByEmailAsync(email, cancel).ConfigureAwait(false))
-                throw new InvalidCredentialsException($"The user with the email '{email}' is not registered.");
+                return string.Empty; //throw new InvalidCredentialsException($"The user with the email '{email}' is not registered.");
 
             var user = await _userService.GetUserByEmailAsync(email, cancel).ConfigureAwait(false);
 
             if (!_userService.VerifyPassword(password, user.PasswordHash))
-                throw new InvalidCredentialsException("Invalid password.");
+                return string.Empty; //throw new InvalidCredentialsException("Invalid password.");
 
             return GenerateJWT(user);
         }

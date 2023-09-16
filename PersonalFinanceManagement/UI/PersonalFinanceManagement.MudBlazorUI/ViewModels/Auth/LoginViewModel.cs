@@ -4,6 +4,7 @@ using PersonalFinanceManagement.Domain.UIModels;
 using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 using PersonalFinanceManagement.MudBlazorUI.Servises;
 using System.IdentityModel.Tokens.Jwt;
+using PersonalFinanceManagement.Domain.APIModels;
 
 namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
 {
@@ -16,16 +17,16 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
         [Inject] NavigationManager NavigationManager { get; init; }
         [Inject] IUsersWebApiClient UsersWebApiClient { get; init; }
 
-        protected async Task AuthenticateAsync()
+        protected async Task<ApiResult<string>> AuthenticateAsync()
         {
-            var loginResponse = await UsersWebApiClient.UserLoginAsync(_loginRequest);
-            if (string.IsNullOrWhiteSpace(loginResponse))
-                return;
+            var response = await UsersWebApiClient.UserLoginAsync(_loginRequest);
+            if (!response.IsSuccessful)
+                return response;
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var jwtToken = tokenHandler.ReadJwtToken(loginResponse);
+            var jwtToken = tokenHandler.ReadJwtToken(response.Value);
 
-            _userSession.AccessToken = loginResponse;
+            _userSession.AccessToken = response.Value;
             _userSession.UserId = int.TryParse(jwtToken.Claims.FirstOrDefault(c => c.Type == "id").Value, out int id) ? id : throw new Exception("Error authentication");
             _userSession.Name = jwtToken.Claims.FirstOrDefault(c => c.Type == "email").Value;
             _userSession.Email = jwtToken.Claims.FirstOrDefault(c => c.Type == "email").Value;
@@ -34,6 +35,8 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
 
             await ((CustomAuthStateProvider)AuthenticationStateProvider).UpdateAuthenticationStateAsync(_userSession);
             NavigationManager.NavigateTo("/", true);
+            
+            return new ApiResult<string>(value: string.Empty);
         }
     }
 }

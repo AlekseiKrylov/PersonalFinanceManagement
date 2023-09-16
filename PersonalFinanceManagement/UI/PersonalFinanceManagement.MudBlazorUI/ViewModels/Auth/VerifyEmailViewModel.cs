@@ -1,7 +1,7 @@
-﻿using MudBlazor;
-using Microsoft.AspNetCore.Components;
-using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Components;
+using PersonalFinanceManagement.Domain.APIModels;
 using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
+using System.ComponentModel.DataAnnotations;
 
 namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
 {
@@ -11,22 +11,16 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
         protected string _emailVerificationCode;
 
         [Inject] IUsersWebApiClient UsersWebApiClient { get; init; }
-        [Inject] IDialogService DialogService { get; init; }
         [Inject] NavigationManager NavigationManager { get; init; }
 
-        protected async Task EmailVerificationAsync()
+        protected async Task<ApiResult<string>> EmailVerificationAsync()
         {
             var response = await UsersWebApiClient.VerifyUserAsync(_emailVerificationCode);
+            if (!response.IsSuccessful)
+                return response;
 
-            await ResultDialog(response ? "Email successfully verified" : "Wrong verify code");
-
-            if (response)
-                NavigationManager.NavigateTo("/login");
-        }
-
-        private async Task ResultDialog(string message)
-        {
-            await DialogService.ShowMessageBox("Information", message);
+            NavigationManager.NavigateTo("/login");
+            return response;
         }
     }
 }

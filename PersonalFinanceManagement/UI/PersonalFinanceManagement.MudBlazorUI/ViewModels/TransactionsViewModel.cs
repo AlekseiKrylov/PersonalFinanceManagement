@@ -54,7 +54,7 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
 
         protected async Task<PageItems<TransactionDTO>> GetPageAsync(int pageIndex, int pageSize, int? walletId = null, int? categoryId = null)
         {
-            var response = await TransactionsWebApiClient.GetPage(pageIndex, pageSize, walletId, categoryId).ConfigureAwait(false);
+            var response = await TransactionsWebApiClient.GetPageAsync(pageIndex, pageSize, walletId, categoryId).ConfigureAwait(false);
             return (PageItems<TransactionDTO>)response;
         }
     }

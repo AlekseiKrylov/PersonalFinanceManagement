@@ -21,30 +21,34 @@ namespace PersonalFinanceManagement.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Register(UserRegistrationAndRestoration userRegistration, CancellationToken cancel = default)
         {
-            await _userService.RegisterUserAsync(userRegistration.Email, userRegistration.Password, cancel);
-            return Ok("User successfully registered.");
+            var user = await _userService.RegisterUserAsync(userRegistration.Email, userRegistration.Password, cancel);
+            return user.Id > 0 ? Ok("User successfully registered.")
+                : StatusCode(409, new ApiError { Message = "The email is already in use.", StatusCode = (int)HttpStatusCode.Conflict });
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Login(UserLogin userLogin, CancellationToken cancel = default)
         {
             var user = await _userService.GetUserByEmailAsync(userLogin.Email, cancel);
 
             if (user is null)
-                return StatusCode(404, new ApiError { Message = "User not found", StatusCode = (int)HttpStatusCode.NotFound });
+                return StatusCode(404, new ApiError { Message = "User not found.", StatusCode = (int)HttpStatusCode.NotFound });
 
             if (user.VerifiedAt is null)
-                return StatusCode(403, new ApiError { Message = "User not verified", StatusCode = (int)HttpStatusCode.Forbidden });
+                return StatusCode(403, new ApiError { Message = "User not verified.", StatusCode = (int)HttpStatusCode.Forbidden });
 
             var token = await _authService.UserLogin(userLogin.Email, userLogin.Password, cancel);
-            return Ok(token);
+            return !string.IsNullOrWhiteSpace(token) ? Ok(token)
+                : StatusCode(401, new ApiError { Message = "Invalid login or password.", StatusCode = (int)HttpStatusCode.Unauthorized });
         }
 
         [AllowAnonymous]

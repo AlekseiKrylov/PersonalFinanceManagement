@@ -3,6 +3,7 @@ using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
 using PersonalFinanceManagement.Domain.UIModels;
 using PersonalFinanceManagement.Interfaces.Common;
 using PersonalFinanceManagement.WebAPIClients.Clients.Base;
+using System.Net;
 using System.Net.Http.Json;
 
 namespace PersonalFinanceManagement.WebAPIClients.Clients
@@ -26,7 +27,13 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
             if (walletId.HasValue)
                 url += $"?walletId={walletId}";
 
-            return await _httpClient.GetFromJsonAsync<PageItems<CategoryDTO>>(url, cancel);
+            var response = await _httpClient.GetAsync(url, cancel).ConfigureAwait(false);
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return new PageItems<CategoryDTO>(Enumerable.Empty<CategoryDTO>(), 0, pageIndex, pageSize);
+
+            return await response.EnsureSuccessStatusCode().Content
+                                 .ReadFromJsonAsync<PageItems<CategoryDTO>>(cancellationToken: cancel)
+                                 .ConfigureAwait(false);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
         public async Task<IEnumerable<TransactionDTO>> GetAllInCategory(int categoryId, CancellationToken cancel = default) =>
             await _httpClient.GetFromJsonAsync<IEnumerable<TransactionDTO>>($"transactions-in-category[{categoryId}]", cancel).ConfigureAwait(false);
 
-        public async Task<IPage<TransactionDTO>> GetPage(int pageIndex, int pageSize, int? walletId = null, int? categoryId = null, CancellationToken cancel = default)
+        public async Task<IPage<TransactionDTO>> GetPageAsync(int pageIndex, int pageSize, int? walletId = null, int? categoryId = null, CancellationToken cancel = default)
         {
             var url = $"page-with-restriction[{pageIndex}:{pageSize}]";
 
@@ -39,7 +39,13 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
             if (!walletId.HasValue && categoryId.HasValue)
                 url += $"?categoryId={categoryId}";
 
-            return await _httpClient.GetFromJsonAsync<PageItems<TransactionDTO>>(url, cancel);
+            var response = await _httpClient.GetAsync(url, cancel).ConfigureAwait(false);
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return new PageItems<TransactionDTO>(Enumerable.Empty<TransactionDTO>(), 0, pageIndex, pageSize);
+
+            return await response.EnsureSuccessStatusCode().Content
+                                 .ReadFromJsonAsync<PageItems<TransactionDTO>>(cancellationToken: cancel)
+                                 .ConfigureAwait(false);
         }
     }
 }

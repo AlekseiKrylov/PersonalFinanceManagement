@@ -1,5 +1,6 @@
 ﻿@page "/verify"
 @inherits VerifyEmailViewModel
+@inject ISnackbar Snackbar
 
 <MudGrid>
     <MudItem xs="12">
@@ -10,7 +11,7 @@
                                   Required="true" RequiredError="Verification code is required!" OnlyValidateIfDirty="false" />
                 </MudCardContent>
                 <MudCardActions>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success)" Class="ml-auto" OnClick="EmailVerificationAsync">Verify</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success)" Class="ml-auto" OnClick="HandleEmailVerificationAsync">Verify</MudButton>
                 </MudCardActions>
             </MudForm>
         </MudCard>
@@ -23,4 +24,22 @@
 @code {
     bool _success;
     MudForm _form;
+
+    private async Task HandleEmailVerificationAsync()
+    {
+        var response = await EmailVerificationAsync();
+
+        switch (response.Status)
+        {
+            case ApiResultStatus.Success:
+                Snackbar.Add(response.Value, Severity.Success);
+                break;
+            case ApiResultStatus.Failure:
+                Snackbar.Add(response.GetErrorString, Severity.Warning);
+                break;
+            case ApiResultStatus.Partial:
+                Snackbar.Add(response.GetErrorString, Severity.Info);
+                break;
+        }
+    }
 }

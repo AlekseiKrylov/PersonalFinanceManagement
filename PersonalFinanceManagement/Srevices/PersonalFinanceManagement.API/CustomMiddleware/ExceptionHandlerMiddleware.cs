@@ -42,14 +42,6 @@ namespace PersonalFinanceManagement.API.CustomMiddleware
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     errorMessage = exception.Message;
                     break;
-                case InvalidOperationException:
-                    response.StatusCode = (int)HttpStatusCode.Forbidden;
-                    errorMessage = exception.Message;
-                    break;
-                case InvalidCredentialsException:
-                    response.StatusCode = (int)HttpStatusCode.Forbidden;
-                    errorMessage = "Wrong email or password";
-                    break;
                 case InvalidUserIdException:
                 case ArgumentException:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;

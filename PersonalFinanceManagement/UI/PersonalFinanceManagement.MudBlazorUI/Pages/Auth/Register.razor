@@ -1,7 +1,8 @@
 ﻿@page "/register"
 @inherits RegisterViewModel
+@inject ISnackbar Snackbar
 
-<EditForm Model="@_registerReqest" OnValidSubmit="RegisterAsync">
+<EditForm Model="@_registerReqest" OnValidSubmit="HandleRegisterAsync">
     <DataAnnotationsValidator />
     <MudGrid>
         <MudItem xs="12">
@@ -46,6 +47,24 @@
             isShow = true;
             PasswordInputIcon = Icons.Material.Filled.Visibility;
             PasswordInput = InputType.Text;
+        }
+    }
+
+    private async Task HandleRegisterAsync()
+    {
+        var response = await RegisterAsync();
+
+        switch (response.Status)
+        {
+            case ApiResultStatus.Success:
+                Snackbar.Add(response.Value, Severity.Success);
+                break;
+            case ApiResultStatus.Failure:
+                Snackbar.Add(response.GetErrorString, Severity.Warning);
+                break;
+            case ApiResultStatus.Partial:
+                Snackbar.Add(response.GetErrorString, Severity.Info);
+                break;
         }
     }
 }

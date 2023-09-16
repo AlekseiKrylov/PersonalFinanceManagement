@@ -1,8 +1,8 @@
-﻿using MudBlazor;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
+using PersonalFinanceManagement.Domain.APIModels;
 using PersonalFinanceManagement.Domain.BLLModels;
-using PersonalFinanceManagement.Domain.UIModels;
 using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
+using PersonalFinanceManagement.Domain.UIModels;
 
 namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
 {
@@ -13,10 +13,9 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
         protected ResetPasswordRequest _resetReqestModel = new();
 
         [Inject] IUsersWebApiClient UsersWebApiClient { get; init; }
-        [Inject] IDialogService DialogService { get; init; }
         [Inject] NavigationManager NavigationManager { get; init; }
 
-        protected async Task ResetAsync()
+        protected async Task<ApiResult<string>> ResetAsync()
         {
             _resetPasswordToken = _resetReqestModel.ResetPasswordToken;
             _resetReqest = new()
@@ -28,17 +27,11 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels.Auth
 
 
             var response = await UsersWebApiClient.ResetPasswordAsync(_resetReqest, _resetPasswordToken);
-            //await ResultDialog(response is null ? "User not found"
-            //                 : response is true ? "Password successfully changed"
-            //                 : "Wrong reset code");
+            if (!response.IsSuccessful)
+                return response;
 
-            if (response is true)
-                NavigationManager.NavigateTo("/login");
-        }
-
-        private async Task ResultDialog(string message)
-        {
-            await DialogService.ShowMessageBox("Information", message);
+            NavigationManager.NavigateTo("/login");
+            return response;
         }
     }
 }

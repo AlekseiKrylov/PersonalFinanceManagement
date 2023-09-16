@@ -51,7 +51,7 @@ namespace PersonalFinanceManagement.BLL.Services
                     : $"{nameof(password)} cannot be null, empty, or contain only whitespace.");
 
             if (await ExistByEmailAsync(email, cancel).ConfigureAwait(false))
-                throw new InvalidOperationException($"The email is already in use.");
+                return new UserDTO(); //throw new InvalidOperationException($"The email is already in use.");
 
             string hashedPassword = HashPassword(password);
 
@@ -61,8 +61,8 @@ namespace PersonalFinanceManagement.BLL.Services
                 PasswordHash = hashedPassword,
             };
 
-            await _userRepository.AddAsync(user, cancel).ConfigureAwait(false);
-            return GetDTO(user);
+            var createdUser = await _userRepository.AddAsync(user, cancel).ConfigureAwait(false);
+            return GetDTO(createdUser);
         }
 
         public async Task<bool> VerifyUserAsync(string verificationToken, CancellationToken cancel)

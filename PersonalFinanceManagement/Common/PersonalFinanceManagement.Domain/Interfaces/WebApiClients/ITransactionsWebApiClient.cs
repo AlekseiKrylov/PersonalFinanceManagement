@@ -9,6 +9,6 @@ namespace PersonalFinanceManagement.Domain.Interfaces.WebApiClients
         Task<bool> MoveTransactionsToAnotherCategory(int walletId, int sourceCategoryId, int targetCategoryId, CancellationToken cancel = default);
         Task<int> GetCountInCategory(int categoryId, CancellationToken cancel = default);
         Task<IEnumerable<TransactionDTO>> GetAllInCategory(int categoryId, CancellationToken cancel = default);
-        Task<IPage<TransactionDTO>> GetPage(int pageIndex, int pageSize, int? walletId = null, int? categoryId = null, CancellationToken cancel = default);
+        Task<IPage<TransactionDTO>> GetPageAsync(int pageIndex, int pageSize, int? walletId = null, int? categoryId = null, CancellationToken cancel = default);
     }
 }
