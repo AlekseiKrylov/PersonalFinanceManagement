@@ -1,7 +1,7 @@
 ﻿@page "/register"
 @inherits RegisterViewModel
-@inject ISnackbar Snackbar
 
+<ApiMessageHandler ApiResponse="_apiResponse" SuccessMessage="_successMessage" />
 <EditForm Model="@_registerReqest" OnValidSubmit="HandleRegisterAsync">
     <DataAnnotationsValidator />
     <MudGrid>
@@ -33,6 +33,8 @@
     bool isShow;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    private IApiResult _apiResponse;
+    private string _successMessage;
 
     void ShowHidePassword()
     {
@@ -54,17 +56,7 @@
     {
         var response = await RegisterAsync();
 
-        switch (response.Status)
-        {
-            case ApiResultStatus.Success:
-                Snackbar.Add(response.Value, Severity.Success);
-                break;
-            case ApiResultStatus.Failure:
-                Snackbar.Add(response.GetErrorString, Severity.Warning);
-                break;
-            case ApiResultStatus.Partial:
-                Snackbar.Add(response.GetErrorString, Severity.Info);
-                break;
-        }
+        _apiResponse = response;
+        _successMessage = response.Value;
     }
 }

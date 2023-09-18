@@ -44,11 +44,11 @@
             }
         </MudItem>
         <MudItem xs="12" hidden="@(!_addTransaction)">
-            <AddTransaction Categories="_categories.ToList()" TransactionCreateForm="_transactionCreateForm" CreateTransactionAsync="CreateTransactionAsync" />
+            <AddTransaction Categories="_categories.ToList()" TransactionCreateForm="_transactionCreateForm" CreateTransactionAsync="HandleCreateTransactionAsync" />
         </MudItem>
         <MudItem xs="12">
             <TransactionsTable Categories="_categories.ToList()" Transactions="_transactions.ToList()" LoadingData="_loadingData"
-                               OnDeleteTransaction="RemoveAsync" OnUpdateTransaction="UpdateAsync" />
+                               OnDeleteTransaction="HandleRemoveTransactionAsync" OnUpdateTransaction="HandleUpdateTransactionAsync" />
         </MudItem>
     </MudGrid>
 </MudContainer>
@@ -96,14 +96,12 @@
         _loadingData = true;
 
         if (_dateRange.Start is not null && _dateRange.End is not null)
-        {
             await GetPeriodReportAsync(SelectedWallet.Id, (DateTime)_dateRange.Start, (DateTime)_dateRange.End);
-        }
 
         _loadingData = false;
     }
 
-    private async Task CreateTransactionAsync()
+    private async Task HandleCreateTransactionAsync()
     {
         var newTransaction = new TransactionCreateDTO
             {
@@ -114,26 +112,25 @@
                 Amount = (decimal)_transactionCreateForm.Amount!
             };
 
-        await AddTransactionAsync(newTransaction);
+        var createdTransaction = await AddTransactionAsync(newTransaction);
 
-        if (newTransaction.Date >= _dateRange.Start && newTransaction.Date <= _dateRange.End)
-        {
+        if (newTransaction.Date >= _dateRange.Start && newTransaction.Date <= _dateRange.End && createdTransaction is not null)
             await GetPeriodReportAsync(SelectedWallet.Id, (DateTime)_dateRange.Start, (DateTime)_dateRange.End);
-        }
+        
         ClearCreateForm();
     }
 
     private void ClearCreateForm() => _transactionCreateForm = new();
 
-    private async Task UpdateAsync(object transaction)
+    private async Task HandleUpdateTransactionAsync(TransactionWithCategory transaction)
     {
-        await UpdateTransactionAsync((TransactionWithCategory)transaction);
+        var updatedTransaction = await UpdateTransactionAsync(transaction);
         await GetReportAsync();
     }
 
-    private async Task RemoveAsync(TransactionWithCategory transaction)
+    private async Task HandleRemoveTransactionAsync(TransactionWithCategory transaction)
     {
-        await RemoveTransactionAsync(transaction.Id);
+        var removedTransaction = await RemoveTransactionAsync(transaction.Id);
         await GetReportAsync();
     }
 }

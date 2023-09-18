@@ -30,7 +30,6 @@ builder.Services.AddApi<ITransactionsWebApiClient, TransactionsWebApiClient>("ap
     .AddHttpMessageHandler<AuthorizationMessageHandler>();
 builder.Services.AddApi<IReportsWebApiClient, ReportsWebApiClient>("api/Reports/")
     .AddHttpMessageHandler<AuthorizationMessageHandler>();
-builder.Services.AddScoped<NotificationService>();
 builder.Services.AddMudServices(config =>
 {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;

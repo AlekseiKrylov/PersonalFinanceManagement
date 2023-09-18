@@ -1,11 +1,10 @@
 ﻿using PersonalFinanceManagement.Domain.BLLModels.Reports;
 using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
-using PersonalFinanceManagement.WebAPIClients.Clients.Base;
 using System.Net.Http.Json;
 
 namespace PersonalFinanceManagement.WebAPIClients.Clients
 {
-    public class ReportsWebApiClient : WebApiClientBase, IReportsWebApiClient
+    public class ReportsWebApiClient : IReportsWebApiClient
     {
         private readonly HttpClient _httpClient;
 

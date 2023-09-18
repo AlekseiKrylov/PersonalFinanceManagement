@@ -59,7 +59,7 @@
                     <MudCheckBox @bind-Checked="_addCategoryForm.IsIncome" Color="Color.Primary">Income</MudCheckBox>
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
                                Disabled="@(!_isValidAddCategoryForm || string.IsNullOrWhiteSpace(_addCategoryForm.Name))" Class="my-1"
-                               OnClick="CreateCategoryAsync">Create</MudButton>
+                               OnClick="HandleCreateCategoryAsync">Create</MudButton>
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -71,9 +71,9 @@
                     <CellTemplate>
                         <MudStack Row="true">
                             <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
-                                           OnClick="async() => await UpdateCategoryDialogAsync(context.Item)" />
+                                           OnClick="async() => await HandleUpdateCategoryAsync(context.Item)" />
                             <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Outlined" Color="Color.Error" Size="Size.Small"
-                                           OnClick="async() => await DeleteCategoryDialogAsync(context.Item)" />
+                                           OnClick="async() => await HandleDeleteCategoryAsync(context.Item)" />
                         </MudStack>
                     </CellTemplate>
                 </TemplateColumn>
@@ -103,7 +103,7 @@
         await GetWalletsAsync();
         if (_wallets.Count() == 1)
             await SetWalletAndLoadCategoriesAsync(_wallets[0].Id);
-        
+
         await base.OnInitializedAsync();
     }
 
@@ -143,12 +143,18 @@
             return;
 
         var createdWallet = await AddWalletAsync(newWallet);
-        _wallets.Add(createdWallet);
+
+        if (createdWallet is not null)
+            _wallets.Add(createdWallet);
     }
 
     private async Task HandleUpdateWalletAsync(WalletDTO wallet)
     {
         var updatedWallet = await UpdateWalletAsync(wallet);
+
+        if (!wallet.Equals(updatedWallet))
+            return;
+
         int index = _wallets.FindIndex(item => item.Id == updatedWallet.Id);
         if (index != -1)
             _wallets[index] = updatedWallet;
@@ -157,20 +163,22 @@
     private async Task HandleDeleteWalletAsync(WalletDTO wallet)
     {
         var deletedWallet = await DeleteWalletAsync(wallet);
-        _wallets.Remove(deletedWallet);
+
+        if (wallet.Equals(deletedWallet))
+            _wallets.Remove(deletedWallet);
     }
 
-    private async Task CreateCategoryAsync()
+    private async Task HandleCreateCategoryAsync()
     {
         _addCategoryForm.WalletId = _selectedWallet.Id;
         var createdCategory = await AddCategoryAsync(_addCategoryForm);
         ClearAddCategoryForm();
 
-        if (_selectedWallet.Id == createdCategory.WalletId)
+        if (_selectedWallet.Id == createdCategory.WalletId && createdCategory is not null)
             _categoriesSelectedWallet.Add(createdCategory);
     }
 
-    private async Task UpdateCategoryDialogAsync(CategoryDTO category)
+    private async Task HandleUpdateCategoryAsync(CategoryDTO category)
     {
         var editableCategory = new CategoryDTO()
             {
@@ -193,12 +201,15 @@
 
         var updatedCategory = await UpdateCategoryAsync(editableCategory);
 
+        if (!category.Equals(updatedCategory))
+            return;
+
         int index = _categoriesSelectedWallet.FindIndex(item => item.Id == updatedCategory.Id);
         if (index != -1)
             _categoriesSelectedWallet[index] = updatedCategory;
     }
 
-    private async Task DeleteCategoryDialogAsync(CategoryDTO category)
+    private async Task HandleDeleteCategoryAsync(CategoryDTO category)
     {
         var categoriesWithoutCurrent = _categoriesSelectedWallet.Where(c => c.Id != category.Id).ToList();
         categoriesWithoutCurrent.Insert(0, new CategoryDTO { Id = -1, Name = "Nowhere" });
@@ -210,7 +221,7 @@
         parameters.Add(d => d.SelectedCategory, selectedCategory);
         parameters.Add(d => d.ContentText, $"Are you sure you want to delete transaction '{category.Name}'?");
 
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
 
         var dialog = DialogService.Show<DeleteCategoryDialog>("Delete", parameters, options);
         var result = await dialog.Result;
@@ -218,11 +229,14 @@
         if (result.Canceled)
             return;
 
-        if (result.DataType == typeof(int) || (int)result.Data > 0)
-            await MoveTransactioncAndDeleteCategory(_selectedWallet.Id, category.Id, (int)result.Data);
-        else
-            await DeleteCategoryAsync(category);
+        CategoryDTO deletedCategory;
 
-        _categoriesSelectedWallet.Remove(category);
+        if (result.DataType == typeof(int) && (int)result.Data > 0)
+            deletedCategory = await MoveTransactioncAndDeleteCategory(_selectedWallet.Id, category.Id, (int)result.Data);
+        else
+            deletedCategory = await DeleteCategoryAsync(category);
+
+        if (category.Equals(deletedCategory))
+            _categoriesSelectedWallet.Remove(category);
     }
 }

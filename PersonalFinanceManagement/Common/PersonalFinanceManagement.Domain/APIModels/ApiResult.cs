@@ -1,4 +1,6 @@
-﻿namespace PersonalFinanceManagement.Domain.APIModels
+﻿using PersonalFinanceManagement.Domain.Interfaces.API;
+
+namespace PersonalFinanceManagement.Domain.APIModels
 {
     public enum ApiResultStatus
     {
@@ -7,7 +9,7 @@
         Failure
     }
 
-    public class ApiResult
+    public class ApiResult : IApiResult
     {
         public ApiResultStatus Status { get; }
         public string[] Errors { get; }
@@ -25,24 +27,12 @@
     {
         public T? Value { get; }
 
-        public ApiResult(T value) : base(ApiResultStatus.Success)
-        {
-            Value = value;
-        }
+        public ApiResult(T value) : base(ApiResultStatus.Success) => Value = value;
 
-        public ApiResult(string error) : base(ApiResultStatus.Failure, error)
-        {
-            Value = default;
-        }
+        public ApiResult(string error) : base(ApiResultStatus.Failure, error) => Value = default;
 
-        public ApiResult(ApiResultStatus status, string error) : base(status, error)
-        {
-            Value = default;
-        }
+        public ApiResult(ApiResultStatus status, string error) : base(status, error) => Value = default;
 
-        public ApiResult(T value, ApiResultStatus status, string error) : base(status, error)
-        {
-            Value = value;
-        }
+        public ApiResult(T value, ApiResultStatus status, string error) : base(status, error) => Value = value;
     }
 }

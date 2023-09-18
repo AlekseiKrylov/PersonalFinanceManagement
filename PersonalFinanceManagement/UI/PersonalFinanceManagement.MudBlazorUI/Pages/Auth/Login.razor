@@ -1,7 +1,7 @@
 ﻿@page "/login"
 @inherits LoginViewModel
-@inject ISnackbar Snackbar
 
+<ApiMessageHandler ApiResponse="_apiResponse" NeedSuccessMessage="false" />
 <EditForm Model="@_loginRequest" OnValidSubmit="HandleAuthenticateAsync">
     <DataAnnotationsValidator />
     <MudGrid>
@@ -11,8 +11,8 @@
                     <MudTextField Label="Email" Class="mt-3"
                     @bind-Value="_loginRequest.Email" For="@(() => _loginRequest.Email)" />
                     <MudTextField Label="Password" Class="mt-3"
-                    @bind-Value="_loginRequest.Password" For="@(() => _loginRequest.Password)" InputType="PasswordInput"
-                                  Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" />
+                    @bind-Value="_loginRequest.Password" For="@(() => _loginRequest.Password)" InputType="_passwordInput"
+                                  Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
@@ -28,38 +28,30 @@
 </EditForm>
 
 @code {
-    bool isShow;
-    InputType PasswordInput = InputType.Password;
-    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    private bool _isShow;
+    private InputType _passwordInput = InputType.Password;
+    private string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+    private IApiResult _apiResponse;
 
     private void ShowHidePassword()
     {
-        @if (isShow)
+        @if (_isShow)
         {
-            isShow = false;
-            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
-            PasswordInput = InputType.Password;
+            _isShow = false;
+            _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+            _passwordInput = InputType.Password;
         }
         else
         {
-            isShow = true;
-            PasswordInputIcon = Icons.Material.Filled.Visibility;
-            PasswordInput = InputType.Text;
+            _isShow = true;
+            _passwordInputIcon = Icons.Material.Filled.Visibility;
+            _passwordInput = InputType.Text;
         }
     }
 
     private async Task HandleAuthenticateAsync()
     {
         var response = await AuthenticateAsync();
-
-        switch (response.Status)
-        {
-            case ApiResultStatus.Failure:
-                Snackbar.Add(response.GetErrorString, Severity.Warning);
-                break;
-            case ApiResultStatus.Partial:
-                Snackbar.Add(response.GetErrorString, Severity.Info);
-                break;
-        }
+        _apiResponse = response;
     }
 }

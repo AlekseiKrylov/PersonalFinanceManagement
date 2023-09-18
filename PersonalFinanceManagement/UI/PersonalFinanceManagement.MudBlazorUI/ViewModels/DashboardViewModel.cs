@@ -38,12 +38,12 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
             SetData(_periodTransactionsReport);
         }
 
-        protected async Task AddTransactionAsync(TransactionCreateDTO transaction)
+        protected async Task<TransactionDTO> AddTransactionAsync(TransactionCreateDTO transaction)
         {
-            var newTransaction = await TransactionsWebApiClient.AddAsync(transaction);
+            return await TransactionsWebApiClient.AddAsync(transaction);
         }
 
-        protected async Task UpdateTransactionAsync(TransactionWithCategory transaction)
+        protected async Task<TransactionDTO> UpdateTransactionAsync(TransactionWithCategory transaction)
         {
             var updatedTransaction = new TransactionDTO
             {
@@ -54,12 +54,13 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
                 Date = (DateTime)transaction.Date,
                 CategoryId = transaction.Category.Id,
             };
-            var updated = await TransactionsWebApiClient.UpdateAsync(updatedTransaction);
+
+            return await TransactionsWebApiClient.UpdateAsync(updatedTransaction);
         }
 
-        protected async Task RemoveTransactionAsync(int id)
+        protected async Task<TransactionDTO> RemoveTransactionAsync(int id)
         {
-            var deleted = await TransactionsWebApiClient.DeleteByIdAsync(id);
+            return await TransactionsWebApiClient.DeleteByIdAsync(id);
         }
 
         private void ClearData()

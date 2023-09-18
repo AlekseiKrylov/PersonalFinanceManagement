@@ -61,18 +61,20 @@ namespace PersonalFinanceManagement.MudBlazorUI.ViewModels
             return await CategoriesWebApiClient.UpdateAsync(category).ConfigureAwait(false);
         }
 
-        protected async Task DeleteCategoryAsync(CategoryDTO category)
+        protected async Task<CategoryDTO> DeleteCategoryAsync(CategoryDTO category)
         {
-            var deletedWallet = await CategoriesWebApiClient.DeleteByIdAsync(category.Id).ConfigureAwait(false);
+            return await CategoriesWebApiClient.DeleteByIdAsync(category.Id).ConfigureAwait(false);
         }
 
-        protected async Task MoveTransactioncAndDeleteCategory(int walletId, int sourceCategoryId, int targetCategoryId)
+        protected async Task<CategoryDTO> MoveTransactioncAndDeleteCategory(int walletId, int sourceCategoryId, int targetCategoryId)
         {
             var movingResult = await TransactionsWebApiClient
                 .MoveTransactionsToAnotherCategory(walletId, sourceCategoryId, targetCategoryId).ConfigureAwait(false);
 
-            if (movingResult)
-                await CategoriesWebApiClient.DeleteByIdAsync(sourceCategoryId).ConfigureAwait(false);
+            if (!movingResult)
+                return new();
+                
+            return await CategoriesWebApiClient.DeleteByIdAsync(sourceCategoryId).ConfigureAwait(false);
         }
     }
 }

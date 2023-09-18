@@ -1,14 +1,13 @@
 ﻿using PersonalFinanceManagement.Domain.APIModels;
 using PersonalFinanceManagement.Domain.BLLModels;
 using PersonalFinanceManagement.Domain.Interfaces.WebApiClients;
-using PersonalFinanceManagement.WebAPIClients.Clients.Base;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace PersonalFinanceManagement.WebAPIClients.Clients
 {
-    public class UsersWebApiClient : WebApiClientBase, IUsersWebApiClient
+    public class UsersWebApiClient : IUsersWebApiClient
     {
         private readonly HttpClient _httpClient;
 
@@ -27,9 +26,9 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
                 var error = JsonSerializer.Deserialize<ApiError>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 return new ApiResult<string>(error.Message);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw HandleException(ex);
+                return new ApiResult<string>("An error occurred while processing your request. Please reload the page and try again.");
             }
         }
 
@@ -53,9 +52,9 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
                     _ => new ApiResult<string>(error?.Message ?? "An unknown error occurred.")
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw HandleException(ex);
+                return new ApiResult<string>("An error occurred while processing your request. Please reload the page and try again.");
             }
         }
 
@@ -72,9 +71,9 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
                 var error = JsonSerializer.Deserialize<ApiError>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 return new ApiResult<string>(error?.Message ?? "An unknown error occurred.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw HandleException(ex);
+                return new ApiResult<string>("An error occurred while processing your request. Please reload the page and try again.");
             }
         }
 
@@ -91,9 +90,9 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
                 var error = JsonSerializer.Deserialize<ApiError>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 return new ApiResult<string>(error?.Message ?? "An unknown error occurred.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw HandleException(ex);
+                return new ApiResult<string>("An error occurred while processing your request. Please reload the page and try again.");
             }
         }
 
@@ -115,9 +114,9 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
                     _ => new ApiResult<string>(error?.Message ?? "An unknown error occurred.")
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw HandleException(ex);
+                return new ApiResult<string>("An error occurred while processing your request. Please reload the page and try again.");
             }
         }
     }

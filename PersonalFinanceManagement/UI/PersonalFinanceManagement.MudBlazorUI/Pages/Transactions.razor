@@ -43,9 +43,9 @@
             <RowTemplate>
                 <MudTd Class="mud-table-cell-align-right mud-typography-nowrap">
                     <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
-                                   OnClick="async() => await UpdateTransactionAsync(context)" />
+                                   OnClick="async() => await HandleUpdateTransactionAsync(context)" />
                     <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Outlined" Color="Color.Error" Size="Size.Small"
-                                   OnClick="async() => await DeleteTransactionAsync(context)" />
+                                   OnClick="async() => await HandleDeleteTransactionAsync(context)" />
                 </MudTd>
                 <MudTd DataLabel="Amount" Style="text-align:right">
                     <MudText Typo="Typo.inherit"
@@ -81,6 +81,13 @@
     private WalletDTO _selectedWallet;
     private CategoryDTO _selectedCategory;
     private MudTable<TransactionDTO> _transactionTable;
+    private TableGroupDefinition<TransactionDTO> _groupDefinition = new()
+        {
+            GroupName = "Day",
+            Indentation = false,
+            Expandable = false,
+            Selector = (t) => t.Date
+        };
 
     public List<WalletDTO> Wallets
     {
@@ -113,7 +120,6 @@
     {
         await GetWalletsAsync();
         await GetCatigoriesAsync();
-        //await GetTransactionAsync();
 
         _selectedWallet = Wallets.Count > 0 ? Wallets[0] : new();
         _selectedCategory = Categories.Count > 0 ? Categories[0] : new();
@@ -128,29 +134,15 @@
         base.OnParametersSet();
     }
 
-    private async Task DeleteTransactionAsync(TransactionDTO transaction)
+    private async Task<TableData<TransactionDTO>> ServerReload(TableState state)
     {
-        var transactionInfo = $"{transaction.Name}, {transaction.Date.ToString("d", _culture)}, {transaction.Amount.ToString("0,0.00", _culture)}";
-        var parameters = new DialogParameters<SimpleTwoButtonsDialog>();
-        parameters.Add(d => d.ContentText, $"Are you sure you want to delete transaction?\n{transactionInfo}");
-        parameters.Add(d => d.ButtonText, "Delete");
-        parameters.Add(d => d.Color, Color.Error);
-
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-
-        var dialog = DialogService.Show<SimpleTwoButtonsDialog>("Delete", parameters, options);
-        var result = await dialog.Result;
-
-        if (result.Canceled)
-            return;
-
-        await RemoveTransactionAsync(transaction.Id);
-
-        await _transactionTable.ReloadServerData();
-        //_transactions.Remove(deletedTransaction);
+        var page = await GetPageAsync(state.Page, state.PageSize,
+                                      _selectedWallet?.Id > 0 ? _selectedWallet.Id : null,
+                                      _selectedCategory?.Id > 0 ? _selectedCategory.Id : null);
+        return new TableData<TransactionDTO>() { TotalItems = page.TotalItems, Items = page.Items };
     }
 
-    private async Task UpdateTransactionAsync(TransactionDTO transaction)
+    private async Task HandleUpdateTransactionAsync(TransactionDTO transaction)
     {
         var editableTransaction = new TransactionWithCategory()
             {
@@ -175,29 +167,27 @@
         if (result.Canceled)
             return;
 
-        await UpdateTransactionAsync(editableTransaction);
-
+        var updatedTransaction = await UpdateTransactionAsync(editableTransaction);
         await _transactionTable.ReloadServerData();
-        // int index = _transactions.ToList().FindIndex(item => item.Id == updatedTransaction.Id);
-        // if (index != -1)
-        //     _transactions[index] = updatedTransaction;
     }
 
-
-    private async Task<TableData<TransactionDTO>> ServerReload(TableState state)
+    private async Task HandleDeleteTransactionAsync(TransactionDTO transaction)
     {
+        var transactionInfo = $"{transaction.Name}, {transaction.Date.ToString("d", _culture)}, {transaction.Amount.ToString("0,0.00", _culture)}";
+        var parameters = new DialogParameters<SimpleTwoButtonsDialog>();
+        parameters.Add(d => d.ContentText, $"Are you sure you want to delete transaction?\n{transactionInfo}");
+        parameters.Add(d => d.ButtonText, "Delete");
+        parameters.Add(d => d.Color, Color.Error);
 
-        var page = await GetPageAsync(state.Page, state.PageSize,
-                                      _selectedWallet?.Id > 0 ? _selectedWallet.Id : null,
-                                      _selectedCategory?.Id > 0 ? _selectedCategory.Id : null);
-        return new TableData<TransactionDTO>() { TotalItems = page.TotalItems, Items = page.Items };
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<SimpleTwoButtonsDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Canceled)
+            return;
+
+        var deletedTransaction = await RemoveTransactionAsync(transaction.Id);
+        await _transactionTable.ReloadServerData();
     }
-
-    private TableGroupDefinition<TransactionDTO> _groupDefinition = new()
-        {
-            GroupName = "Day",
-            Indentation = false,
-            Expandable = false,
-            Selector = (t) => t.Date
-        };
 }

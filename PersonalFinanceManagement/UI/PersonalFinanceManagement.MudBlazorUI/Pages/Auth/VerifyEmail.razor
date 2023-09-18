@@ -1,13 +1,13 @@
 ﻿@page "/verify"
 @inherits VerifyEmailViewModel
-@inject ISnackbar Snackbar
 
+<ApiMessageHandler ApiResponse="_apiResponse" SuccessMessage="_successMessage" />
 <MudGrid>
     <MudItem xs="12">
         <MudCard>
             <MudForm @ref="_form" @bind-IsValid="@_success">
                 <MudCardContent>
-                    <MudTextField T="string" @bind-Value="_emailVerificationCode" Label="Enter the verification code" 
+                    <MudTextField T="string" @bind-Value="_emailVerificationCode" Label="Enter the verification code"
                                   Required="true" RequiredError="Verification code is required!" OnlyValidateIfDirty="false" />
                 </MudCardContent>
                 <MudCardActions>
@@ -22,24 +22,16 @@
 </MudGrid>
 
 @code {
-    bool _success;
-    MudForm _form;
+    private bool _success;
+    private MudForm _form;
+    private IApiResult _apiResponse;
+    private string _successMessage;
 
     private async Task HandleEmailVerificationAsync()
     {
         var response = await EmailVerificationAsync();
 
-        switch (response.Status)
-        {
-            case ApiResultStatus.Success:
-                Snackbar.Add(response.Value, Severity.Success);
-                break;
-            case ApiResultStatus.Failure:
-                Snackbar.Add(response.GetErrorString, Severity.Warning);
-                break;
-            case ApiResultStatus.Partial:
-                Snackbar.Add(response.GetErrorString, Severity.Info);
-                break;
-        }
+        _apiResponse = response;
+        _successMessage = response.Value;
     }
 }

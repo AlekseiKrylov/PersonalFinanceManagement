@@ -1,7 +1,13 @@
 ﻿<MudDialog>
     <DialogContent>
-        <MudText>@ContentText</MudText>
-        <MudText>By deleting the category, all across transactions will be deleted. If you wish to move them to another category, just choose one!</MudText>
+        <MudText Align="Align.Center">
+            @ContentText
+        </MudText>
+        <MudText Align="Align.Center" Color="Color.Warning">
+            By deleting the category, all across transactions will be deleted.
+            <br />
+            If you wish to move them to another category, just choose one!
+        </MudText>
         <CategoriesDropdown Categories="Categories" DropdownVariant="Variant.Outlined"
                             @bind-SelectedCategory="SelectedCategory" />
     </DialogContent>
@@ -16,7 +22,7 @@
     private bool success;
 
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    
+
     [Parameter] public List<CategoryDTO> Categories { get; set; }
     [Parameter] public CategoryDTO SelectedCategory { get; set; }
     [Parameter] public string ContentText { get; set; }
