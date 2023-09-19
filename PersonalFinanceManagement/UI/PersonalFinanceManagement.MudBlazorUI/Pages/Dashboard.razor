@@ -1,0 +1,136 @@
+﻿@page "/dashboard"
+@attribute [Authorize]
+@inherits DashboardViewModel
+
+<MudContainer Class="mt-2 px-2" MaxWidth="MaxWidth.False">
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudSelect T="WalletDTO" ValueChanged="OnWalletChangedAsync" Value="SelectedWallet" Label="Wallet" Variant="Variant.Outlined"
+                       AdornmentIcon="@Icons.Material.Outlined.Wallet" AdornmentColor="Color.Primary">
+                @foreach (var selectItem in _wallets)
+                {
+                    <MudSelectItem Value="@selectItem" />
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudStack Spacing="2" Row="true">
+                <MudDateRangePicker Variant="Variant.Outlined" Disabled="@(SelectedWallet is null)" @bind-DateRange="_dateRange" />
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Disabled="@(SelectedWallet is null)" OnClick="GetReportAsync">Ok</MudButton>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <SumPlate LoadingData="_loadingData" Name="Change for the period" Amount="@(_reportIncome - _reportExpenses)"
+                      IsIncome="@((_reportIncome - _reportExpenses) == 0 ? null : (_reportIncome - _reportExpenses) > 0 ? true : false)" />
+        </MudItem>
+        <MudItem xs="6" sm="3" md="4">
+            <SumPlate Name="Income" Amount="_reportIncome" IsIncome="true" LoadingData="_loadingData" />
+        </MudItem>
+        <MudItem xs="6" sm="3" md="4">
+            <SumPlate Name="Expenses" Amount="_reportExpenses" IsIncome="false" LoadingData="_loadingData" />
+        </MudItem>
+        <MudItem xs="12">
+            @if (_addTransaction)
+            {
+                <MudButton Disabled="@(SelectedWallet is null)" Variant="Variant.Filled" Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Cancel" IconColor="Color.Warning"
+                           OnClick="AddTransactionToggle">Cancel</MudButton>
+            }
+            else
+            {
+                <MudButton Disabled="@(SelectedWallet is null)" Variant="Variant.Filled" Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.AddCircle" IconColor="Color.Success"
+                           OnClick="AddTransactionToggle">Add transaction</MudButton>
+            }
+        </MudItem>
+        <MudItem xs="12" hidden="@(!_addTransaction)">
+            <AddTransaction Categories="_categories.ToList()" TransactionCreateForm="_transactionCreateForm" CreateTransactionAsync="HandleCreateTransactionAsync" />
+        </MudItem>
+        <MudItem xs="12">
+            <TransactionsTable Categories="_categories.ToList()" Transactions="_transactions.ToList()" LoadingData="_loadingData"
+                               OnDeleteTransaction="HandleRemoveTransactionAsync" OnUpdateTransaction="HandleUpdateTransactionAsync" />
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private bool _loadingData = false;
+    private bool _addTransaction = false;
+    public CultureInfo culture = CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
+    private DateRange _dateRange = new()
+    {
+        Start = new(DateTime.Now.Year, DateTime.Now.Month, 1),
+        End = DateTime.Now.AddMonths(1).AddDays(-(DateTime.Today.Day)).Date
+    };
+
+    private WalletDTO SelectedWallet { get; set; }
+    private CreateTransactionForm _transactionCreateForm = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetWalletsAsync();
+        if (_wallets.Count() == 1)
+        {
+            SelectedWallet = _wallets.First();
+            await GetReportAsync();
+            await GetCatigoriesInWallet(SelectedWallet.Id);
+        }
+        await base.OnInitializedAsync();
+    }
+
+    private void AddTransactionToggle()
+    {
+        _addTransaction = !_addTransaction;
+        ClearCreateForm();
+    }
+
+    private async Task OnWalletChangedAsync(WalletDTO wallet)
+    {
+        SelectedWallet = wallet;
+        await GetReportAsync();
+        await GetCatigoriesInWallet(wallet.Id);
+    }
+
+    private async Task GetReportAsync()
+    {
+        _loadingData = true;
+
+        if (_dateRange.Start is not null && _dateRange.End is not null)
+            await GetPeriodReportAsync(SelectedWallet.Id, (DateTime)_dateRange.Start, (DateTime)_dateRange.End);
+
+        _loadingData = false;
+    }
+
+    private async Task HandleCreateTransactionAsync()
+    {
+        var newTransaction = new TransactionCreateDTO
+            {
+                CategoryId = _transactionCreateForm.Category.Id,
+                Name = _transactionCreateForm.Name,
+                Note = _transactionCreateForm.Note,
+                Date = (DateTime)_transactionCreateForm.Date!,
+                Amount = (decimal)_transactionCreateForm.Amount!
+            };
+
+        var createdTransaction = await AddTransactionAsync(newTransaction);
+
+        if (newTransaction.Date >= _dateRange.Start && newTransaction.Date <= _dateRange.End && createdTransaction is not null)
+            await GetPeriodReportAsync(SelectedWallet.Id, (DateTime)_dateRange.Start, (DateTime)_dateRange.End);
+        
+        ClearCreateForm();
+    }
+
+    private void ClearCreateForm() => _transactionCreateForm = new();
+
+    private async Task HandleUpdateTransactionAsync(TransactionWithCategory transaction)
+    {
+        var updatedTransaction = await UpdateTransactionAsync(transaction);
+        await GetReportAsync();
+    }
+
+    private async Task HandleRemoveTransactionAsync(TransactionWithCategory transaction)
+    {
+        var removedTransaction = await RemoveTransactionAsync(transaction.Id);
+        await GetReportAsync();
+    }
+}

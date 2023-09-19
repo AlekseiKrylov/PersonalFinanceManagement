@@ -23,11 +23,5 @@ namespace PersonalFinanceManagement.Domain.DALEntities
 
         [ForeignKey(nameof(CategoryId))]
         public virtual Category Category { get; set; }
-
-        [Required]
-        public int WalletId { get; set; }
-
-        [ForeignKey(nameof(WalletId))]
-        public virtual Wallet Wallet { get; set; }
     }
 }

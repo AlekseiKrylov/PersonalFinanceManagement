@@ -1,0 +1,193 @@
+﻿@page "/transactions"
+@attribute [Authorize]
+@inherits TransactionsViewModel
+@inject IDialogService DialogService
+
+<MudGrid>
+    <MudGrid Spacing="2" Justify="Justify.FlexStart">
+        <MudItem xs="12" sm="5" md="4" Class="d-flex align-center justify-center mud-width-full">
+            <WalletsDropdown Wallets="Wallets" DropdownVariant="Variant.Text" IsRequired="false" @bind-SelectedWallet="_selectedWallet" />
+        </MudItem>
+        <MudItem xs="12" sm="5" md="4" Class="d-flex align-center justify-center mud-width-full">
+            <CategoriesDropdown Categories="Categories" DropdownVariant="Variant.Text" IsRequired="false" @bind-SelectedCategory="_selectedCategory" />
+        </MudItem>
+        <MudItem xs="2" sm="2" md="2" Class="d-flex flex-column align-start justify-end mud-width-full">
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="_transactionTable.ReloadServerData">Ok</MudButton>
+        </MudItem>
+    </MudGrid>
+    <MudItem xs="12" Class="mud-width-full">
+        <MudTable ServerData="@(new Func<TableState, Task<TableData<TransactionDTO>>>(ServerReload))" @ref="_transactionTable"
+                  Dense="true" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info" Bordered="true"
+                  GroupBy="_groupDefinition" GroupHeaderStyle="background-color:var(--mud-palette-background-grey)">
+            <ColGroup>
+                <col style="width:100px;" />
+                <col style="width:12%;" />
+                <col style="width:12%;" />
+                <col style="width:12%;" />
+                <col style="width:15%;" />
+                <col style="width:0%;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh Style="text-align:right">Amount</MudTh>
+                <MudTh>Date</MudTh>
+                <MudTh>Category</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Note</MudTh>
+            </HeaderContent>
+            <GroupHeaderTemplate>
+                <MudTh Class="mud-table-cell-custom-group" colspan="7">
+                    @(((DateTime)context.Key).ToString("d", _culture))
+                </MudTh>
+            </GroupHeaderTemplate>
+            <RowTemplate>
+                <MudTd Class="mud-table-cell-align-right mud-typography-nowrap">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
+                                   OnClick="async() => await HandleUpdateTransactionAsync(context)" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Outlined" Color="Color.Error" Size="Size.Small"
+                                   OnClick="async() => await HandleDeleteTransactionAsync(context)" />
+                </MudTd>
+                <MudTd DataLabel="Amount" Style="text-align:right">
+                    <MudText Typo="Typo.inherit"
+                             Color="@(_categories.Count() < 1 ? Color.Default
+                                            : _categories.Where(c => c.Id == context.CategoryId).First().IsIncome
+                                                ? Color.Success : Color.Error)">
+                        @(_categories.Count() < 1 ? context.Amount.ToString("0,0.00", _culture)
+                            : _categories.Where(c => c.Id == context.CategoryId).First().IsIncome
+                            ? context.Amount.ToString("0,0.00", _culture)
+                            : $"- {context.Amount.ToString("0,0.00", _culture)}")
+                    </MudText>
+                </MudTd>
+                <MudTd DataLabel="Date">
+                    @(((DateTime)context.Date!).ToString("d", _culture))
+                </MudTd>
+                <MudTd DataLabel="Category">
+                    @(_categories.Count() < 1 ? context.CategoryId
+                        : _categories.Where(c => c.Id == context.CategoryId).First().Name)
+                </MudTd>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Note" Style="white-space: pre-line">@context.Note</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private bool _loadingData = false;
+    private CultureInfo _culture;
+    private WalletDTO _selectedWallet;
+    private CategoryDTO _selectedCategory;
+    private MudTable<TransactionDTO> _transactionTable;
+    private TableGroupDefinition<TransactionDTO> _groupDefinition = new()
+        {
+            GroupName = "Day",
+            Indentation = false,
+            Expandable = false,
+            Selector = (t) => t.Date
+        };
+
+    public List<WalletDTO> Wallets
+    {
+        get
+        {
+            var walletList = _selectedCategory?.WalletId > 0
+                ? _wallets.Where(w => w.Id == _selectedCategory.WalletId).ToList()
+                : _wallets.ToList();
+
+            walletList.Insert(0, new WalletDTO { Id = -1, Name = "Not selected" });
+
+            return walletList;
+        }
+    }
+    public List<CategoryDTO> Categories
+    {
+        get
+        {
+            var categoryList = _selectedWallet?.Id > 0
+                ? _categories.Where(c => c.WalletId == _selectedWallet.Id).ToList()
+                : _categories.ToList();
+
+            categoryList.Insert(0, new CategoryDTO { Id = -1, Name = "Not selected", WalletId = -1 });
+
+            return categoryList;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetWalletsAsync();
+        await GetCatigoriesAsync();
+
+        _selectedWallet = Wallets.Count > 0 ? Wallets[0] : new();
+        _selectedCategory = Categories.Count > 0 ? Categories[0] : new();
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        _culture = CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
+
+        base.OnParametersSet();
+    }
+
+    private async Task<TableData<TransactionDTO>> ServerReload(TableState state)
+    {
+        var page = await GetPageAsync(state.Page, state.PageSize,
+                                      _selectedWallet?.Id > 0 ? _selectedWallet.Id : null,
+                                      _selectedCategory?.Id > 0 ? _selectedCategory.Id : null);
+        return new TableData<TransactionDTO>() { TotalItems = page.TotalItems, Items = page.Items };
+    }
+
+    private async Task HandleUpdateTransactionAsync(TransactionDTO transaction)
+    {
+        var editableTransaction = new TransactionWithCategory()
+            {
+                Id = transaction.Id,
+                Name = transaction.Name,
+                Note = transaction.Note,
+                Amount = transaction.Amount,
+                Date = transaction.Date,
+                Category = _categories.Where(c => c.Id == transaction.CategoryId).First(),
+            };
+
+        var parameters = new DialogParameters<EditTransactionDialog>();
+        parameters.Add(d => d.Categories, Categories);
+        parameters.Add(d => d.Transaction, editableTransaction);
+        parameters.Add(d => d.Culture, _culture);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        var dialog = DialogService.Show<EditTransactionDialog>("Edit", parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Canceled)
+            return;
+
+        var updatedTransaction = await UpdateTransactionAsync(editableTransaction);
+        await _transactionTable.ReloadServerData();
+    }
+
+    private async Task HandleDeleteTransactionAsync(TransactionDTO transaction)
+    {
+        var transactionInfo = $"{transaction.Name}, {transaction.Date.ToString("d", _culture)}, {transaction.Amount.ToString("0,0.00", _culture)}";
+        var parameters = new DialogParameters<SimpleTwoButtonsDialog>();
+        parameters.Add(d => d.ContentText, $"Are you sure you want to delete transaction?\n{transactionInfo}");
+        parameters.Add(d => d.ButtonText, "Delete");
+        parameters.Add(d => d.Color, Color.Error);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<SimpleTwoButtonsDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Canceled)
+            return;
+
+        var deletedTransaction = await RemoveTransactionAsync(transaction.Id);
+        await _transactionTable.ReloadServerData();
+    }
+}

@@ -1,0 +1,57 @@
+﻿@page "/login"
+@inherits LoginViewModel
+
+<ApiMessageHandler ApiResponse="_apiResponse" NeedSuccessMessage="false" />
+<EditForm Model="@_loginRequest" OnValidSubmit="HandleAuthenticateAsync">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="12">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Email" Class="mt-3"
+                    @bind-Value="_loginRequest.Email" For="@(() => _loginRequest.Email)" />
+                    <MudTextField Label="Password" Class="mt-3"
+                    @bind-Value="_loginRequest.Password" For="@(() => _loginRequest.Password)" InputType="_passwordInput"
+                                  Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12">
+            <MudButton Variant="Variant.Filled" Href="/register">Register</MudButton>
+            <MudButton Variant="Variant.Filled" Href="/forgot">Forgot password</MudButton>
+            <MudButton Variant="Variant.Filled" Href="/verify">Verify email</MudButton>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    private bool _isShow;
+    private InputType _passwordInput = InputType.Password;
+    private string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+    private IApiResult _apiResponse;
+
+    private void ShowHidePassword()
+    {
+        @if (_isShow)
+        {
+            _isShow = false;
+            _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+            _passwordInput = InputType.Password;
+        }
+        else
+        {
+            _isShow = true;
+            _passwordInputIcon = Icons.Material.Filled.Visibility;
+            _passwordInput = InputType.Text;
+        }
+    }
+
+    private async Task HandleAuthenticateAsync()
+    {
+        var response = await AuthenticateAsync();
+        _apiResponse = response;
+    }
+}

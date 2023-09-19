@@ -1,4 +1,4 @@
-﻿using PersonalFinanceManagement.Interfaces.Base.Entities;
+﻿using PersonalFinanceManagement.Interfaces.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,7 +18,15 @@ namespace PersonalFinanceManagement.Domain.DTOModels
         public DateTime Date { get; set; }
         [Required]
         public int CategoryId { get; set; }
-        [Required]
-        public int WalletId { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            var other = obj as TransactionDTO;
+            return other?.Id == Id;
+        }
+
+        public override int GetHashCode() => Id.GetHashCode();
+
+        public override string ToString() => Name is null ? string.Empty : Name;
     }
 }

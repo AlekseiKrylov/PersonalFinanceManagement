@@ -1,0 +1,56 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudForm @bind-IsValid="@success">
+            <MudGrid>
+                <MudItem xs="12" sm="6" md="4">
+                    <CategoriesDropdown Categories="Categories" DropdownVariant="Variant.Outlined"
+                                        @bind-SelectedCategory="Transaction.Category" />
+                    <MudDatePicker Label="Date" Variant="Variant.Outlined"
+                                   Required="true" RequiredError="Date is required!"
+                                   Culture="_culture" AdornmentColor="Color.Primary"
+                                   @bind-Date="Transaction.Date" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudNumericField Label="Enter amount" Format="F2" Culture="_culture"
+                                     Required="true" Variant="Variant.Outlined" Immediate="false"
+                                     @bind-Value="Transaction.Amount" />
+                    <MudTextField Label="Name" Variant="Variant.Outlined"
+                                  Counter="50" MaxLength="50" Immediate="true"
+                                  Required="true" RequiredError="Title is required!"
+                                  @bind-Value="Transaction.Name" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudTextField Label="Note" Lines="2" Variant="Variant.Outlined"
+                                  Counter="1000" MaxLength="1000" Immediate="true"
+                                  @bind-Value="Transaction.Note" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Success" OnClick="Submit" Disabled="@(!success || Transaction.Amount == 0)">Confirm</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    private bool success;
+    private CultureInfo _culture;
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public TransactionWithCategory Transaction { get; set; } = new();
+    [Parameter] public CultureInfo? Culture { get; set; } = null;
+    [Parameter] public List<CategoryDTO> Categories { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _culture = Culture ?? CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
+
+        base.OnParametersSet();
+    }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+}

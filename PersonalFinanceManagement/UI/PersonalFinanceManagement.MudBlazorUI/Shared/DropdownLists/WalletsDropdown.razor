@@ -1,0 +1,31 @@
+﻿<MudSelect T="WalletDTO" Label="Wallet" Variant="_variant"
+           Required="IsRequired" RequiredError="Wallet is required!" Dense="true"
+           AdornmentIcon="@Icons.Material.Outlined.Wallet" AdornmentColor="Color.Primary"
+           Value="SelectedWallet" ValueChanged="SetSelectedWalletAsync">
+    @foreach (var item in Wallets)
+    {
+        <MudSelectItem T="WalletDTO" Value="@item" />
+    }
+</MudSelect>
+
+@code {
+    private Variant _variant;
+
+    [Parameter] public bool IsRequired { get; set; } = true;
+    [Parameter] public Variant? DropdownVariant { get; set; } = null;
+    [Parameter] public WalletDTO SelectedWallet { get; set; }
+    [Parameter] public List<WalletDTO> Wallets { get; set; }
+    [Parameter] public EventCallback<WalletDTO> SelectedWalletChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _variant = DropdownVariant ?? Variant.Text;
+        base.OnInitialized();
+    }
+
+    private async Task SetSelectedWalletAsync(WalletDTO newValue)
+    {
+        SelectedWallet = newValue;
+        await SelectedWalletChanged.InvokeAsync(newValue);
+    }
+}

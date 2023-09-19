@@ -1,0 +1,37 @@
+﻿@page "/verify"
+@inherits VerifyEmailViewModel
+
+<ApiMessageHandler ApiResponse="_apiResponse" SuccessMessage="_successMessage" />
+<MudGrid>
+    <MudItem xs="12">
+        <MudCard>
+            <MudForm @ref="_form" @bind-IsValid="@_success">
+                <MudCardContent>
+                    <MudTextField T="string" @bind-Value="_emailVerificationCode" Label="Enter the verification code"
+                                  Required="true" RequiredError="Verification code is required!" OnlyValidateIfDirty="false" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success)" Class="ml-auto" OnClick="HandleEmailVerificationAsync">Verify</MudButton>
+                </MudCardActions>
+            </MudForm>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12">
+        <MudButton Variant="Variant.Filled" Href="/login">Login</MudButton>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private bool _success;
+    private MudForm _form;
+    private IApiResult _apiResponse;
+    private string _successMessage;
+
+    private async Task HandleEmailVerificationAsync()
+    {
+        var response = await EmailVerificationAsync();
+
+        _apiResponse = response;
+        _successMessage = response.Value;
+    }
+}

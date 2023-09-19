@@ -1,0 +1,24 @@
+﻿@inject ISnackbar Snackbar
+
+@if (ApiResponse != null)
+{
+    switch (ApiResponse.Status)
+    {
+        case ApiResultStatus.Success:
+            if (NeedSuccessMessage) 
+                Snackbar.Add(string.IsNullOrWhiteSpace(SuccessMessage) ? "Success" : SuccessMessage, Severity.Success);
+            break;
+        case ApiResultStatus.Failure:
+            Snackbar.Add(ApiResponse.GetErrorString, Severity.Warning);
+            break;
+        case ApiResultStatus.Partial:
+            Snackbar.Add(ApiResponse.GetErrorString, Severity.Info);
+            break;
+    }
+}
+
+@code {
+    [Parameter] public IApiResult ApiResponse { get; set; }
+    [Parameter] public bool NeedSuccessMessage { get; set; } = true;
+    [Parameter] public string? SuccessMessage { get; set; }
+}

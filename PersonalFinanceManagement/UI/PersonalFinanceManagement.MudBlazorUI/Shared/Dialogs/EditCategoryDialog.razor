@@ -1,0 +1,28 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudForm @bind-IsValid="@success">
+            <MudStack Row="false">
+                    <MudTextField Label="Name" Variant="Variant.Outlined" Counter="50" MaxLength="50" Immediate="true"
+                                  Required="true" RequiredError="Name is required!"
+                                  @bind-Value="Category.Name" />
+                    <MudCheckBox @bind-Checked="Category.IsIncome" Color="Color.Primary">Income</MudCheckBox>
+            </MudStack>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Success" OnClick="Submit" Disabled="@(!success || string.IsNullOrWhiteSpace(Category.Name))">Confirm</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    private bool success;
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    
+    [Parameter] public CategoryDTO Category { get; set; } = new();
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+}

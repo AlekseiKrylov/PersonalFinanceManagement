@@ -77,14 +77,9 @@ namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int>("WalletId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("WalletId");
 
                     b.ToTable("Transactions");
                 });
@@ -170,20 +165,12 @@ namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
             modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.Transaction", b =>
                 {
                     b.HasOne("PersonalFinanceManagement.Domain.DALEntities.Category", "Category")
-                        .WithMany()
+                        .WithMany("Transactions")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PersonalFinanceManagement.Domain.DALEntities.Wallet", "Wallet")
-                        .WithMany()
-                        .HasForeignKey("WalletId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Category");
-
-                    b.Navigation("Wallet");
                 });
 
             modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.Wallet", b =>
@@ -195,6 +182,11 @@ namespace PersonalFinanceManagement.DAL.SqlServer.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.Category", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("PersonalFinanceManagement.Domain.DALEntities.User", b =>

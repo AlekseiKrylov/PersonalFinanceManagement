@@ -1,0 +1,53 @@
+﻿<MudGrid>
+    <MudItem xs="12" sm="12">
+        <MudPaper Class="pa-4">
+            <MudForm @bind-IsValid="@success">
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="4">
+                        <CategoriesDropdown Categories="Categories" DropdownVariant="Variant.Outlined"
+                                            @bind-SelectedCategory="TransactionCreateForm.Category" />
+                        <MudDatePicker Label="Date" Variant="Variant.Outlined"
+                                       Required="true" RequiredError="Date is required!"
+                                       Culture="_culture" AdornmentColor="Color.Primary"
+                                       @bind-Date="TransactionCreateForm.Date" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudNumericField Label="Enter amount" Format="F2" Culture="_culture"
+                                         Required="true" Variant="Variant.Outlined" Immediate="false"
+                                         @bind-Value="TransactionCreateForm.Amount" />
+                        <MudTextField Label="Name" Variant="Variant.Outlined"
+                                      Counter="50" MaxLength="50" Immediate="true"
+                                      Required="true" RequiredError="Name is required!"
+                                      @bind-Value="TransactionCreateForm.Name" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudTextField Label="Note" Lines="2" Variant="Variant.Outlined"
+                                      Counter="1000" MaxLength="1000" Immediate="true"
+                                      @bind-Value="TransactionCreateForm.Note" />
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                   Disabled="@(!success || TransactionCreateForm.Amount is null || TransactionCreateForm.Amount == 0)" Class="my-1"
+                                   OnClick="CreateTransactionAsync">Create</MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private bool success;
+    private CultureInfo _culture;
+    private List<CategoryDTO> _categories = new();
+
+    [Parameter] public Func<Task> CreateTransactionAsync { get; set; }
+    [Parameter] public CultureInfo? Culture { get; set; } = null;
+    [Parameter] public CreateTransactionForm TransactionCreateForm { get; set; } = new();
+    [Parameter] public List<CategoryDTO> Categories { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _culture = Culture ?? CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
+        
+        base.OnParametersSet();
+    }
+}

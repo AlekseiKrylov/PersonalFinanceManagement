@@ -1,0 +1,67 @@
+﻿@inject IDialogService DialogService
+
+<MudCard Elevation="5" Class="rounded-lg mud-width-full">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6" Align="Align.Center">@Wallet.Name</MudText>
+            <MudText Typo="Typo.body2" Style="white-space: pre-line">@Wallet.Description</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudStack Row="false">
+                <MudIconButton Size=Size.Small Icon="@Icons.Material.Filled.Edit" Color="Color.Default"
+                               OnClick="async() => await UpdateAsync()"/>
+                <MudSpacer />
+                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Error"
+                               OnClick="async() => await DeleteAsync()"/>
+            </MudStack>
+        </CardHeaderActions>
+    </MudCardHeader>
+</MudCard>
+
+@code {
+    [Parameter] public WalletDTO Wallet { get; set; }
+    [Parameter] public EventCallback<WalletDTO> OnDelete { get; set; }
+    [Parameter] public EventCallback<WalletDTO> OnUpdate { get; set; }
+
+    private async Task DeleteAsync()
+    {
+        var parameters = new DialogParameters<SimpleTwoButtonsDialog>();
+        parameters.Add(d => d.ContentText, $"Are you sure you want to delete wallet '{Wallet.Name}'?");
+        parameters.Add(d => d.ButtonText, "Delete");
+        parameters.Add(d => d.Color, Color.Error);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<SimpleTwoButtonsDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Canceled)
+            return;
+
+        await OnDelete.InvokeAsync(Wallet);
+    }
+
+    private async Task UpdateAsync()
+    {
+        var editableWallet = new WalletDTO()
+            {
+                Id = Wallet.Id,
+                Name = Wallet.Name,
+                Description = Wallet.Description,
+                UserId = Wallet.UserId
+            };
+
+        var parameters = new DialogParameters<AddEditWalletDialog>();
+        parameters.Add(d => d.Wallet, editableWallet);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        var dialog = DialogService.Show<AddEditWalletDialog>("Edit", parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Canceled)
+            return;
+
+        await OnUpdate.InvokeAsync(editableWallet);
+    }
+}

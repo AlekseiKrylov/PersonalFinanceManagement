@@ -1,0 +1,120 @@
+﻿@inject IDialogService DialogService
+
+<MudTable Items="Transactions" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm" 
+          Loading="LoadingData" LoadingProgressColor="Color.Info" Bordered="true"
+          GroupBy="_groupDefinition" GroupHeaderStyle="background-color:var(--mud-palette-background-grey)">
+    <ColGroup>
+        <col style="width:100px;" />
+        <col style="width:12%;" />
+        <col style="width:12%;" />
+        <col style="width:12%;" />
+        <col style="width:15%;" />
+        <col style="width:0%;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh></MudTh>
+        <MudTh Style="text-align:right">Amount</MudTh>
+        <MudTh>Date</MudTh>
+        <MudTh>Category</MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Note</MudTh>
+    </HeaderContent>
+    <GroupHeaderTemplate>
+        <MudTh Class="mud-table-cell-custom-group" colspan="6">@(((DateTime)context.Key).ToString("d", Culture))</MudTh>
+    </GroupHeaderTemplate>
+    <RowTemplate>
+        <MudTd Class="mud-table-cell-align-right mud-typography-nowrap">
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
+                           OnClick="async() => await UpdateTransactionAsync(context)" />
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Outlined" Color="Color.Error" Size="Size.Small"
+                           OnClick="async() => await DeleteTransactionAsync(context)" />
+        </MudTd>
+        <MudTd DataLabel="Amount" Style="text-align:right">
+            <MudText Typo="Typo.inherit" Color="@(context.Category.IsIncome ? Color.Success : Color.Error)">
+                @(context.Category.IsIncome
+                    ? context.Amount.ToString("0,0.00", Culture)
+                    : $"- {context.Amount.ToString("0,0.00", Culture)}")
+            </MudText>
+        </MudTd>
+        <MudTd DataLabel="Date">@(((DateTime)context.Date!).ToString("d", _culture))</MudTd>
+        <MudTd DataLabel="Category">@context.Category.Name</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Note" Style="white-space: pre-line">@context.Note</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+    @code {
+    private CultureInfo _culture;
+    private List<TransactionWithCategory> _transactions;
+    private TableGroupDefinition<TransactionWithCategory> _groupDefinition = new()
+    {
+        GroupName = "Day",
+        Indentation = false,
+        Expandable = false,
+        Selector = (t) => t.Date
+    };
+
+    [Parameter] public bool LoadingData { get; set; } = false;
+    [Parameter] public CultureInfo? Culture { get; set; } = null;
+    [Parameter] public List<TransactionWithCategory> Transactions { get => _transactions.OrderByDescending(t => t.Date).ToList(); set => _transactions = value; }
+    [Parameter] public List<CategoryDTO> Categories { get; set; }
+    [Parameter] public EventCallback<TransactionWithCategory> OnDeleteTransaction { get; set; }
+    [Parameter] public EventCallback<TransactionWithCategory> OnUpdateTransaction { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _culture = Culture ?? CultureInfo.CurrentCulture ?? CultureInfo.InvariantCulture;
+
+        base.OnParametersSet();
+    }
+
+    private async Task DeleteTransactionAsync(TransactionWithCategory transaction)
+    {
+        var transactionInfo = $"{transaction.Name}, {transaction.Date?.ToString("d", Culture)}, {transaction.Amount.ToString("0,0.00", Culture)}";
+        var parameters = new DialogParameters<SimpleTwoButtonsDialog>();
+        parameters.Add(d => d.ContentText, $"Are you sure you want to delete transaction?\n{transactionInfo}");
+        parameters.Add(d => d.ButtonText, "Delete");
+        parameters.Add(d => d.Color, Color.Error);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<SimpleTwoButtonsDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Canceled)
+            return;
+
+        await OnDeleteTransaction.InvokeAsync(transaction);
+    }
+
+    private async Task UpdateTransactionAsync(TransactionWithCategory transaction)
+    {
+        var editableTransaction = new TransactionWithCategory()
+        {
+            Id = transaction.Id,
+            Name = transaction.Name,
+            Note = transaction.Note,
+            Amount = transaction.Amount,
+            Date = transaction.Date,
+            Category = transaction.Category,
+        };
+
+        var parameters = new DialogParameters<EditTransactionDialog>();
+        parameters.Add(d => d.Categories, Categories);
+        parameters.Add(d => d.Transaction, editableTransaction);
+        parameters.Add(d => d.Culture, Culture);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        var dialog = DialogService.Show<EditTransactionDialog>("Edit", parameters, options);
+        var result = await dialog.Result;
+
+        if (result.Canceled)
+            return;
+
+        await OnUpdateTransaction.InvokeAsync(editableTransaction);
+    }
+}
