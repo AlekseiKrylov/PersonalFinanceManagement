@@ -4,23 +4,25 @@
             <MudGrid>
                 <MudItem xs="12" sm="6" md="4">
                     <CategoriesDropdown Categories="Categories" DropdownVariant="Variant.Outlined"
-                    @bind-SelectedCategory="Transaction.Category" />
+                                        @bind-SelectedCategory="Transaction.Category" />
                     <MudDatePicker Label="Date" Variant="Variant.Outlined"
                                    Required="true" RequiredError="Date is required!"
                                    Culture="_culture" AdornmentColor="Color.Primary"
-                    @bind-Date="Transaction.Date" />
+                                   @bind-Date="Transaction.Date" />
                 </MudItem>
                 <MudItem xs="12" sm="6" md="4">
-                    <MudTextField T="string" Label="Title" Variant="Variant.Outlined"
-                                  Required="true" RequiredError="Title is required!"
-                    @bind-Value="Transaction.Name" />
                     <MudNumericField Label="Enter amount" Format="F2" Culture="_culture"
                                      Required="true" Variant="Variant.Outlined" Immediate="false"
-                    @bind-Value="Transaction.Amount" />
+                                     @bind-Value="Transaction.Amount" />
+                    <MudTextField Label="Name" Variant="Variant.Outlined"
+                                  Counter="50" MaxLength="50" Immediate="true"
+                                  Required="true" RequiredError="Title is required!"
+                                  @bind-Value="Transaction.Name" />
                 </MudItem>
                 <MudItem xs="12" sm="6" md="4">
                     <MudTextField Label="Note" Lines="2" Variant="Variant.Outlined"
-                    @bind-Value="Transaction.Note" />
+                                  Counter="1000" MaxLength="1000" Immediate="true"
+                                  @bind-Value="Transaction.Note" />
                 </MudItem>
             </MudGrid>
         </MudForm>

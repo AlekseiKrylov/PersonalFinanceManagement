@@ -16,19 +16,19 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
 
         public async Task<bool> MoveTransactionsToAnotherCategory(int walletId, int sourceCategoryId, int targetCategoryId, CancellationToken cancel = default)
         {
-            var response = await _httpClient.PostAsync($"move[{walletId}:{sourceCategoryId}:{targetCategoryId}]", null, cancel).ConfigureAwait(false);
+            var response = await _httpClient.PostAsync($"move/{walletId}/{sourceCategoryId}/{targetCategoryId}", null, cancel).ConfigureAwait(false);
             return response.StatusCode != HttpStatusCode.NotFound && response.IsSuccessStatusCode;
         }
 
         public async Task<int> GetCountInCategory(int categoryId, CancellationToken cancel = default) =>
-            await _httpClient.GetFromJsonAsync<int>($"count-in-category[{categoryId}]", cancel);
+            await _httpClient.GetFromJsonAsync<int>($"category/{categoryId}/count", cancel);
 
         public async Task<IEnumerable<TransactionDTO>> GetAllInCategory(int categoryId, CancellationToken cancel = default) =>
-            await _httpClient.GetFromJsonAsync<IEnumerable<TransactionDTO>>($"transactions-in-category[{categoryId}]", cancel).ConfigureAwait(false);
+            await _httpClient.GetFromJsonAsync<IEnumerable<TransactionDTO>>($"category/{categoryId}", cancel).ConfigureAwait(false);
 
         public async Task<IPage<TransactionDTO>> GetPageAsync(int pageIndex, int pageSize, int? walletId = null, int? categoryId = null, CancellationToken cancel = default)
         {
-            var url = $"page-with-restriction[{pageIndex}:{pageSize}]";
+            var url = $"page-with-restriction/{pageIndex}/{pageSize}";
 
             if (walletId.HasValue)
                 url += $"?walletId={walletId}";

@@ -34,11 +34,11 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients.Base
             await _httpClient.GetFromJsonAsync<IEnumerable<T>>("", cancel).ConfigureAwait(false);
 
         public async Task<IEnumerable<T>> GetAsync(int skip, int count, CancellationToken cancel = default) =>
-            await _httpClient.GetFromJsonAsync<IEnumerable<T>>($"items[{skip}:{count}]", cancel).ConfigureAwait(false);
+            await _httpClient.GetFromJsonAsync<IEnumerable<T>>($"items/{skip}/{count}", cancel).ConfigureAwait(false);
 
         public async Task<IPage<T>> GetPageAsync(int pageIndex, int pageSize, CancellationToken cancel = default)
         {
-            var response = await _httpClient.GetAsync($"page[{pageIndex}:{pageSize}]", cancel).ConfigureAwait(false);
+            var response = await _httpClient.GetAsync($"page/{pageIndex}/{pageSize}", cancel).ConfigureAwait(false);
             if (response.StatusCode == HttpStatusCode.NotFound)
                 return new PageItems<T>(Enumerable.Empty<T>(), 0, pageIndex, pageSize);
 

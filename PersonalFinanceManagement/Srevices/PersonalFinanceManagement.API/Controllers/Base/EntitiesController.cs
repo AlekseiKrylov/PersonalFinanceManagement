@@ -37,12 +37,12 @@ namespace PersonalFinanceManagement.API.Controllers.Base
         public async Task<IActionResult> Exist(T item, CancellationToken cancel = default) =>
             await _entityService.ExistsAsync(item, cancel) ? Ok(true) : NotFound(false);
 
-        [HttpGet("items[[{skip:int}:{count:int}]]")]
+        [HttpGet("items/{skip:int}/{count:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<T>>> Get(int skip, int count, CancellationToken cancel = default) =>
             Ok(await _entityService.GetAsync(skip, count, cancel));
 
-        [HttpGet("page[[{pageIndex:int}:{pageSize:int}]]")]
+        [HttpGet("page/{pageIndex:int}/{pageSize:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IPage<T>>> GetPage(int pageIndex, int pageSize, CancellationToken cancel = default)

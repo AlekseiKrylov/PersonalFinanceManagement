@@ -16,17 +16,17 @@ namespace PersonalFinanceManagement.API.Controllers
             _categoriesService = categoriesService;
         }
 
-        [HttpGet("count-in-wallet[[{walletId:int}]]")]
+        [HttpGet("wallet/{walletId:int}/count")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
         public async Task<IActionResult> GetCountInWallet(int walletId, CancellationToken cancel = default) =>
             Ok(await _categoriesService.GetCountInWalletAsync(walletId, cancel).ConfigureAwait(false));
 
-        [HttpGet("categories-in-wallet[[{walletId:int}]]")]
+        [HttpGet("wallet/{walletId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetAllInWallet(int walletId, CancellationToken cancel = default) =>
             Ok(await _categoriesService.GetAllInWalletAsync(walletId, cancel).ConfigureAwait(false));
 
-        [HttpGet("page-with-restriction[[{pageIndex}:{pageSize}]]")]
+        [HttpGet("page-with-restriction/{pageIndex}/{pageSize}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IPage<CategoryDTO>>> GetPage(int pageIndex,
