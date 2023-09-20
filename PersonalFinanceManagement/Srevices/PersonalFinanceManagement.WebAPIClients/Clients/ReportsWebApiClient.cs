@@ -11,11 +11,11 @@ namespace PersonalFinanceManagement.WebAPIClients.Clients
         public ReportsWebApiClient(HttpClient httpClient) => _httpClient = httpClient;
 
         public async Task<DailyTransactionsReport> GetDailyReport(int walletId, DateTime date, CancellationToken cancel = default) =>
-            await _httpClient.GetFromJsonAsync<DailyTransactionsReport>($"daily/wallet/{walletId}/{date:yyyy-MM-dd}", cancel)
+            await _httpClient.GetFromJsonAsync<DailyTransactionsReport>($"daily?walletId={walletId}&date={date:yyyy-MM-dd}", cancel)
                 .ConfigureAwait(false);
 
         public async Task<PeriodTransactionsReport> GetPeriodReport(int walletId, DateTime startDate, DateTime endDate, CancellationToken cancel = default) =>
-            await _httpClient.GetFromJsonAsync<PeriodTransactionsReport>($"period/wallet/{walletId}/{startDate:yyyy-MM-dd}/{endDate:yyyy-MM-dd}", cancel)
+            await _httpClient.GetFromJsonAsync<PeriodTransactionsReport>($"period?walletId={walletId}&startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}", cancel)
                 .ConfigureAwait(false);
     }
 }
