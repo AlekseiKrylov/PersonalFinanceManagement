@@ -13,7 +13,7 @@ namespace PersonalFinanceManagement.API.Controllers
 
         public TransactionsController(ITransactionsService transactionService) : base(transactionService) => _transactionService = transactionService;
 
-        [HttpPost("move/{walletId:int}/{sourceCategoryId:int}/{targetCategoryId:int}")]
+        [HttpPost("move")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(bool))]
         public async Task<IActionResult> MoveTransactionsToAnotherCategory(int walletId,
@@ -24,17 +24,17 @@ namespace PersonalFinanceManagement.API.Controllers
             ? Ok(true)
             : NotFound(false);
 
-        [HttpGet("category/{categoryId:int}/count")]
+        [HttpGet("in-category-count")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
         public async Task<IActionResult> GetCountInCategory(int categoryId, CancellationToken cancel = default) =>
             Ok(await _transactionService.GetCountInCategoryAsync(categoryId, cancel).ConfigureAwait(false));
 
-        [HttpGet("category/{categoryId:int}")]
+        [HttpGet("in-category")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<TransactionDTO>>> GetAllInCategory(int categoryId, CancellationToken cancel = default) =>
             Ok(await _transactionService.GetAllInCategoryAsync(categoryId, cancel).ConfigureAwait(false));
 
-        [HttpGet("page-with-restriction/{pageIndex}/{pageSize}")]
+        [HttpGet("page-with-restriction")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IPage<TransactionDTO>>> GetPage(int pageIndex,
