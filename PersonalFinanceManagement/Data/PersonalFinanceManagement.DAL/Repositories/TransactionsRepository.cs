@@ -39,17 +39,15 @@ namespace PersonalFinanceManagement.DAL.Repositories
 
         public async Task<bool> MoveToAnotherCategoryOfSameWalletAsync(int walletId, int sourceCategoryId, int targetCategoryId, CancellationToken cancel = default)
         {
-            var uniqueCategoryCount = await Items
-                .Where(t => t.Category.WalletId == walletId && (t.CategoryId == sourceCategoryId || t.CategoryId == targetCategoryId))
-                .Select(t => t.CategoryId)
-                .Distinct()
+            var categoriesCount = await _db.Categories
+                .Where(c => c.Wallet.UserId == _userId && c.WalletId == walletId && (c.Id == sourceCategoryId || c.Id == targetCategoryId))
                 .CountAsync(cancel)
                 .ConfigureAwait(false);
 
-            if (uniqueCategoryCount != 2)
+            if (categoriesCount != 2)
                 return false;
 
-            var totalTransactionsToUpdate = await GetCountInCategoryAsync(targetCategoryId, cancel);
+            var totalTransactionsToUpdate = await GetCountInCategoryAsync(sourceCategoryId, cancel);
 
             if (totalTransactionsToUpdate == 0)
                 return false;
@@ -85,13 +83,19 @@ namespace PersonalFinanceManagement.DAL.Repositories
 
         public async Task<bool> CheckEntitiesExistAsync(int categoryId, int? transactionId, CancellationToken cancel = default)
         {
-            var query = _db.Categories.Where(c => c.Wallet.UserId == _userId && c.Id == categoryId);
+            if (!transactionId.HasValue)
+                return await _db.Categories.AnyAsync(c => c.Wallet.UserId == _userId && c.Id == categoryId, cancel)
+                    .ConfigureAwait(false);
 
-            if (transactionId.HasValue)
-                query = query.Join(_db.Transactions.Where(t => t.CategoryId == categoryId && t.Id == transactionId), c => c.Id, t => t.CategoryId, (c, t) => c);
+            var category = await _db.Categories.Where(c => c.Wallet.UserId == _userId && c.Id == categoryId)
+                .FirstOrDefaultAsync(cancel)
+                .ConfigureAwait(false);
 
-            var result = await query.AnyAsync(cancel).ConfigureAwait(false);
-            return result;
+            if (category == null)
+                return false;
+
+            return await _db.Transactions.AnyAsync(t => t.Category.WalletId == category.WalletId && t.Id == transactionId, cancel)
+                .ConfigureAwait(false);
         }
 
         public async Task<IPage<Transaction>> GetPageWithRestrictionsAsync(int pageIndex, int pageSize,

@@ -231,7 +231,7 @@
 
         CategoryDTO deletedCategory;
 
-        if (result.DataType == typeof(int) && (int)result.Data > 0)
+        if (result.Data.GetType() == typeof(int) && (int)result.Data > 0)
             deletedCategory = await MoveTransactioncAndDeleteCategory(_selectedWallet.Id, category.Id, (int)result.Data);
         else
             deletedCategory = await DeleteCategoryAsync(category);
