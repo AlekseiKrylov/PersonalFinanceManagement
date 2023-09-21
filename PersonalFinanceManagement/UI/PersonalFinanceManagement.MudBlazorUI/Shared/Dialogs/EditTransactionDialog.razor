@@ -40,7 +40,7 @@
 
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    [Parameter] public TransactionWithCategory Transaction { get; set; } = new();
+    [Parameter] public TransactionWithCategory Transaction { get; set; }
     [Parameter] public CultureInfo? Culture { get; set; } = null;
     [Parameter] public List<CategoryDTO> Categories { get; set; }
 
