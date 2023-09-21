@@ -21,14 +21,14 @@ builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthorizationMessageHandler>();
 builder.Services.AddAuthorizationCore();
-builder.Services.AddApi<IUsersWebApiClient, UsersWebApiClient>("api/Users/");
-builder.Services.AddApi<IEntitiesWebApiClient<WalletDTO, WalletCreateDTO>, WalletsWebApiClient>("api/Wallets/")
+builder.Services.AddApi<IUsersWebApiClient, UsersWebApiClient>("api/users/");
+builder.Services.AddApi<IEntitiesWebApiClient<WalletDTO, WalletCreateDTO>, WalletsWebApiClient>("api/wallets/")
     .AddHttpMessageHandler<AuthorizationMessageHandler>();
-builder.Services.AddApi<ICategoriesWebApiClient, CategoriesWebApiClient>("api/Categories/")
+builder.Services.AddApi<ICategoriesWebApiClient, CategoriesWebApiClient>("api/categories/")
     .AddHttpMessageHandler<AuthorizationMessageHandler>();
-builder.Services.AddApi<ITransactionsWebApiClient, TransactionsWebApiClient>("api/Transactions/")
+builder.Services.AddApi<ITransactionsWebApiClient, TransactionsWebApiClient>("api/transactions/")
     .AddHttpMessageHandler<AuthorizationMessageHandler>();
-builder.Services.AddApi<IReportsWebApiClient, ReportsWebApiClient>("api/Reports/")
+builder.Services.AddApi<IReportsWebApiClient, ReportsWebApiClient>("api/reports/")
     .AddHttpMessageHandler<AuthorizationMessageHandler>();
 builder.Services.AddMudServices(config =>
 {
