@@ -38,7 +38,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<PFMDbContext>(
     options => options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
+        builder.Configuration.GetConnectionString("PersonalFMSqlDb"),
         parametr => parametr.MigrationsAssembly("PersonalFinanceManagement.DAL.SqlServer")));
 builder.Services.AddTransient<PFMDbInitializer>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(RepositoryBase<>));

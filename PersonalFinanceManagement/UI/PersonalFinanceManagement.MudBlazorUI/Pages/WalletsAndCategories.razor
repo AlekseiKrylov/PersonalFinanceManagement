@@ -219,7 +219,7 @@
         var parameters = new DialogParameters<DeleteCategoryDialog>();
         parameters.Add(d => d.Categories, categoriesWithoutCurrent);
         parameters.Add(d => d.SelectedCategory, selectedCategory);
-        parameters.Add(d => d.ContentText, $"Are you sure you want to delete transaction '{category.Name}'?");
+        parameters.Add(d => d.ContentText, $"Are you sure you want to delete category '{category.Name}'?");
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
 
