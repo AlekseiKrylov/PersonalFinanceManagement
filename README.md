@@ -13,14 +13,14 @@ By implementing user authentication, the application ensures secure access to da
 ### Screenshots
 
 <p align="center">Login page with user notification of errors</p>
-<p align="center"><img  src="./_Screenshots/Image 001.png" width="65%"></p>
+<p align="center"><img  src="./_Screenshots/Image 001.png" width="75%"></p>
 <p align="center">Dashboard with transaction creation</p>
-<p align="center"><img  src="./_Screenshots/Image 003.png" width="65%"></p>
+<p align="center"><img  src="./_Screenshots/Image 003.png" width="75%"></p>
 <p align="center">Dashboard</p>
-<p align="center"><img  src="./_Screenshots/Image 004.png" width="65%"></p>
+<p align="center"><img  src="./_Screenshots/Image 004.png" width="75%"></p>
 <p align="center">Wallets and categories</p>
-<p align="center"><img  src="./_Screenshots/Image 005.png" width="65%"></p>
+<p align="center"><img  src="./_Screenshots/Image 005.png" width="75%"></p>
 <p align="center">Delete a category dialog</p>
-<p align="center"><img  src="./_Screenshots/Image 006.png" width="65%"></p>
+<p align="center"><img  src="./_Screenshots/Image 006.png" width="75%"></p>
 <p align="center">Transactions</p>
-<p align="center"><img  src="./_Screenshots/Image 007.png" width="65%"></p>
+<p align="center"><img  src="./_Screenshots/Image 007.png" width="75%"></p>
