@@ -5,6 +5,9 @@
 ![Static Badge](https://img.shields.io/badge/MSSQL-blue)
 ![Static Badge](https://img.shields.io/badge/MudBlazor-blue)
 ![Static Badge](https://img.shields.io/badge/JWT-blue)
+![Static Badge](https://img.shields.io/badge/xUnit-blue)
+![Static Badge](https://img.shields.io/badge/Moq-blue)
+![Static Badge](https://img.shields.io/badge/EFC.InMemory-blue)
 
 A comprehensive application for managing personal finances.
 
