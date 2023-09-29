@@ -1,4 +1,10 @@
 # Personal Finance Management
+![Static Badge](https://img.shields.io/badge/Net_6.0-8A2BE2)
+![Static Badge](https://img.shields.io/badge/ASP.NET_Core_Web_API-8A2BE2)
+![Static Badge](https://img.shields.io/badge/Entity_Framework_Core-8A2BE2)
+![Static Badge](https://img.shields.io/badge/MSSQL-8A2BE2)
+![Static Badge](https://img.shields.io/badge/MudBlazor-8A2BE2)
+![Static Badge](https://img.shields.io/badge/JWT-8A2BE2)
 
 A comprehensive application for managing personal finances.
 
